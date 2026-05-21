@@ -1,0 +1,92 @@
+{
+  "poster_title": "学术海报生成：从科学论文到 Poster 的初步探索",
+  "template": "template_dashboard",
+  "color_theme": "academic_blue",
+  "authors": "吴雪玉, 2026",
+  "paper_info": "A low-code AI Agent workflow for paper-to-poster generation",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "dashboard_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "为什么做这个研究？",
+      "content": [
+        "学术海报是会议交流中的重要媒介",
+        "人工制作海报耗时且依赖设计经验",
+        "论文到海报需要同时处理文本、图片和布局"
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only"
+    },
+    {
+      "section": "我们的方案：PosterAgent 工作流",
+      "content": [
+        "通过 ParseAgent 提取论文文本资产",
+        "通过 Visual Agent 理解论文图像资产",
+        "通过 PlannerAgent 生成结构化 panels",
+        "通过 Python 渲染服务生成可编辑 PPTX"
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only"
+    },
+    {
+      "section": "Benchmark 与数据",
+      "content": [
+        "支持从 PDF 中提取图片和文本预览",
+        "将图片转换为 base64 供 Dify 后续使用",
+        "保留图注、页码、尺寸等元信息"
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only"
+    },
+    {
+      "section": "创新点",
+      "content": [
+        "采用低代码 Agent 编排复杂任务",
+        "设计 panel-based JSON 中间表示",
+        "实现内容规划与 PPTX 渲染解耦",
+        "支持后续接入 VLM 视觉反馈"
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only"
+    },
+    {
+      "section": "重要结论",
+      "content": [
+        "多 Agent 拆解提升了系统可控性",
+        "可编辑 PPTX 更适合真实科研场景",
+        "抽图服务解决了 Dify 无法稳定获取论文图片的问题"
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only"
+    },
+    {
+      "section": "对小同行的启发",
+      "content": [
+        "不要只追求生成好看的页面",
+        "更应关注信息压缩和读者理解",
+        "系统设计要兼顾可控性、可编辑性和可扩展性"
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only"
+    }
+  ],
+  "figures": {},
+  "use_commenter": false,
+  "max_iterations": 2,
+  "save_debug_images": true
+}

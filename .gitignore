@@ -1,0 +1,21 @@
+# Python
+.venv/
+.venv312/
+__pycache__/
+*.py[cod]
+.DS_Store
+
+# Secrets — never commit
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Generated / runtime artifacts
+outputs/
+orgin_cache2/
+origin_cache/
+static/assets/
+static/tmp_*.png
+static/poster_debug_*.png
+*.pptx

@@ -1,0 +1,47 @@
+{
+    "asset_token": "714aa7f42c7d4791",
+    "poster_title": "No Base64 Dify Workflow Test",
+    "authors": "Paper2Poster Backend",
+    "paper_info": "Dify passes only asset_token and figure_id",
+    "panels": [
+        {
+            "section": "Motivation",
+            "content": [
+                "Base64 images exceed LLM context limits.",
+                "Dify should only orchestrate metadata.",
+                "The renderer can resolve stored assets later."
+            ],
+            "layout_hint": "text_only"
+        },
+        {
+            "section": "Method",
+            "content": [
+                "Extract figures once.",
+                "Store them under asset_token.",
+                "Planner selects figure_id.",
+                "PPT renderer loads image locally."
+            ],
+            "figure_id": "Fig1",
+            "figure_caption": "Figure 1: EduIllustrate generates geometrically accurate visuals for diverse STEM problems. Taking textual K-12",
+            "layout_hint": "text_left_image_right"
+        },
+        {
+            "section": "Results",
+            "content": [
+                "The HTTP extraction response is lightweight.",
+                "The final PPTX can still include figures."
+            ],
+            "figure_id": "Fig2",
+            "figure_caption": "Figure 2: Overview of EduIllustrate. Given a K-12 STEM problem, the generation protocol produces a structured",
+            "layout_hint": "image_top_text_bottom"
+        },
+        {
+            "section": "Conclusion",
+            "content": [
+                "Use asset_token plus figure_id instead of base64 in Dify."
+            ],
+            "layout_hint": "text_only"
+        }
+    ],
+    "figures": {}
+}
