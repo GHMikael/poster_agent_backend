@@ -19,3 +19,5 @@ static/assets/
 static/tmp_*.png
 static/poster_debug_*.png
 *.pptx
+
+PROJECT_CONVERSATION_SUMMARY.md

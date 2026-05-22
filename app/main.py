@@ -14,7 +14,7 @@ from app.job_store import JOBS, now_iso
 from app.models import PosterTask
 from app.pdf_assets import extract_pdf_assets_from_bytes
 from app.ppt_renderer import generate_dashboard_pptx
-from app.run_archive import RUNS_ROOT, RunArchive, update_runs_index
+from app.run_archive import RUNS_ROOT, RunArchive, slugify, update_runs_index
 
 
 app = FastAPI(title="Paper-to-Poster Backend", version="4.1")
@@ -31,6 +31,32 @@ app.add_middleware(
 @app.get("/health")
 def health():
     return {"status": "ok", "service": "paper-to-poster-backend"}
+
+
+def _pptx_filename_for_run(run_folder: str) -> str:
+    """Derive a paper-title-based PPTX filename for a run folder.
+
+    Reads ``input.json`` for the full ``poster_title`` and slugifies it.
+    Falls back to parsing the folder name (``<ts>_<slug>_<runid>``) and
+    finally to ``poster.pptx`` so the download always has a name.
+    """
+
+    input_path = RUNS_ROOT / run_folder / "input.json"
+    if input_path.exists():
+        try:
+            data = json.loads(input_path.read_text(encoding="utf-8"))
+            title = (data.get("poster_title") or "").strip()
+            if title:
+                return f"{slugify(title, max_len=60)}.pptx"
+        except Exception:
+            pass
+
+    parts = run_folder.split("_")
+    if len(parts) >= 4:
+        slug = "_".join(parts[2:-1]).strip("_")
+        if slug:
+            return f"{slug}.pptx"
+    return "poster.pptx"
 
 
 @app.post("/extract_pdf_assets")
@@ -87,7 +113,7 @@ def _run_poster_job(job_id: str, task: PosterTask, base_url: str) -> None:
             run_folder = outcome["run_folder"]
             result = {
                 "run_folder": run_folder,
-                "filename": "final.pptx",
+                "filename": _pptx_filename_for_run(run_folder),
                 "download_url": f"{base_url}/download/run/{run_folder}",
                 "best_score": outcome["best_score"],
                 "iterations": outcome["iterations"],
@@ -116,7 +142,7 @@ def _run_poster_job(job_id: str, task: PosterTask, base_url: str) -> None:
                 print(f"update_runs_index failed: {exc}")
             result = {
                 "run_folder": archive.folder_name,
-                "filename": "final.pptx",
+                "filename": _pptx_filename_for_run(archive.folder_name),
                 "download_url": f"{base_url}/download/run/{archive.folder_name}",
                 "best_score": None,
                 "iterations": 0,
@@ -211,7 +237,7 @@ async def generate_ppt_file(request: Request):
             return {
                 "status": "completed",
                 "download_url": f"/download/run/{result['run_folder']}",
-                "filename": "final.pptx",
+                "filename": _pptx_filename_for_run(result["run_folder"]),
                 "run_folder": result["run_folder"],
                 "feedback": {
                     "run_id": result["run_id"],
@@ -250,7 +276,7 @@ async def generate_ppt_file(request: Request):
     return {
         "status": "completed",
         "download_url": f"/download/run/{archive.folder_name}",
-        "filename": "final.pptx",
+        "filename": _pptx_filename_for_run(archive.folder_name),
         "run_folder": archive.folder_name,
     }
 
@@ -266,7 +292,7 @@ def download_run(run_folder: str):
     return FileResponse(
         path,
         media_type="application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        filename=f"{run_folder}.pptx",
+        filename=_pptx_filename_for_run(run_folder),
     )
 
 

@@ -1,6 +1,7 @@
 import io
 import re
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Dict, List, Optional, Tuple
 
 from pptx import Presentation
@@ -250,6 +251,40 @@ def fit_picture_box(img_w: int, img_h: int, x, y, w, h):
     return x + int((w - pic_w) / 2), y + int((h - pic_h) / 2), pic_w, pic_h
 
 
+@lru_cache(maxsize=128)
+def _image_aspect(image_source: str) -> Optional[float]:
+    if not image_source:
+        return None
+    stream = load_image_from_source(image_source)
+    if not stream:
+        return None
+    size = image_size(stream)
+    if not size:
+        return None
+    return size[0] / max(size[1], 1)
+
+
+def figure_squashed_in_vertical(image_source: str, box_w, box_h, min_height_ratio: float = 0.6) -> bool:
+    """Whether a wide image would letterbox to < min_height_ratio of its
+    allocated vertical-layout figure box. Used to decide whether to swap
+    a text-top/image-bottom panel to a horizontal arrangement (or trim
+    bullets to free vertical space) before committing the layout.
+
+    Why: fit_picture_box centers a wider-than-box image by setting
+    pic_h = box_w / img_ratio, so the picture occupies only
+    box_ratio / img_ratio of the available height — a 2:1 image inside a
+    1:1 figure box renders at 50% height even though the box looks full.
+    """
+    img_ratio = _image_aspect(image_source)
+    if img_ratio is None:
+        return False
+    box_ratio = box_w / max(box_h, 1)
+    if img_ratio <= box_ratio:
+        return False
+    return (box_ratio / img_ratio) < min_height_ratio
+
+
+
 def _panel_font_size(base: float, panel: Optional[Panel] = None, task: Optional[PosterTask] = None) -> float:
     """Apply per-panel and global font scaling, clamped to a safe range.
 
@@ -408,6 +443,15 @@ def add_panel_content(slide, x, y, w, h, panel: Panel, task: PosterTask, palette
         text_w = cw * 0.47
         add_bullets(slide, cx, cy, text_w, ch, panel, palette, accent, task=task, max_items=4)
         add_figure(slide, cx + text_w + Inches(0.12), cy + Inches(0.03), cw - text_w - Inches(0.12), ch - Inches(0.04), figure_source, figure_caption, palette)
+    elif figure_source and hint == "image_focus":
+        # Figure-dominant vertical: image takes ~75% of the panel and only the
+        # single most-critical bullet sits below it. Applier sets this hint
+        # when the VLM signals figure_too_small on a panel that's already
+        # vertical, so the picture grows instead of staying letterboxed.
+        fig_h = ch * 0.75
+        text_h = ch - fig_h - Inches(0.10)
+        add_figure(slide, cx, cy, cw, fig_h, figure_source, figure_caption, palette)
+        add_bullets(slide, cx, cy + fig_h + Inches(0.10), cw, text_h, panel, palette, accent, task=task, max_items=1)
     elif figure_source and hint == "image_compact":
         # Compact figure container: figure takes 30% so the panel reads as
         # text-heavy with a small supporting visual. Applier uses this hint
@@ -417,7 +461,26 @@ def add_panel_content(slide, x, y, w, h, panel: Panel, task: PosterTask, palette
         add_bullets(slide, cx, cy, cw, text_h, panel, palette, accent, task=task, max_items=4)
         add_figure(slide, cx, cy + text_h + Inches(0.08), cw, fig_h, figure_source, figure_caption, palette)
     elif figure_source and hint in ["text_top_image_bottom", "image_top_text_bottom"]:
-        if hint == "image_top_text_bottom":
+        # Probe whether vertical layout would crush the image into a thin
+        # letterboxed strip. If so, prefer text_left_image_right when the
+        # panel is wide enough; otherwise keep vertical but hand the figure
+        # most of the height and reduce text to the single critical bullet.
+        est_fig_h = ch * 0.56
+        squashed = figure_squashed_in_vertical(figure_source, cw, est_fig_h)
+        if squashed and cw >= Inches(3.4):
+            text_w = cw * 0.47
+            add_bullets(slide, cx, cy, text_w, ch, panel, palette, accent, task=task, max_items=3)
+            add_figure(slide, cx + text_w + Inches(0.12), cy + Inches(0.03), cw - text_w - Inches(0.12), ch - Inches(0.04), figure_source, figure_caption, palette)
+        elif squashed:
+            fig_h = ch * 0.78
+            if hint == "image_top_text_bottom":
+                add_figure(slide, cx, cy, cw, fig_h, figure_source, figure_caption, palette)
+                add_bullets(slide, cx, cy + fig_h + Inches(0.10), cw, ch - fig_h - Inches(0.10), panel, palette, accent, task=task, max_items=1)
+            else:
+                text_h = ch - fig_h - Inches(0.10)
+                add_bullets(slide, cx, cy, cw, text_h, panel, palette, accent, task=task, max_items=1)
+                add_figure(slide, cx, cy + text_h + Inches(0.08), cw, fig_h, figure_source, figure_caption, palette)
+        elif hint == "image_top_text_bottom":
             fig_h = ch * 0.56
             add_figure(slide, cx, cy, cw, fig_h, figure_source, figure_caption, palette)
             add_bullets(slide, cx, cy + fig_h + Inches(0.15), cw, ch - fig_h - Inches(0.15), panel, palette, accent, task=task, max_items=3)
@@ -656,9 +719,14 @@ class StoryflowTemplate(DashboardTemplate):
         content_h = h - (content_y - y) - Inches(0.10)
         if figure_source:
             fig_ratio = 0.32 if compact or panel.layout_hint == "image_compact" else 0.42
+            est_fig_w = w - Inches(0.20)
+            est_fig_h = content_h * fig_ratio
+            if figure_squashed_in_vertical(figure_source, est_fig_w, est_fig_h):
+                fig_ratio = 0.70
             add_figure(slide, x + Inches(0.10), content_y, w - Inches(0.20), content_h * fig_ratio, figure_source, figure_caption, p)
             bullet_y = content_y + content_h * (fig_ratio + 0.06)
-            add_bullets(slide, x + Inches(0.10), bullet_y, w - Inches(0.20), content_h * (1 - fig_ratio - 0.08), panel, p, accent, task=task, max_items=3 if compact else 4)
+            bullets_squashed_cap = 1 if fig_ratio >= 0.6 else (3 if compact else 4)
+            add_bullets(slide, x + Inches(0.10), bullet_y, w - Inches(0.20), content_h * (1 - fig_ratio - 0.08), panel, p, accent, task=task, max_items=bullets_squashed_cap)
         elif classify_panel(panel.section) == "method":
             add_mini_pipeline(slide, x + Inches(0.10), content_y + Inches(0.02), w - Inches(0.20), content_h * 0.40, panel, p, accent, task=task)
             add_bullets(slide, x + Inches(0.10), content_y + content_h * 0.48, w - Inches(0.20), content_h * 0.48, panel, p, accent, task=task, max_items=2 if compact else 3)
@@ -725,8 +793,11 @@ class MinimalTemplate(DashboardTemplate):
         cw = w - Inches(0.32)
         ch = h - Inches(0.82)
         if figure_source:
-            add_figure(slide, cx, cy, cw, ch * 0.48, figure_source, figure_caption, p)
-            add_bullets(slide, cx, cy + ch * 0.54, cw, ch * 0.44, panel, p, accent, max_items=3)
+            fig_ratio = 0.78 if figure_squashed_in_vertical(figure_source, cw, ch * 0.48) else 0.48
+            add_figure(slide, cx, cy, cw, ch * fig_ratio, figure_source, figure_caption, p)
+            bullet_top = cy + ch * (fig_ratio + 0.06)
+            bullet_h = ch * (1 - fig_ratio - 0.06)
+            add_bullets(slide, cx, bullet_top, cw, bullet_h, panel, p, accent, max_items=1 if fig_ratio >= 0.6 else 3)
         else:
             add_bullets(slide, cx, cy, cw, ch, panel, p, accent, max_items=4)
 

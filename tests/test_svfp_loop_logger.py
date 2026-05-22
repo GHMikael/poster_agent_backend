@@ -63,9 +63,9 @@ from app.vlm_commenter import (  # noqa: E402
 
 class SVFPTests(unittest.TestCase):
     def test_enum_has_three_canonical_issues(self) -> None:
-        expected = {"overlapping_elements", "empty_space", "low_contrast"}
+        expected = {"overlapping_elements", "empty_space", "low_contrast", "figure_too_small"}
         self.assertEqual(set(SVFP_ISSUE_VALUES), expected)
-        self.assertEqual(len(SVFP_ISSUE_VALUES), 3)
+        self.assertEqual(len(SVFP_ISSUE_VALUES), 4)
         self.assertEqual({m.value for m in SVFPIssueType}, expected)
 
     def test_suggested_action_enum_has_nine_actions(self) -> None:

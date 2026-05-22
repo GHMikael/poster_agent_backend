@@ -20,6 +20,7 @@ from app.vlm_commenter import check_layout_with_vlm
 ISSUE_OVERLAPPING_ELEMENTS = "overlapping_elements"
 ISSUE_EMPTY_SPACE = "empty_space"
 ISSUE_LOW_CONTRAST = "low_contrast"
+ISSUE_FIGURE_TOO_SMALL = "figure_too_small"
 
 # Closed action set understood by FeedbackApplier. Mirrors
 # ``SVFPSuggestedAction`` in vlm_commenter.py so the schema and the dispatcher
@@ -318,9 +319,37 @@ class FeedbackApplier:
     def _dispatch_panel_action(self, panel: Panel, item: "PanelFeedback", task: PosterTask) -> bool:
         action = (item.suggested_action or "").strip()
         target = item.target_value
+        issues = list(item.issues or [])
+        horizontal = panel.layout_hint == "text_left_image_right"
+        has_figure = bool(panel.figure_id or panel.figure)
+
+        # figure_too_small only makes sense for vertical layouts where the
+        # picture is actually letterboxed. On a healthy horizontal panel the
+        # image isn't squashed — reducing bullets just leaves whitespace.
+        # Strip the issue (and any action it dragged in) before dispatch.
+        if ISSUE_FIGURE_TOO_SMALL in issues and horizontal:
+            issues = [i for i in issues if i != ISSUE_FIGURE_TOO_SMALL]
+            if action == ACTION_REDUCE_BULLET_COUNT and (target == 1 or target == "1"):
+                action = ACTION_NONE
+            if not issues and action == ACTION_NONE:
+                return False
+
+        # figure_too_small on a vertical layout: drop to one critical bullet
+        # AND flip the hint to image_focus so the figure grows instead of
+        # staying compact. Direct route bypasses the noisy action mapping.
+        if ISSUE_FIGURE_TOO_SMALL in issues and has_figure and not horizontal:
+            self._reduce_bullets(panel, 1)
+            panel.layout_hint = "image_focus"
+            return True
 
         if action == ACTION_REDUCE_BULLET_COUNT:
-            self._reduce_bullets(panel, int(target) if target else 4)
+            count = int(target) if target else 4
+            # Guard against the empty-panel regression: don't strip a
+            # horizontal panel down to a single bullet unless we have a real
+            # overlap signal forcing it.
+            if horizontal and count <= 1 and ISSUE_OVERLAPPING_ELEMENTS not in issues:
+                return False
+            self._reduce_bullets(panel, count)
             return True
         if action == ACTION_SHRINK_TEXT:
             self._scale_panel_font(panel, float(target) if target else 0.85)
@@ -329,7 +358,18 @@ class FeedbackApplier:
             self._truncate_bullets(panel, int(target) if target else 80)
             return True
         if action == ACTION_SHRINK_FIGURE_BOX or action == ACTION_COMPACT_FIGURE_BOX:
-            panel.layout_hint = "image_compact"
+            # Don't demote a working horizontal panel into image_compact —
+            # image_compact is text-dominant (figure shrinks to 30%) and was
+            # the root cause of the iter-1→iter-2 regression where Method
+            # and Experiments lost their wide image columns. Also keep
+            # hands off image_focus, which was set deliberately to grow the
+            # figure; switching back would unwind that.
+            if horizontal:
+                self._scale_panel_font(panel, 0.92)
+            elif panel.layout_hint == "image_focus":
+                self._scale_panel_font(panel, 1.05)
+            else:
+                panel.layout_hint = "image_compact"
             return True
         if action == ACTION_ENLARGE_FONT:
             self._scale_panel_font(panel, float(target) if target else 1.15)
@@ -346,10 +386,10 @@ class FeedbackApplier:
             return True
         if action == ACTION_NONE or not action:
             # No explicit action — pick a sensible default from the issues.
-            return self._apply_issue_defaults(panel, item.issues, task)
+            return self._apply_issue_defaults(panel, issues, task)
 
         # Unknown action string — treat it like "none" rather than crashing.
-        return self._apply_issue_defaults(panel, item.issues, task)
+        return self._apply_issue_defaults(panel, issues, task)
 
     # ------------------------------------------------------------------
     # Mutation primitives
@@ -410,6 +450,17 @@ class FeedbackApplier:
     def _apply_issue_defaults(self, panel: Panel, issues: List[str], task: PosterTask) -> bool:
         """Best-effort fix when the VLM provides issues but no action."""
 
+        horizontal = panel.layout_hint == "text_left_image_right"
+        has_figure = bool(panel.figure_id or panel.figure)
+
+        if ISSUE_FIGURE_TOO_SMALL in issues:
+            # On horizontal panels the image isn't actually squashed, so
+            # reducing bullets would just empty the text column. Skip and
+            # fall through to remaining issues (if any).
+            if not horizontal and has_figure:
+                self._reduce_bullets(panel, 1)
+                panel.layout_hint = "image_focus"
+                return True
         if ISSUE_OVERLAPPING_ELEMENTS in issues:
             self._reduce_bullets(panel, 4)
             return True
