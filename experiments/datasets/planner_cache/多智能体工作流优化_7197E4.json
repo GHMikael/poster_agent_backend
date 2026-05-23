@@ -1,0 +1,133 @@
+{
+  "asset_token": "3a6118bf212048a2",
+  "template": "template_storyflow",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "EvoAgentX: An Automated Framework for Evolving Agentic Workflows",
+  "authors": "Yingxu Wang, Siwei Liu, Jinyuan Fang, Zaiqiao Meng",
+  "paper_info": "Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing: System Demonstrations, pages 643–655, November 4-9, 2025",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "dashboard_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "Multi-agent systems (MAS) are powerful for orchestrating large language models (LLMs) and specialized tools.",
+        "MAS have been widely deployed in multi-hop QA, software engineering, code generation, and dialogue systems.",
+        "Existing MAS frameworks often require manual workflow configuration and lack dynamic evolution support."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "Manual efforts are required to define roles, task decomposition, agent interactions, and workflow configurations.",
+        "Most existing MAS frameworks lack mechanisms for dynamic workflow evolution or optimization.",
+        "Optimization methods are fragmented and not integrated into unified platforms."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "EvoAgentX automates the generation, execution, and evolutionary optimization of multi-agent workflows.",
+        "Modular architecture with five core layers: basic components, agent, workflow, evolving, and evaluation.",
+        "Integrates three optimization algorithms: TextGrad, AFlow, and MIPRO."
+      ],
+      "figure": null,
+      "figure_id": "Fig1",
+      "figure_caption": "The framework of EvoAgentX. It illustrates the modular architecture including the basic components.",
+      "layout_hint": "text_top_image_bottom",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "EvoAgentX evaluated on HotPotQA, MBPP, MATH, and GAIA benchmarks.",
+        "Assessed on real-world tasks using the GAIA benchmark."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "7.44% increase in HotPotQA F1 score.",
+        "10.00% improvement in MBPP pass@1.",
+        "10.00% gain in MATH solve accuracy.",
+        "Up to 20.00% overall accuracy improvement on GAIA."
+      ],
+      "figure": null,
+      "figure_id": "Fig2",
+      "figure_caption": "Performance improvements of Open Deep Research and OWL Agent on the GAIA benchmark.",
+      "layout_hint": "text_top_image_bottom",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Key Findings",
+      "content": [
+        "EvoAgentX consistently improves performance through dynamic workflow evolution.",
+        "The platform's modular architecture and optimization techniques support diverse applications.",
+        "Built-in benchmarks and standardized evaluation metrics facilitate consistent performance improvements."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "EvoAgentX significantly enhances multi-agent system performance through automated and evolutionary workflow optimization.",
+        "Modular architecture and advanced optimization techniques make it a valuable tool for various applications."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig1": {
+      "caption": "The framework of EvoAgentX. It illustrates the modular architecture including the basic components.",
+      "type": "architecture",
+      "description": "展示了 EvoAgentX 的模块化架构及其基本组成部分",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/3a6118bf212048a2/Fig1.png",
+      "image_url": "http://host.docker.internal:8000/assets/3a6118bf212048a2/Fig1.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/3a6118bf212048a2/Fig1_thumb.jpg"
+    },
+    "Fig2": {
+      "caption": "Performance improvements of Open Deep Research and OWL Agent on the GAIA benchmark.",
+      "type": "result_chart",
+      "description": "展示了 Open Deep Research 和 OWL Agent 在 GAIA 基准上的性能提升",
+      "best_matched_section": "Results",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/3a6118bf212048a2/Fig2.png",
+      "image_url": "http://host.docker.internal:8000/assets/3a6118bf212048a2/Fig2.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/3a6118bf212048a2/Fig2_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

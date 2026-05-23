@@ -1,0 +1,8 @@
+baselines:
+  - name: ours_svfp
+    module: experiments.baselines.ours_svfp
+    class: OursSVFPRunner
+    description: SVFP smoke override (2 iterations instead of 4).
+    use_commenter: true
+    max_iterations: 2
+    timeout_s: 600

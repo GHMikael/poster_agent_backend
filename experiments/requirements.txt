@@ -1,0 +1,42 @@
+# Experiment dependencies — installed on top of the base requirements.txt.
+#
+# Usage:
+#   .venv312/bin/pip install -r experiments/requirements.txt
+#
+# Production (app/) NEVER depends on these. If a package shows up in
+# app/*.py imports, move it to the top-level requirements.txt instead.
+
+# Config + data
+PyYAML>=6.0
+pandas>=2.0
+numpy>=1.24
+
+# Stats + bootstrap CI + Wilcoxon (D2 also uses scipy in places)
+scipy>=1.11
+
+# Plotting (M4 figures)
+matplotlib>=3.7
+seaborn>=0.12
+
+# Test runner (we already use unittest, but pytest is handy for selective runs)
+pytest>=7.4
+
+# === Heavier deps below are gated by metrics that need them.       ===
+# === Comment in only when you reach the relevant milestone.        ===
+
+# A2 — AltCLIP embeddings (needs torch)
+# transformers>=4.40
+# torch>=2.1
+
+# A3 — DeBERTa-v3 NLI
+# transformers>=4.40
+# torch>=2.1
+# rank-bm25>=0.2
+
+# B1/B2 — colorimetry, layout geometry
+# colormath>=3.0
+# python-Levenshtein>=0.21
+
+# Dataset acquisition
+# arxiv>=2.1
+# semanticscholar>=0.8

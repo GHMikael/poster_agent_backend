@@ -17,6 +17,30 @@ from app.ppt_renderer import generate_dashboard_pptx
 from app.vlm_commenter import check_layout_with_vlm
 
 
+def _maybe_experiment_logger(
+    run_id: str,
+    *,
+    default_log_path: Optional[Path] = None,
+) -> Optional[Any]:
+    """Return an experiment logger when ``POSTER_EXPERIMENT_MODE`` is on,
+    else ``None``. Guarded by try/except so production runs work even when
+    the ``experiments`` package is absent.
+
+    ``default_log_path`` is the per-run path used when the operator hasn't
+    explicitly overridden it via ``POSTER_EXPERIMENT_LOG``. Callers in
+    this module pass ``<archive.run_dir>/experiment_log.jsonl`` so each
+    poster run produces its own log file next to ``input.json`` and
+    ``run_report.json`` — which is what the downstream D1/D2 metrics
+    expect for per-paper attribution.
+    """
+    try:
+        from experiments.tools.experiment_logger import get_logger_from_env  # type: ignore
+    except ImportError:
+        return None
+    return get_logger_from_env(run_id=run_id, default_log_path=default_log_path)
+
+
+
 ISSUE_OVERLAPPING_ELEMENTS = "overlapping_elements"
 ISSUE_EMPTY_SPACE = "empty_space"
 ISSUE_LOW_CONTRAST = "low_contrast"
@@ -713,10 +737,14 @@ def parse_vlm_feedback(raw: Dict[str, Any], fallback: LayoutFeedback) -> LayoutF
 
 
 class VisualFeedbackLoop:
-    def __init__(self):
+    def __init__(self, experiment_logger: Optional[Any] = None):
         self.preview_renderer = PreviewRenderer()
         self.heuristic_checker = HeuristicLayoutChecker()
         self.applier = FeedbackApplier()
+        # When ``POSTER_EXPERIMENT_MODE`` is unset, the helper returns None
+        # and every ``self._logger.x()`` call below is gated by an explicit
+        # ``is not None`` check so production cost is one nil-check per stage.
+        self._logger: Optional[Any] = experiment_logger
 
     def run(self, task: PosterTask) -> Dict[str, Any]:
         from app.run_archive import RunArchive, update_runs_index
@@ -731,6 +759,20 @@ class VisualFeedbackLoop:
         archive = RunArchive.create(run_id, task.poster_title)
         archive.save_input(task.model_dump())
 
+        # Late-bind the experiment logger so the run_id propagates into events.
+        if self._logger is None:
+            self._logger = _maybe_experiment_logger(
+                run_id,
+                default_log_path=archive.run_dir / "experiment_log.jsonl",
+            )
+        elif getattr(self._logger, "run_id", "") == "":
+            try:
+                self._logger.run_id = run_id  # type: ignore[attr-defined]
+            except Exception:
+                pass
+        logger = self._logger
+        run_t0 = time.perf_counter()
+
         current = copy.deepcopy(task)
         max_iterations = max(1, min(current.max_iterations or 1, 20))
         best_task = copy.deepcopy(current)
@@ -742,21 +784,44 @@ class VisualFeedbackLoop:
 
         for iteration in range(1, max_iterations + 1):
             iter_started_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+            iter_t0 = time.perf_counter()
 
             # Draft preview is kept as a debug artifact so users can eyeball
             # structural changes between iterations, but it is NOT fed to
             # the VLM — that role belongs exclusively to the real PPT
             # screenshot below.
+            stage_t = time.perf_counter()
             preview_path = self.preview_renderer.render(
                 current,
                 archive.preview_dir / f"iter_{iteration}_preview.png",
                 iteration=iteration,
             )
+            if logger is not None:
+                logger.log_stage(
+                    stage="preview_render",
+                    latency_ms=(time.perf_counter() - stage_t) * 1000,
+                    extra={"iteration": iteration},
+                )
 
+            stage_t = time.perf_counter()
             pptx_buf = generate_dashboard_pptx(current)
             pptx_path = archive.pptx_dir / f"iter_{iteration}.pptx"
             pptx_path.write_bytes(pptx_buf.getvalue())
+            if logger is not None:
+                logger.log_stage(
+                    stage="pptx_gen",
+                    latency_ms=(time.perf_counter() - stage_t) * 1000,
+                    extra={"iteration": iteration, "size_bytes": len(pptx_buf.getvalue())},
+                )
+
+            stage_t = time.perf_counter()
             screenshot_path = render_pptx_to_png(pptx_path, archive.pptx_dir)
+            if logger is not None:
+                logger.log_stage(
+                    stage="png_render",
+                    latency_ms=(time.perf_counter() - stage_t) * 1000,
+                    extra={"iteration": iteration, "ok": screenshot_path is not None},
+                )
 
             if screenshot_path:
                 screenshot_fallback = self.heuristic_checker.check(
@@ -764,7 +829,14 @@ class VisualFeedbackLoop:
                 )
                 try:
                     image = Image.open(screenshot_path).convert("RGB")
-                    vlm_raw = check_layout_with_vlm(image)
+                    stage_t = time.perf_counter()
+                    vlm_raw = check_layout_with_vlm(image, experiment_logger=logger)
+                    if logger is not None:
+                        logger.log_stage(
+                            stage="vlm_call",
+                            latency_ms=(time.perf_counter() - stage_t) * 1000,
+                            extra={"iteration": iteration},
+                        )
                     feedback = parse_vlm_feedback(vlm_raw, screenshot_fallback)
                 except Exception as exc:
                     feedback = screenshot_fallback
@@ -795,6 +867,17 @@ class VisualFeedbackLoop:
                 "ppt_screenshot": str(screenshot_path) if screenshot_path else "",
             }
             history.append(record)
+
+            if logger is not None:
+                logger.log_stage(
+                    stage="iteration_total",
+                    latency_ms=(time.perf_counter() - iter_t0) * 1000,
+                    extra={
+                        "iteration": iteration,
+                        "score": feedback.score,
+                        "source": feedback.source,
+                    },
+                )
 
             current_issue_count = len(feedback.global_issues) + sum(
                 len(pf.issues) for pf in feedback.panel_feedback
@@ -856,6 +939,22 @@ class VisualFeedbackLoop:
             update_runs_index()
         except Exception as exc:  # never let index regeneration take down a run
             print(f"update_runs_index failed: {exc}")
+
+        if logger is not None:
+            logger.log_stage(
+                stage="run_total",
+                latency_ms=(time.perf_counter() - run_t0) * 1000,
+                extra={
+                    "iterations": len(history),
+                    "converged": converged,
+                    "convergence_reason": stop_reason,
+                    "best_score": best_score,
+                },
+            )
+            try:
+                logger.close()
+            except Exception:
+                pass
 
         return {
             "run_id": run_id,
@@ -1164,16 +1263,5 @@ def check_convergence(
     }
 
 
-def _convergence_demo() -> None:
-    """Quick demo printing convergence states for a synthetic run."""
-
-    fake_run = [
-        {"score": 6.4, "feedback": {"global_issues": ["dense_content"], "panel_feedback": []}},
-        {"score": 7.6, "feedback": {"global_issues": ["dense_content"], "panel_feedback": []}},
-        {"score": 7.7, "feedback": {"global_issues": [], "panel_feedback": []}},
-    ]
-    print(json.dumps(check_convergence(fake_run), ensure_ascii=False, indent=2))
-
-
-if __name__ == "__main__":
-    _convergence_demo()
+# A standalone convergence demo previously lived here; it is now at
+# ``experiments/scratch/convergence_detector_demo.py``.

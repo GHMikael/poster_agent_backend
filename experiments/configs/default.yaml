@@ -1,0 +1,40 @@
+# PosterAgent experiments — global defaults
+#
+# All paths are relative to repo root (the parent of this experiments/
+# folder). Override by passing --config <path> to any scripts/* entry
+# point or by setting POSTERAGENT_CONFIG=<path>.
+
+seed: 42
+
+paths:
+  papers: experiments/datasets/papers
+  gold: experiments/datasets/gold
+  artifacts: experiments/results/artifacts
+  metrics: experiments/results/metrics
+  aggregate: experiments/results/aggregate
+  figures: experiments/results/figures
+  cache: experiments/.cache
+
+backend:
+  base_url: http://127.0.0.1:8000   # the FastAPI app/ server
+  request_timeout_s: 1800           # 30 min ceiling per poster gen
+  poll_interval_s: 5
+  poll_max_s: 1800
+
+experiment_mode:
+  enabled: true                     # sets POSTER_EXPERIMENT_MODE=1 in workers
+  log_filename: experiment_log.jsonl
+
+cache:
+  enabled: true
+  # SHA256(model + prompt + temperature) keyed cache for o3 / GPT-4o judge calls
+  # avoids re-paying for the same query across reruns. Stored under paths.cache.
+  ttl_days: 30
+
+dataset:
+  n_papers: 30
+  categories:
+    - {tag: cs.CV, target: 10}
+    - {tag: cs.CL, target: 10}
+    - {tag: cs.LG, target: 10}
+  page_range: [6, 30]

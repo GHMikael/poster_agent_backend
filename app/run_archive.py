@@ -32,7 +32,6 @@ from __future__ import annotations
 import json
 import re
 import shutil
-import tempfile
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -293,36 +292,6 @@ def update_runs_index(runs_root: Optional[Path] = None) -> Path:
 # ---------------------------------------------------------------------------
 # Example usage
 # ---------------------------------------------------------------------------
-
-
-def _demo() -> Path:
-    """Create a fake run in a tempdir so callers can verify the on-disk layout."""
-
-    tmp_root = Path(tempfile.mkdtemp(prefix="run_archive_demo_"))
-    archive = RunArchive.create(
-        run_id="demoxx", poster_title="Demo Paper", archive_root=tmp_root
-    )
-    archive.save_input({"poster_title": "Demo Paper", "panels": [{"section": "Intro"}]})
-    archive.save_final_pptx_bytes(b"PPTX-CONTENT-PLACEHOLDER")
-    archive.save_report(
-        input_task={"poster_title": "Demo Paper"},
-        summary={
-            "best_score": 8.4,
-            "iterations": 2,
-            "converged": True,
-            "convergence_reason": "no_issues",
-            "score_curve": [7.0, 8.4],
-        },
-        iterations=[
-            {"iteration": 1, "score": 7.0, "feedback": {"source": "vlm"}},
-            {"iteration": 2, "score": 8.4, "feedback": {"source": "vlm"}},
-        ],
-    )
-    index_path = update_runs_index(runs_root=tmp_root)
-    print(f"Index regenerated at {index_path}")
-    print(f"Run folder: {archive.run_dir}")
-    return archive.run_dir
-
-
-if __name__ == "__main__":
-    _demo()
+# (Demo lived here previously; see experiments/scratch/ for ad-hoc archive
+# verification scripts. Production callers use ``RunArchive.create`` /
+# ``update_runs_index`` directly from ``app/main.py`` and ``app/feedback_loop.py``.)

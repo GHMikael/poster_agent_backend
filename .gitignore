@@ -1,9 +1,14 @@
+# Local IDE / agent config
+.claude/
+
 # Python
 .venv/
 .venv312/
 __pycache__/
+.pytest_cache/
 *.py[cod]
 .DS_Store
+.ipynb_checkpoints/
 
 # Secrets — never commit
 .env
@@ -13,11 +18,30 @@ __pycache__/
 
 # Generated / runtime artifacts
 outputs/
+orgin_cache3/
 orgin_cache2/
 origin_cache/
 static/assets/
 static/tmp_*.png
 static/poster_debug_*.png
+static/*.png
+static/*.jpg
+static/*.jpeg
 *.pptx
+*.log
 
 PROJECT_CONVERSATION_SUMMARY.md
+
+# Experiments — heavy / generated artifacts (don't commit)
+experiments/datasets/papers/*.pdf
+experiments/datasets/gold/*/figures/
+experiments/baselines/_vendor/
+experiments/results/artifacts/
+experiments/results/metrics/
+experiments/results/aggregate/
+experiments/results/figures/
+experiments/scratch/_workspace/
+experiments/.cache/
+experiments/results/user_study/
+experiments/results/expert_ratings.csv
+experiments/notebooks/*.ipynb

@@ -1,0 +1,54 @@
+# Baseline configurations for the main experiment matrix.
+#
+# Each baseline must correspond to a class in experiments/baselines/* that
+# inherits from BaselineRunner. The `name` field is used as the run-id
+# prefix in results/artifacts/<name>_<arxiv_id>/.
+
+baselines:
+  - name: ours_svfp
+    module: experiments.baselines.ours_svfp
+    class: OursSVFPRunner
+    description: Our system with full SVFP feedback loop (use_commenter=true, max_iter=4).
+    use_commenter: true
+    max_iterations: 4
+    timeout_s: 1800
+
+  - name: ours_no_svfp
+    module: experiments.baselines.ours_no_svfp
+    class: OursNoSVFPRunner
+    description: Ablation — same renderer, no feedback loop.
+    use_commenter: false
+    max_iterations: 1
+    timeout_s: 600
+
+  - name: gpt4o_zeroshot
+    module: experiments.baselines.gpt4o_zeroshot
+    class: GPT4oZeroShotRunner
+    description: |
+      Single text-LLM zero-shot: paper text + figure list → PosterTask JSON,
+      then rendered by our renderer. Isolates content planning quality from
+      rendering quality. Despite the historical name, the underlying model
+      is configurable; default is Qwen2.5-72B-Instruct via SiliconFlow (the
+      same provider the rest of the project uses). To switch to true GPT-4o
+      set model+api_key_env+base_url below.
+    model: Qwen/Qwen3-32B
+    api_key_env: DASHSCOPE_API_KEY
+    base_url: https://api.siliconflow.cn/v1
+    temperature: 0.2
+    timeout_s: 600
+
+  - name: paper2poster
+    module: experiments.baselines.paper2poster
+    class: Paper2PosterRunner
+    description: External SOTA — Gao et al. NeurIPS 2024. Vendored under baselines/_vendor/.
+    vendor_dir: experiments/baselines/_vendor/Paper2Poster
+    entry_cmd: "python paper2poster/main.py --pdf {paper_path} --out {out_dir}"
+    timeout_s: 1800
+
+  - name: posteragent
+    module: experiments.baselines.posteragent
+    class: PosterAgentRunner
+    description: External SOTA — Li et al. 2025. Vendored under baselines/_vendor/.
+    vendor_dir: experiments/baselines/_vendor/PosterAgent
+    entry_cmd: "python posteragent/run.py --paper {paper_path} --out {out_dir}"
+    timeout_s: 1800

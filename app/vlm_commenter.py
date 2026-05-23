@@ -388,13 +388,22 @@ def _extract_json_block(text: str) -> Optional[Dict[str, Any]]:
     return None
 
 
-def check_layout_with_vlm(image: Image.Image) -> Dict[str, Any]:
+def check_layout_with_vlm(
+    image: Image.Image,
+    *,
+    experiment_logger: Optional[Any] = None,
+) -> Dict[str, Any]:
     """Ask the configured VLM to review a poster preview image.
 
     Returns a dict that already aligns with the layout-feedback schema used
     by :class:`app.feedback_loop.VisualFeedbackLoop`. If no API key is set or
     the network call fails, a neutral placeholder is returned so the loop
     can fall back to heuristics.
+
+    When ``experiment_logger`` is non-None, a single ``llm_call`` event is
+    emitted with token counts (from ``resp.usage``), latency, and the
+    parsed VLM response. Production callers leave the kwarg unset, in
+    which case the logger calls are gated by a single ``is not None`` check.
 
     The function is defensive about VLM transport quirks:
 
@@ -482,16 +491,43 @@ JSON schema:
         # Some OpenAI-compatible endpoints (incl. SiliconFlow Qwen-VL) accept
         # response_format; others reject it. Try the strict mode first and
         # silently retry without it if the server complains.
+        import time as _time
+
+        _t0 = _time.perf_counter()
+        retries = 0
         try:
             resp = client.chat.completions.create(
                 response_format={"type": "json_object"},
                 **kwargs,
             )
         except Exception:
+            retries = 1
             resp = client.chat.completions.create(**kwargs)
+        _latency_ms = (_time.perf_counter() - _t0) * 1000
 
         content = (resp.choices[0].message.content or "").strip()
         data = _extract_json_block(content)
+
+        # Telemetry: emit a single llm_call event with token counts and the
+        # parsed response. Gated by an explicit None-check so production
+        # cost is zero.
+        if experiment_logger is not None:
+            usage = getattr(resp, "usage", None)
+            prompt_tokens = int(getattr(usage, "prompt_tokens", 0) or 0)
+            completion_tokens = int(getattr(usage, "completion_tokens", 0) or 0)
+            try:
+                experiment_logger.log_llm_call(
+                    stage="vlm_layout_review",
+                    model=QWEN_VL_MODEL,
+                    prompt_tokens=prompt_tokens,
+                    completion_tokens=completion_tokens,
+                    latency_ms=_latency_ms,
+                    raw_response={"content": content[:4000], "parsed": data},
+                    retries=retries,
+                )
+            except Exception:
+                pass
+
         if data is not None:
             # Detect "looks complete" vs "recovered partial" so downstream
             # callers know whether to trust the score fully.
@@ -511,46 +547,5 @@ JSON schema:
         return {"score": 7.0, "global_issues": [], "panel_feedback": [], "comment": f"VLM failed: {exc}", "source": "vlm_error"}
 
 
-# ---------------------------------------------------------------------------
-# Example usage
-# ---------------------------------------------------------------------------
-
-
-def _example_demo() -> None:
-    """Demonstrate how to emit multiple SVFP feedback records."""
-
-    items = build_feedback_batch(
-        [
-            {
-                "issue_type": SVFPIssueType.OVERLAPPING_ELEMENTS,
-                "details": "Panel 'Method' shows 7 bullets, the last two overflow the card.",
-                "section": "Method",
-                "severity": "high",
-                "suggested_fix": SVFPSuggestedAction.REDUCE_BULLET_COUNT.value,
-                "target_value": 4,
-            },
-            {
-                "issue_type": "low_contrast",
-                "details": "Title uses light gray on white, contrast ratio ≈ 2.1.",
-                "suggested_fix": SVFPSuggestedAction.SWITCH_PALETTE.value,
-                "section": "Header",
-                "severity": "medium",
-            },
-            {
-                "issue_type": SVFPIssueType.EMPTY_SPACE,
-                "details": "Results panel has small figure with large surrounding padding.",
-                "suggested_fix": SVFPSuggestedAction.COMPACT_FIGURE_BOX.value,
-                "section": "Results",
-            },
-        ]
-    )
-
-    print("=== SVFP feedback batch ===")
-    print(json.dumps(items, ensure_ascii=False, indent=2))
-
-    print("\n=== SVFP single-item JSON Schema ===")
-    print(json.dumps(get_svfp_schema(), ensure_ascii=False, indent=2))
-
-
-if __name__ == "__main__":
-    _example_demo()
+# A standalone demo previously lived here; it is now at
+# ``experiments/scratch/vlm_commenter_demo.py``.

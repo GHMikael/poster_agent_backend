@@ -1,0 +1,103 @@
+a1_information_retention:
+  claim_extractor:
+    max_claims_per_paper: 25
+    model: Qwen/Qwen3-32B
+    temperature: 0.0
+  enabled: true
+  entailment_judge:
+    model: Qwen/Qwen3-32B
+    temperature: 0.0
+    threshold_logprob: 0.6
+  gold_validation_kappa_min: 0.7
+a2_figure_text_alignment:
+  cosine_threshold: 0.28
+  embedder: BAAI/AltCLIP-XLMR-L
+  enabled: true
+a3_hallucination:
+  contradict_max: 0.3
+  enabled: true
+  entail_min: 0.4
+  llm_nli:
+    model: Qwen/Qwen3-32B
+  nli_model: MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli
+  retrieval:
+    method: bm25
+    top_k: 2
+  robustness_check:
+    enabled: true
+    model: Qwen/Qwen2.5-72B-Instruct
+    via: dashscope
+a4_section_coverage:
+  canonical_sections:
+  - Motivation
+  - Problem
+  - Method
+  - Experiments
+  - Results
+  - Conclusion
+  enabled: true
+  levenshtein_min: 0.8
+  llm_fallback_judge:
+    model: Qwen/Qwen3-32B
+b1_layout_rationality:
+  auto_geometric:
+    grid_columns: 12
+    grid_tolerance_px: 5
+    weights:
+      aspect_extremes: 0.15
+      grid_alignment: 0.2
+      overlap: 0.25
+      reading_order: 0.15
+      whitespace: 0.25
+  enabled: true
+  vlm_judge:
+    criteria:
+    - balance
+    - alignment
+    - hierarchy
+    - whitespace
+    - flow
+    model: Qwen/Qwen3-32B
+b2_readability:
+  delta_lstar_reference: 50
+  enabled: true
+  font_pt_reference: 24
+b3_academic_compliance:
+  enabled: true
+  rubric_items:
+  - title_accuracy
+  - author_completeness
+  - data_fidelity
+  - citation_compliance
+  - section_order
+  source_csv: experiments/results/expert_ratings.csv
+c1_paperquiz:
+  answerers:
+  - id: qwen_vl_32b
+    model: Qwen/Qwen3-VL-32B-Instruct
+    temperature: 0.0
+  enabled: true
+  question_generator:
+    max_paper_chars: 16000
+    model: Qwen/Qwen3-32B
+    n_questions: 5
+c2_sus_likert:
+  enabled: true
+  source_csv: experiments/results/user_study/sus_likert.csv
+  target_n: 12
+c3_time_saving:
+  enabled: true
+  source_csv: experiments/results/user_study/timing.csv
+  target_n: 12
+d1_latency:
+  enabled: true
+  source: experiment_log.jsonl
+d2_cost:
+  enabled: true
+  pricing_table: experiments/tools/pricing.py
+d3_failure_rate:
+  enabled: true
+  fail_kinds:
+  - exception
+  - soffice_nonzero
+  - empty_pptx

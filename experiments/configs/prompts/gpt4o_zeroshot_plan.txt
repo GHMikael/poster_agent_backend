@@ -1,0 +1,49 @@
+You are an academic poster planner. Read the paper text and figure list,
+then output a PosterTask JSON that organises the paper into 6 panels.
+
+# OUTPUT SCHEMA (JSON object — no Markdown, no commentary)
+
+{
+  "poster_title": "<paper title>",
+  "authors": "<comma-separated authors, max 8>",
+  "paper_info": "<venue/year, e.g. 'NeurIPS 2024'>",
+  "template": "template_dashboard",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": ["bullet 1 (<=140 chars)", "bullet 2", "bullet 3"],
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {"section": "Problem", "content": [...], ...},
+    {"section": "Method", "content": [...], "figure_id": "fig1", "layout_hint": "text_top_image_bottom"},
+    {"section": "Experiments", "content": [...], ...},
+    {"section": "Results", "content": [...], "figure_id": "fig2", "layout_hint": "text_top_image_bottom"},
+    {"section": "Conclusion", "content": [...], ...}
+  ]
+}
+
+# RULES
+
+1. Exactly 6 panels in this order: Motivation, Problem, Method, Experiments, Results, Conclusion.
+2. Each panel: 3–5 bullets, each ≤ 140 characters, declarative and paper-grounded
+   (no filler like "this paper is important").
+3. Use figures sparingly: at most 2 panels carry a figure (typically Method and
+   Results). For the others, leave figure_id empty and layout_hint = "text_only".
+4. figure_id must match one of the figure ids provided in the FIGURE LIST below.
+5. Do NOT invent numbers, citations, or claims that the paper does not state.
+6. Output a single JSON object. No preamble, no trailing text, no Markdown fences.
+
+# PAPER TITLE
+{title}
+
+# PAPER TEXT (truncated to ~12k chars)
+{paper_text}
+
+# FIGURE LIST
+{figure_list}

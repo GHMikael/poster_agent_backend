@@ -1,0 +1,130 @@
+{
+  "asset_token": "53ee1c6b3bdc4793",
+  "template": "template_classic",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "Agentic Context Engineering: Evolving Contexts for Self-Improving Language Models",
+  "authors": "Qizheng Zhang, Changran Hu, Shubhangi Upasani, Boyuan Ma, Fenglu Hong, Vamsidhar Kamanuru, Jay Rainton, Chen Wu, Mengmeng Ji, Hanchen Li, Urmish Thakker, James Zou, Kunle Olukotun",
+  "paper_info": "Accepted at International Conference on Learning Representations (ICLR 2026)",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "classic_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "Context adaptation is crucial for LLM applications like agents and compound AI systems.",
+        "Contexts allow rapid integration of new knowledge and sharing across models.",
+        "Long-context LLMs and context-efficient inference make context-based approaches practical."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "Brevity bias: many prompt optimizers prioritize concise instructions.",
+        "Context collapse: iterative rewriting often degrades into less informative summaries.",
+        "Detailed, task-specific knowledge is essential for agents and knowledge-intensive applications."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "ACE treats contexts as evolving playbooks for LLMs.",
+        "Incorporates generation, reflection, and curation modules.",
+        "Prevents context collapse with structured, incremental updates."
+      ],
+      "figure": null,
+      "figure_id": "Fig3",
+      "figure_caption": "The ACE Framework. Inspired by Dynamic Cheatsheet, ACE adopts an agentic architecture with generation, reflection, and curation modules.",
+      "layout_hint": "text_top_image_bottom",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Evaluated on agent performance and domain-specific benchmarks.",
+        "Used AppWorld benchmark for agent evaluation.",
+        "Focused on financial analysis for domain-specific tasks."
+      ],
+      "figure": null,
+      "figure_id": "Fig2",
+      "figure_caption": "Example ACE-Generated Context on the AppWorld Benchmark (partially shown).",
+      "layout_hint": "text_top_image_bottom",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "ACE outperformed strong baselines with average gains of 10.6% on agents and 8.6% on domain-specific benchmarks.",
+        "Matched the top-ranked production-level agent IBM-CUGA and surpassed it on the harder test-challenge split.",
+        "Achieved 86.9% lower adaptation latency and significantly fewer rollouts and lower costs."
+      ],
+      "figure": null,
+      "figure_id": "Fig7",
+      "figure_caption": "The AppWorld leaderboard as accessed on 09/20/2025.",
+      "layout_hint": "text_top_image_bottom",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "Comprehensive, evolving contexts enable scalable, efficient, and self-improving LLM systems.",
+        "ACE provides a robust framework for context adaptation, outperforming existing methods in agent and domain-specific reasoning tasks."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig3": {
+      "caption": "The ACE Framework. Inspired by Dynamic Cheatsheet, ACE adopts an agentic architecture with generation, reflection, and curation modules.",
+      "type": "architecture",
+      "description": "图注描述了 ACE 框架，受 Dynamic Cheatsheet 启发，采用了代理架构。",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/53ee1c6b3bdc4793/Fig3.png",
+      "image_url": "http://host.docker.internal:8000/assets/53ee1c6b3bdc4793/Fig3.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/53ee1c6b3bdc4793/Fig3_thumb.jpg"
+    },
+    "Fig2": {
+      "caption": "Example ACE-Generated Context on the AppWorld Benchmark (partially shown).",
+      "type": "dataset_example",
+      "description": "图注描述了 ACE 生成的上下文示例，部分展示。",
+      "best_matched_section": "Experiments",
+      "importance": "medium",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/53ee1c6b3bdc4793/Fig2.png",
+      "image_url": "http://host.docker.internal:8000/assets/53ee1c6b3bdc4793/Fig2.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/53ee1c6b3bdc4793/Fig2_thumb.jpg"
+    },
+    "Fig7": {
+      "caption": "The AppWorld leaderboard as accessed on 09/20/2025.",
+      "type": "comparison_table",
+      "description": "图注描述了 AppWorld 排行榜，访问日期为 2025 年 9 月 20 日。",
+      "best_matched_section": "Results",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/53ee1c6b3bdc4793/Fig7.png",
+      "image_url": "http://host.docker.internal:8000/assets/53ee1c6b3bdc4793/Fig7.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/53ee1c6b3bdc4793/Fig7_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

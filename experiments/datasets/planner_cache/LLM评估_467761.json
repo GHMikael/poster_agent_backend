@@ -1,0 +1,129 @@
+{
+  "asset_token": "2b70a8f4d6234e62",
+  "template": "template_classic",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "Automated Evaluation of Personalized Text Generation using Large Language Models",
+  "authors": "Yaqing Wang, Jiepu Jiang, Mingyang Zhang, Cheng Li, Yi Liang, Qiaozhu Mei, Michael Bendersky",
+  "paper_info": "Proceedings of ACM Conference, 2023, 15 pages",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "classic_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "Traditional metrics insufficient for personalized text generation.",
+        "Human judgments costly and hard to obtain.",
+        "Need for robust automated evaluation methods."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "Lack of evaluation methodologies for personalization.",
+        "Difficulty in distinguishing personalization from generic text quality.",
+        "Need for scalable and efficient evaluation techniques."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "AuPEL framework uses LLMs for evaluation.",
+        "Pairwise comparisons between text generation systems.",
+        "Leverages LLMs' ability in authorship attribution."
+      ],
+      "figure": null,
+      "figure_id": "Fig7",
+      "figure_caption": "Estimated consistency of AuPEL, human raters, and NLG metrics for comparing T5 XL vs. T5 XXL generators.",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Validation against human annotators and traditional metrics.",
+        "Experiments with different model sizes and user profiles."
+      ],
+      "figure": null,
+      "figure_id": "Fig10",
+      "figure_caption": "Pairwise comparison of multiple T5 generators.",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "AuPEL outperforms human annotators and traditional metrics.",
+        "LLM evaluators improve personalization evaluation with larger models."
+      ],
+      "figure": null,
+      "figure_id": "Fig18",
+      "figure_caption": "Elo ratings of different checkpoints with 95% confidence intervals.",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "AuPEL is a novel and effective framework for evaluating personalized text generation.",
+        "LLMs show promise in capturing personalization nuances.",
+        "Further research needed to address remaining challenges."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig7": {
+      "caption": "Estimated consistency of AuPEL, human raters, and NLG metrics for comparing T5 XL vs. T5 XXL generators.",
+      "type": "result_chart",
+      "description": "展示了 AuPEL、人类评估者和 NLG 指标在比较 T5 XL 和 T5 XXL 生成器时的一致性估计",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/2b70a8f4d6234e62/Fig7.png",
+      "image_url": "http://host.docker.internal:8000/assets/2b70a8f4d6234e62/Fig7.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/2b70a8f4d6234e62/Fig7_thumb.jpg"
+    },
+    "Fig10": {
+      "caption": "Pairwise comparison of multiple T5 generators",
+      "type": "comparison_table",
+      "description": "展示了多个 T5 生成器的成对比较结果",
+      "best_matched_section": "Experiments",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/2b70a8f4d6234e62/Fig10.png",
+      "image_url": "http://host.docker.internal:8000/assets/2b70a8f4d6234e62/Fig10.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/2b70a8f4d6234e62/Fig10_thumb.jpg"
+    },
+    "Fig18": {
+      "caption": "Elo ratings of different checkpoints with 95% confidence intervals",
+      "type": "result_chart",
+      "description": "展示了不同检查点的 Elo 评分及其 95% 的置信区间",
+      "best_matched_section": "Results",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/2b70a8f4d6234e62/Fig18.png",
+      "image_url": "http://host.docker.internal:8000/assets/2b70a8f4d6234e62/Fig18.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/2b70a8f4d6234e62/Fig18_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

@@ -1,0 +1,33 @@
+You are an academic paper exam-question writer. Read the paper text and
+produce a small set of multiple-choice questions (MCQs) that test
+*core* paper knowledge — not formatting, page numbers, or trivia.
+
+# OUTPUT FORMAT (JSON only — no Markdown)
+
+{
+  "mcqs": [
+    {
+      "question_id": "q-001",
+      "question": "<one sentence; specific, paper-grounded>",
+      "options": {"A": "<option>", "B": "<option>", "C": "<option>", "D": "<option>"},
+      "correct": "B",
+      "section": "Method"
+    },
+    ...
+  ]
+}
+
+# RULES
+
+1. Produce exactly {n_questions} MCQs.
+2. Each question has 4 options A/B/C/D and exactly one correct.
+3. Distractors must be plausible (the paper says something related but not
+   identical), not absurd.
+4. Cover diverse sections: at least one from each of {Motivation, Problem,
+   Method, Experiments / Results, Conclusion} if possible.
+5. Questions are answerable from the paper alone (no external knowledge).
+6. Avoid yes/no questions and "all of the above".
+7. ``section`` field marks the paper section the question is grounded in.
+
+# PAPER TEXT (truncated)
+{paper_text}

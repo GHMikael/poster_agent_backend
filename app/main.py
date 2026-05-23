@@ -17,7 +17,7 @@ from app.ppt_renderer import generate_dashboard_pptx
 from app.run_archive import RUNS_ROOT, RunArchive, slugify, update_runs_index
 
 
-app = FastAPI(title="Paper-to-Poster Backend", version="4.1")
+app = FastAPI(title="Paper-to-Poster Backend", version="5.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -310,7 +310,15 @@ def get_asset(asset_token: str, filename: str):
 
 
 if __name__ == "__main__":
+    import os
     import uvicorn
 
+    # Default experiment-mode ON when launched via ``python -m app.main``
+    # so each run automatically drops outputs/runs/<id>/experiment_log.jsonl
+    # next to input.json and run_report.json. Operators who want a clean
+    # run (no telemetry) can override with POSTER_EXPERIMENT_MODE=0.
+    os.environ.setdefault("POSTER_EXPERIMENT_MODE", "1")
+
     print(f"Poster backend running at http://localhost:{PORT}")
+    print(f"  experiment mode: {os.environ.get('POSTER_EXPERIMENT_MODE')}  (set POSTER_EXPERIMENT_MODE=0 to disable)")
     uvicorn.run("app.main:app", host="0.0.0.0", port=PORT, reload=False)

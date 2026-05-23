@@ -1,0 +1,124 @@
+{
+  "asset_token": "32b82b7cd82243c1",
+  "template": "template_classic",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "INSIDE: LLMS’ INTERNAL STATES RETAIN THE POWER OF HALLUCINATION DETECTION",
+  "authors": "Chao Chen, Kai Liu, Ze Chen, Yi Gu, Yue Wu, Mingyuan Tao, Zhihang Fu, Jieping Ye",
+  "paper_info": "Published as a conference paper at ICLR 2024",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "classic_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "Knowledge hallucination in LLMs poses security and reliability risks.",
+        "Previous methods lose semantic information through logit-level or language-level evaluations.",
+        "A novel approach is needed to detect hallucinations effectively."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "Token-level uncertainty measures are insufficient for sequence-level uncertainty.",
+        "Post-hoc semantic measurements on decoded sentences are less effective.",
+        "Overconfident hallucinations are challenging to detect."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "INSIDE framework uses LLMs' internal states for hallucination detection.",
+        "EigenScore metric measures semantic consistency in the sentence embedding space.",
+        "Feature clipping reduces overconfident generations."
+      ],
+      "figure": null,
+      "figure_id": "Fig1",
+      "figure_caption": "Illustration of the proposed hallucination detection pipeline.",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Evaluated on popular LLMs and QA benchmarks.",
+        "Compared different sentence embeddings and feature clipping strategies.",
+        "Achieved state-of-the-art performance."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "State-of-the-art hallucination detection performance.",
+        "EigenScore captures semantic consistency and represents differential entropy.",
+        "Feature clipping aids in detecting self-consistent hallucinations."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Key Findings",
+      "content": [
+        "Internal states of LLMs are powerful for hallucination detection.",
+        "EigenScore and feature clipping improve LLM reliability.",
+        "The framework is effective across various LLMs and benchmarks."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "INSIDE framework leverages LLMs' internal states for hallucination detection.",
+        "The methods improve the reliability of LLMs in practical applications.",
+        "Future work will explore the framework's applicability to other NLP tasks."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig1": {
+      "caption": "Illustration of our proposed hallucination detection pipeline. During inference time, for",
+      "type": "pipeline",
+      "description": "展示了所提出的幻觉检测管道的图示。说明了在推理过程中管道的工作流程。",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/32b82b7cd82243c1/Fig1.png",
+      "image_url": "http://host.docker.internal:8000/assets/32b82b7cd82243c1/Fig1.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/32b82b7cd82243c1/Fig1_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

@@ -33,7 +33,7 @@ from app.feedback_loop import (  # noqa: E402
     check_convergence,
     parse_vlm_feedback,
 )
-from app.history_logger import (  # noqa: E402
+from experiments.tools.history_logger import (  # noqa: E402
     HistoryLogger,
     filter_by_paper,
     load_history,
@@ -722,7 +722,10 @@ class EnhancedApplierTests(unittest.TestCase):
         self.assertGreater(panel_c.body_font_scale, 1.0)
         self.assertLessEqual(panel_c.body_font_scale, 1.3)  # clamp upper bound
 
-    def test_add_bullet_action_appends_supporting_bullet(self) -> None:
+    def test_add_bullet_action_enlarges_font_instead_of_fabricating(self) -> None:
+        # ACTION_ADD_BULLET deliberately does NOT append a new bullet — the
+        # applier refuses to fabricate filler content unrelated to the paper.
+        # The empty_space symptom is treated by enlarging the existing text.
         task = self._task()
         fb = LayoutFeedback(
             panel_feedback=[
@@ -735,7 +738,9 @@ class EnhancedApplierTests(unittest.TestCase):
         )
         new_task = FeedbackApplier().apply(task, fb)
         panel_c = next(p for p in new_task.panels if p.section == "Panel C")
-        self.assertEqual(len(panel_c.content), 2)  # was 1, now 2
+        self.assertEqual(len(panel_c.content), 1)              # unchanged: no filler bullet added
+        self.assertGreater(panel_c.body_font_scale, 1.0)        # font enlarged instead
+        self.assertLessEqual(panel_c.body_font_scale, 1.3)      # within clamp upper bound
 
     def test_compact_figure_box_sets_image_compact_hint(self) -> None:
         task = self._task()
@@ -969,27 +974,15 @@ class RunArchiveTests(unittest.TestCase):
         self.assertEqual(archive2.run_dir.parent, self.ra.RUNS_ROOT)
 
     def test_demo_does_not_pollute_runs_root(self) -> None:
-        """``_demo`` must write to a tempdir and never touch RUNS_ROOT."""
+        """Regression guard: the ``_demo`` entry was removed from
+        ``app/run_archive.py`` (it now lives outside the production module
+        under ``experiments/scratch/``). This test stays as documentation
+        that production must never write to ``RUNS_ROOT`` from a ``__main__``
+        block — verified by asserting the symbol is gone.
+        """
 
-        import shutil as _shutil
-
-        demo_dir = self.ra._demo()
-        try:
-            # demo lives under tempfile, completely outside RUNS_ROOT.
-            self.assertFalse(
-                str(demo_dir).startswith(str(self.ra.RUNS_ROOT)),
-                f"demo leaked into RUNS_ROOT: {demo_dir}",
-            )
-            self.assertEqual(list(self.ra.RUNS_ROOT.iterdir()), [])
-            # tempdir prefix is the one set in _demo (regression guard).
-            self.assertTrue(demo_dir.parent.name.startswith("run_archive_demo_"))
-            # Full on-disk layout was produced inside the tempdir.
-            self.assertTrue((demo_dir / "input.json").exists())
-            self.assertTrue((demo_dir / "final.pptx").exists())
-            self.assertTrue((demo_dir / "run_report.json").exists())
-            self.assertTrue((demo_dir.parent / "INDEX.md").exists())
-        finally:
-            _shutil.rmtree(demo_dir.parent, ignore_errors=True)
+        self.assertFalse(hasattr(self.ra, "_demo"))
+        self.assertEqual(list(self.ra.RUNS_ROOT.iterdir()), [])
 
 
 if __name__ == "__main__":
