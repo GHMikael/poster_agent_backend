@@ -1,0 +1,111 @@
+{
+  "asset_token": "a9d2f1ccc4614571",
+  "template": "template_minimal",
+  "layout_variant": "auto",
+  "color_theme": "minimal_gray",
+  "emphasis_level": "normal",
+  "poster_title": "A Comprehensive Survey of Reward Models: Taxonomy, Applications, Challenges, and Future",
+  "authors": "Jialun Zhong, Wei Shen, Yanzeng Li, Songyang Gao, Hua Lu, Yicheng Chen, Yang Zhang, Wei Zhou, Jinjie Gu, Lei Zou",
+  "paper_info": "arXiv:2504.12328v1 [cs.CL] 12 Apr 2025",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "minimal_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Overview",
+      "content": [
+        "First comprehensive survey on Reward Models (RMs) in the LLM era.",
+        "Covers taxonomy, applications, challenges, and future directions.",
+        "Provides a foundation for researchers and beginners."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Background",
+      "content": [
+        "Rapid development in Large Language Models (LLMs).",
+        "Enhanced AI community and driven progress in various tasks.",
+        "RMs trained on human preference data guide reinforcement learning."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "Lack of systematic organization of RMs in existing surveys.",
+        "Efficiency and quality issues in preference collection.",
+        "High costs and practical limitations of human annotators."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "Systematically review related works.",
+        "Introduce a detailed taxonomy of RMs.",
+        "Discuss challenges and propose research directions."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "Detailed taxonomy of RMs introduced.",
+        "Challenges identified: efficiency, quality, and AI preferences.",
+        "Future research directions proposed."
+      ],
+      "figure": null,
+      "figure_id": "Fig8",
+      "figure_caption": "Example of a Reward Model (RM) in the survey.",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "RMs have significant potential in aligning LLMs with human values.",
+        "Systematic organization and detailed discussions are essential.",
+        "Survey provides a foundation for further research."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig8": {
+      "caption": "Figure 1: An example of RM.",
+      "type": "dataset_example",
+      "description": "示例图展示了 RM 的一个具体实例，但图注信息不足，无法确定具体细节。",
+      "best_matched_section": "Other",
+      "importance": "medium",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/a9d2f1ccc4614571/Fig8.png",
+      "image_url": "http://host.docker.internal:8000/assets/a9d2f1ccc4614571/Fig8.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/a9d2f1ccc4614571/Fig8_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

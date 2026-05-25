@@ -1,0 +1,140 @@
+{
+  "asset_token": "7982d7c948f54151",
+  "template": "template_classic",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "Seeing, Listening, Remembering, and Reasoning: A Multimodal Agent with Long-Term Memory",
+  "authors": "Lin Long, Yichen He, Wentao Ye, Yiyuan Pan, Yuan Lin, Hang Li, Junbo Zhao, Wei Li",
+  "paper_info": "arXiv:2508.09736v4 [cs.CV] 9 Oct 2025",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "classic_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "Multimodal agents require continuous perception through sensors.",
+        "Effective long-term memory is vital for world knowledge retention.",
+        "Reasoning over long-term memory guides agent actions."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "Current methods focus on finite offline videos, not continuous online streams.",
+        "Traditional video descriptions lack high-level world knowledge, leading to ambiguity."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "M3-Agent processes real-time visual and auditory inputs.",
+        "Episodic memory captures concrete events; semantic memory captures general knowledge.",
+        "Entity-centric memory structure ensures coherence and consistency."
+      ],
+      "figure": null,
+      "figure_id": "Fig3",
+      "figure_caption": "Architecture of M3-Agent",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Evaluated on M3-Bench, a new LVQA benchmark.",
+        "M3-Bench includes 100 robot-perspective and 920 web-sourced videos."
+      ],
+      "figure": null,
+      "figure_id": "Fig5",
+      "figure_caption": "Examples from M3-Bench",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "Outperforms baselines by 6.7%, 7.7%, and 5.3% on M3-Bench-robot, M3-Bench-web, and VideoMME-long.",
+        "Ablation studies show significant drops when key components are removed."
+      ],
+      "figure": null,
+      "figure_id": "Fig19",
+      "figure_caption": "Training curves of DAPO",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Key Findings",
+      "content": [
+        "M3-Agent excels in multimodal reasoning with long-term memory.",
+        "Reinforcement learning significantly improves performance.",
+        "Entity-centric memory structure enhances consistency."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "M3-Agent advances multimodal agents toward human-like long-term memory.",
+        "Provides insights for practical design of multimodal agents with long-term memory."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig3": {
+      "caption": "Figure 1 Architecture of M3-Agent, comprising a multimodal large language model (MLLM) and a multimodal",
+      "type": "architecture",
+      "description": "M3-Agent 的架构图，包括多模态大语言模型 (MLLM) 和多模态组件",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/7982d7c948f54151/Fig3.png",
+      "image_url": "http://host.docker.internal:8000/assets/7982d7c948f54151/Fig3.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/7982d7c948f54151/Fig3_thumb.jpg"
+    },
+    "Fig5": {
+      "caption": "Figure 2 Examples from M3-Bench. M3-Bench-robot features long videos from realistic robotic work scenarios, while",
+      "type": "dataset_example",
+      "description": "M3-Bench 数据集的示例，展示了来自现实机器人工作场景的长视频",
+      "best_matched_section": "Experiments",
+      "importance": "medium",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/7982d7c948f54151/Fig5.png",
+      "image_url": "http://host.docker.internal:8000/assets/7982d7c948f54151/Fig5.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/7982d7c948f54151/Fig5_thumb.jpg"
+    },
+    "Fig19": {
+      "caption": "Figure 4 Average scores (on training set) and accuracy (on dev set) curves during the DAPO training process. The",
+      "type": "result_chart",
+      "description": "DAPO 训练过程中的平均分数（训练集）和准确率（开发集）曲线图",
+      "best_matched_section": "Results",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/7982d7c948f54151/Fig19.png",
+      "image_url": "http://host.docker.internal:8000/assets/7982d7c948f54151/Fig19.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/7982d7c948f54151/Fig19_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

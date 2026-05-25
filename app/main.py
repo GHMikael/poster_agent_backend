@@ -17,7 +17,7 @@ from app.ppt_renderer import generate_dashboard_pptx
 from app.run_archive import RUNS_ROOT, RunArchive, slugify, update_runs_index
 
 
-app = FastAPI(title="Paper-to-Poster Backend", version="5.0")
+app = FastAPI(title="Paper-to-Poster Backend", version="5.1")
 
 app.add_middleware(
     CORSMiddleware,

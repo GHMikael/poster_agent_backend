@@ -1,0 +1,127 @@
+{
+  "asset_token": "d9347fae887b426b",
+  "template": "template_classic",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "One SPACE to Rule Them All: Jointly Mitigating Factuality and Faithfulness Hallucinations in LLMs",
+  "authors": "Pengbo Wang, Chaozhuo Li, Chenxu Wang, Liwen Zheng, Litian Zhang, Xi Zhang",
+  "paper_info": "39th Conference on Neural Information Processing Systems (NeurIPS 2025)",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "classic_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation / Background",
+      "content": [
+        "LLMs have unprecedented capabilities in NLP.",
+        "Factuality and faithfulness hallucinations hinder practical deployment.",
+        "Existing methods address these issues independently, leading to trade-offs.",
+        "Propose SPACE to enhance both factuality and faithfulness.",
+        "SPACE identifies and edits shared activation subspaces."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem / Challenge",
+      "content": [
+        "Factuality hallucinations: contradictions against verifiable facts.",
+        "Faithfulness hallucinations: deviations from user intent or internal inconsistencies.",
+        "Interventions for one type often exacerbate the other.",
+        "SPACE aims to mitigate both types of hallucinations.",
+        "Propose a unified framework for joint improvement."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method / Framework",
+      "content": [
+        "SPACE edits shared activation subspaces to enhance factuality and faithfulness.",
+        "Formalizes the intersection of activation patterns through dual-task feature modeling.",
+        "Uses a hybrid probe strategy combining spectral clustering and attention head saliency scoring."
+      ],
+      "figure": null,
+      "figure_id": "Fig22",
+      "figure_caption": "Framework of the proposed SPACE model.",
+      "layout_hint": "text_top_image_bottom",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments / Results",
+      "content": [
+        "Experiments conducted on TruthfulQA for factuality and PDTB for faithfulness.",
+        "Comparative baselines: TruthX (factual accuracy) and CAD (faithfulness).",
+        "SPACE significantly reduces both types of hallucinations.",
+        "Mitigates the trade-off between factuality and faithfulness."
+      ],
+      "figure": null,
+      "figure_id": "Fig17",
+      "figure_caption": "Activation Distributions of Factual and Faithful Tasks.",
+      "layout_hint": "text_top_image_bottom",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Key Findings",
+      "content": [
+        "Theoretical revelation of the trade-off between factuality and faithfulness.",
+        "SPACE identifies and edits critical subspace-contributing heads.",
+        "Experimental validation demonstrates superiority over SOTA baselines.",
+        "Proposed method offers a promising direction for LLM reliability."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion / Takeaways",
+      "content": [
+        "SPACE effectively mitigates both factuality and faithfulness hallucinations.",
+        "Unified approach improves the reliability and trustworthiness of LLMs.",
+        "Future work: explore effectiveness across different LLM architectures and datasets."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig22": {
+      "caption": "Figure 3: Framework of the proposed SPACE model.",
+      "type": "method_diagram",
+      "description": "图中展示了提出的 SPACE 模型的框架。",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/d9347fae887b426b/Fig22.png",
+      "image_url": "http://host.docker.internal:8000/assets/d9347fae887b426b/Fig22.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/d9347fae887b426b/Fig22_thumb.jpg"
+    },
+    "Fig17": {
+      "caption": "Figure 2: Activation Distributions of Factual and Faithful Tasks. Subfigure (a) shows the proportion",
+      "type": "result_chart",
+      "description": "图中展示了事实和忠实任务的激活分布，子图 (a) 显示了比例。",
+      "best_matched_section": "Results",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/d9347fae887b426b/Fig17.png",
+      "image_url": "http://host.docker.internal:8000/assets/d9347fae887b426b/Fig17.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/d9347fae887b426b/Fig17_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

@@ -1,0 +1,100 @@
+{
+  "asset_token": "0e362a9804be41dc",
+  "template": "template_classic",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "From Efficiency to Adaptivity: A Deeper Look at Adaptive Reasoning in Large Language Models",
+  "authors": "Chao Wu, Baoheng Li, Mingchen Gao, Zhenyi Wang",
+  "paper_info": "arXiv:2511.10788v1 [cs.AI] 13 Nov 2025",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "classic_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "Reasoning is crucial for human intelligence and decision-making.",
+        "LLMs are evaluated on reasoning efficiency, but lack adaptivity.",
+        "Adaptivity is needed for task difficulty and uncertainty."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Research Problem",
+      "content": [
+        "Uniform reasoning strategies in LLMs are inefficient for simple tasks.",
+        "Complex tasks require extended reasoning, which current models fail to provide.",
+        "Adaptivity is essential for optimizing reasoning effort."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "Formalize deductive, inductive, and abductive reasoning in LLMs.",
+        "Reframe adaptive reasoning as a control-augmented policy optimization problem.",
+        "Propose a taxonomy of training-based and training-free methods."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Empirical studies highlight the limitations of fixed-length CoT models.",
+        "Fixed-length CoT models waste computation on easy inputs.",
+        "Complex inputs are not adequately addressed by fixed-length CoT models."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "The taxonomy clarifies practical adaptive reasoning mechanisms.",
+        "The framework allows systematic comparison of diverse strategies.",
+        "Adaptive reasoning improves efficiency and effectiveness."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "Adaptive reasoning is a promising direction for LLMs.",
+        "Future work should focus on self-evaluation and meta-reasoning.",
+        "Human-aligned reasoning control remains a challenge."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {},
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

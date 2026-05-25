@@ -1,0 +1,121 @@
+{
+  "asset_token": "b72fe3f441d7407b",
+  "template": "template_storyflow",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "Chain-of-Thought Prompting Obscures Hallucination Cues in Large Language Models: An Empirical Evaluation",
+  "authors": "Jiahao Cheng, Tiancheng Su, Jia Yuan, Guoxiu He, Jiawei Liu, Xinqi Tao, Jingwen Xie, Huaxia Li",
+  "paper_info": "East China Normal University, Wuhan University, Xiaohongshu Inc., 2025",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "storyflow_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "LLMs excel in NLP tasks but suffer from hallucinations.",
+        "Hallucination detection methods rely on output consistency, internal states, and self-evaluation.",
+        "Impact of CoT prompting on hallucination detection is under-explored."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "CoT prompting may obscure critical signals for hallucination detection.",
+        "This can impair the effectiveness of existing detection methods.",
+        "Need to evaluate the robustness of detection methods under CoT prompting."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "Pilot experiments on MCQA tasks: CommonSenseQA, ARC-Challenge, MMLU.",
+        "Comprehensive evaluations on complex QA and summarization datasets.",
+        "Evaluated three CoT prompting strategies and four hallucination detection methods."
+      ],
+      "figure": null,
+      "figure_id": "Fig9",
+      "figure_caption": "Workflow for evaluating the impact of CoT prompting on hallucination detection.",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Used three MCQA datasets: CommonSenseQA, ARC-Challenge, MMLU.",
+        "Evaluated three LLMs: Llama-3.1-8B-Instruct, Mistral-7B-v0.3-Instruct, DeepSeek-R1-Distill-Llama-8B.",
+        "Assessed changes in hallucination score distributions, detection accuracy, and confidence."
+      ],
+      "figure": null,
+      "figure_id": "Fig1",
+      "figure_caption": "Example of CoT prompting confusing hallucination detection.",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "CoT prompting alters the probability distribution of final answer tokens.",
+        "Consistency-based methods show greater robustness; internal-state and self-evaluation methods are more susceptible.",
+        "Advanced detection methods lose their advantage over perplexity-based baselines under CoT prompting."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "CoT prompting enhances LLM performance but disrupts hallucination detection mechanisms.",
+        "Reasoning-enhanced inference makes hallucination signals more subtle and harder to capture.",
+        "Future work should explore generalizability across tasks and domains."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig1": {
+      "caption": "An example of CoT prompting confusing hallucination detection. When the input When is the Earth",
+      "type": "qualitative_example",
+      "description": "示例展示了 CoT 提示如何导致对幻觉检测的混淆。",
+      "best_matched_section": "Experiments",
+      "importance": "medium",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/b72fe3f441d7407b/Fig1.png",
+      "image_url": "http://host.docker.internal:8000/assets/b72fe3f441d7407b/Fig1.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/b72fe3f441d7407b/Fig1_thumb.jpg"
+    },
+    "Fig9": {
+      "caption": "The workflow for evaluating the impact of CoT prompting on hallucination detection. The upper section",
+      "type": "pipeline",
+      "description": "展示了评估 CoT 提示对幻觉检测影响的工作流程。",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/b72fe3f441d7407b/Fig9.png",
+      "image_url": "http://host.docker.internal:8000/assets/b72fe3f441d7407b/Fig9.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/b72fe3f441d7407b/Fig9_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

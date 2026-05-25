@@ -1,0 +1,121 @@
+{
+  "asset_token": "d9eb26e02b194460",
+  "template": "template_classic",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "Constitutional AI: Harmlessness from AI Feedback",
+  "authors": "Yuntao Bai, Saurav Kadavath, Sandipan Kundu, Amanda Askell, Jackson Kernion, Andy Jones, Anna Chen, Anna Goldie, Azalia Mirhoseini, Cameron McKinnon, Carol Chen, Catherine Olsson, Christopher Olah, Danny Hernandez, Dawn Drain, Deep Ganguli, Dustin Li, Eli Tran-Johnson, Ethan Perez, Jamie Kerr, Jared Mueller, Jeffrey Ladish, Joshua Landau, Kamal Ndousse, Kamile Lukosuite, Liane Lovitt, Michael Sellitto, Nelson Elhage, Nicholas Schiefer, Noemi Mercado, Nova DasSarma, Robert Lasenby, Robin Larson, Sam Ringer, Scott Johnston, Shauna Kravec, Sheer El Showk, Stanislav Fort, Tamera Lanham, Timothy Telleen-Lawton, Tom Conerly, Tom Henighan, Tristan Hume, Samuel R. Bowman, Zac Hatfield-Dodds, Ben Mann, Dario Amodei, Nicholas Joseph, Sam McCandlish, Tom Brown, Jared Kaplan",
+  "paper_info": "arXiv:2212.08073v1 [cs.CL] 15 Dec 2022",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "classic_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "AI systems require techniques beyond human supervision for behavior control.",
+        "RLHF trains AI but demands extensive human feedback labels.",
+        "Need for a method to train harmless AI assistants without human harmful labels."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "Training harmless AI without human labels is challenging.",
+        "Balancing helpfulness and harmlessness in AI assistants is difficult.",
+        "AI decision-making transparency and understandability need improvement."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "CAI combines supervised and reinforcement learning phases.",
+        "SL phase: Model generates self-critiques and revisions, finetuned on revised responses.",
+        "RL phase: Preference model trained using AI-generated preferences, model trained with RL using PM as reward signal."
+      ],
+      "figure": null,
+      "figure_id": "Fig1",
+      "figure_caption": "Basic steps of the Constitutional AI (CAI) process",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Models trained using a short list of natural language principles (constitution).",
+        "Performance evaluated through crowdworker preferences in open-ended conversation.",
+        "Compared CAI models with models trained using human feedback for harmfulness."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "RL-CAI model preferred over human feedback models for harmfulness.",
+        "RL-CAI models achieved less harmfulness at a given level of helpfulness.",
+        "Chain-of-thought reasoning enhanced AI decision-making transparency and performance."
+      ],
+      "figure": null,
+      "figure_id": "Fig2",
+      "figure_caption": "Harmlessness versus helpfulness Elo scores",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "CAI offers a promising approach to train harmless and helpful AI assistants with minimal human supervision.",
+        "The method leverages AI feedback to improve performance and reliability while maintaining transparency.",
+        "Future work may refine principles for broader deployment."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig1": {
+      "caption": "Basic steps of the Constitutional AI (CAI) process",
+      "type": "method_diagram",
+      "description": "展示了 Constitutional AI (CAI) 过程的基本步骤，包含超级步骤。",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/d9eb26e02b194460/Fig1.png",
+      "image_url": "http://host.docker.internal:8000/assets/d9eb26e02b194460/Fig1.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/d9eb26e02b194460/Fig1_thumb.jpg"
+    },
+    "Fig2": {
+      "caption": "Harmlessness versus helpfulness Elo scores",
+      "type": "result_chart",
+      "description": "展示了无害性和有用性 Elo 评分的对比图，较高的评分更好，图中仅显示了评分的差异。",
+      "best_matched_section": "Results",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/d9eb26e02b194460/Fig2.png",
+      "image_url": "http://host.docker.internal:8000/assets/d9eb26e02b194460/Fig2.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/d9eb26e02b194460/Fig2_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

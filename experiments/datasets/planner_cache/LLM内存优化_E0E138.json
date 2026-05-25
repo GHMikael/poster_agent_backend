@@ -1,0 +1,134 @@
+{
+  "asset_token": "635a8a4068274271",
+  "template": "template_classic",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "MLP Memory: A Retriever-Pretrained Memory for Large Language Models",
+  "authors": "Rubin Wei, Jiaqi Cao, Jiarui Wang, Jushi Kai, Qipeng Guo, Bowen Zhou, Zhouhan Lin",
+  "paper_info": "arXiv:2508.01832v4 [cs.CL] 27 Feb 2026",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "classic_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "Decoder-only models excel in various tasks but struggle with accurate knowledge utilization.",
+        "Non-parametric RAG methods have high inference latency and shallow integration.",
+        "Parametric methods risk catastrophic forgetting and degrade general performance."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "RAG methods introduce significant inference latency.",
+        "Parametric adaptation methods degrade general capabilities.",
+        "Existing memory tokens lack long-term knowledge retention."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "Propose MLP Memory to internalize retrieval patterns without document access.",
+        "Pretrain MLP to imitate 𝑘NN retriever’s behavior on pretraining dataset.",
+        "Integrate pretrained MLP Memory with Transformer decoders via probability interpolation."
+      ],
+      "figure": null,
+      "figure_id": "Fig3",
+      "figure_caption": "Impact of KL loss weight 𝛼 on retriever imitation.",
+      "layout_hint": "text_top_image_bottom",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Evaluate on WikiText-103 and Web datasets for scaling gains.",
+        "Test on five QA benchmarks and nine general NLP tasks.",
+        "Measure inference efficiency compared to RAG and 𝑘NN-LM methods."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "17.5% and 24.1% scaling gains on WikiText-103 and Web datasets.",
+        "12.3% relative improvement on QA benchmarks and 5.2 points absolute gain on NLP tasks.",
+        "Reduce hallucinations by up to 10 points on HaluEval."
+      ],
+      "figure": null,
+      "figure_id": "Fig1",
+      "figure_caption": "Performance and efficiency comparison on QA benchmarks.",
+      "layout_hint": "text_top_image_bottom",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Key Findings",
+      "content": [
+        "MLP Memory significantly improves knowledge-intensive task performance.",
+        "Maintains constant inference speed regardless of corpus size.",
+        "Outperforms RAG and 𝑘NN-LM in both accuracy and efficiency."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "MLP Memory bridges efficient inference and effective knowledge access.",
+        "Promising alternative for enhancing large language models.",
+        "Performance and efficiency gains may vary with different datasets and architectures."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig1": {
+      "caption": "Performance and efficiency comparison on QA benchmarks.",
+      "type": "result_chart",
+      "description": "比较了在三个 QA 基准上的准确性和效率。",
+      "best_matched_section": "Results",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/635a8a4068274271/Fig1.png",
+      "image_url": "http://host.docker.internal:8000/assets/635a8a4068274271/Fig1.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/635a8a4068274271/Fig1_thumb.jpg"
+    },
+    "Fig3": {
+      "caption": "Impact of KL loss weight 𝛼 on retriever imitation.",
+      "type": "ablation_study",
+      "description": "分析了 KL 损失权重 𝛼 对检索器模仿的影响。",
+      "best_matched_section": "Experiments",
+      "importance": "medium",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/635a8a4068274271/Fig3.png",
+      "image_url": "http://host.docker.internal:8000/assets/635a8a4068274271/Fig3.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/635a8a4068274271/Fig3_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

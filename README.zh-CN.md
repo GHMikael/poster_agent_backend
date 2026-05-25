@@ -2,58 +2,68 @@
 
 # Paper-to-Poster Backend
 
-> **当前版本：v5.0** · FastAPI 后端，为 Dify「论文 → 学术海报」工作流提供解耦服务，并附带离线 **实验评测** 框架。
+> **当前版本：v5.1** · FastAPI 后端，为 Dify「论文 → 学术海报」**Chatflow** 提供解耦服务，并附带离线 **实验评测** 框架。
 
-从 PDF 提取图文素材，接收 Dify Planner 的结构化面板规划，渲染可编辑的 PPTX 海报；可选 **SVFP 视觉反馈闭环**（VLM 评分 → 结构化修复 → 收敛留痕），并针对 Dify 长耗时场景提供 **异步 Job + 长轮询**。
+从 PDF 提取图文素材，接收 Dify 三 Agent（文本解析 / 视觉解析 / 规划）输出的结构化面板规划，渲染可编辑 PPTX 海报；可选 **SVFP 视觉反馈闭环**（VLM 评分 → 结构化修复 → 收敛留痕），并针对 Dify 长耗时场景提供 **异步 Job + 长轮询**。
 
-**v5.0** 新增完整批量评测流水线（12 项指标 × 5 条基线）、可选的运行遥测 JSONL，以及 **5 篇论文的试点实验**（ours_svfp vs ours_no_svfp vs gpt4o_zeroshot）。
+**v5.1** 新增 **Dify 批跑脚本**（`batch_dify_runs.py`）、版本化的 Agent Prompt（`dify/prompts/`）、`planner_cache/` 规划快照回放，以及面向 **30 篇论文** 完整矩阵的 **L0→L8 实验流水线** 文档。
 
 ---
 
-## 版本概览（v5.0）
+## 版本概览（v5.1）
 
 | 模块 | 能力 |
 |------|------|
-| **PDF 资产** | `POST /extract_pdf_assets`：文本预览 + 插图提取，默认落盘 `static/assets/{asset_token}/`，返回轻量 `image_url` |
-| **PPT 渲染** | 4 套模板 × 4 套配色；支持 `image_focus` 图主导布局、纵向挤压检测 |
-| **SVFP 闭环** | 结构化 issue/action（含 `figure_too_small`）；`FeedbackApplier` 路由修复；防横向布局退化 |
-| **双阶段评审** | Stage 1：Pillow 快速预览 + VLM/启发式；Stage 2：LibreOffice 真 PPTX 截图再评（独立 profile） |
-| **运行归档** | 单次运行写入 `outputs/runs/<timestamp>_<slug>_<runid>/`（`input.json`、`final.pptx`、`run_report.json`、可选 `experiment_log.jsonl`） |
-| **异步接口** | `POST /generate_ppt` 立即返回 `job_id`（HTTP 202）；`GET /jobs/{job_id}?wait=20` 服务端长轮询 |
-| **实验遥测** | `POSTER_EXPERIMENT_MODE=1` 时，SVFP 各阶段写入 JSONL（耗时、VLM token、soffice 状态）；关闭时仅一次 `None` 判断，生产零开销 |
-| **下载体验** | `GET /download/run/{run_folder}` 按论文标题生成可读文件名 |
-| **实验框架** | `experiments/`：12 项指标、5 条基线、Judge 模块、矩阵跑批与统计聚合（详见 `experiments/README.md`） |
+| **Dify Chatflow** | 三 Agent 流水线（Text Parse → Visual Parse → Planner）；Prompt 见 `dify/prompts/`；设计说明见 `dify/DIFY_WORKFLOW_AND_PAPER_DESIGN.md` |
+| **Dify 批跑** | `batch_dify_runs.py` 通过 Dify API 上传 PDF 并触发 Chatflow；支持自建 Dify + Chatflow `type: custom` 文件上传 |
+| **规划回放** | Dify 运行产物 `outputs/runs/.../input.json` → 匹配 PDF → `planner_cache/<stem>.json`（`import_dify_runs.py`） |
+| **PDF 资产** | `POST /extract_pdf_assets`：文本预览 + 插图，默认轻量 `image_url` |
+| **PPT 渲染** | 4 套模板 × 4 套配色；`image_focus` 图主导布局 |
+| **SVFP 闭环** | 结构化 issue/action；`FeedbackApplier` 路由；防横向布局退化 |
+| **双阶段评审** | Pillow 快速预览 + VLM/启发式；LibreOffice 真 PPTX 截图再评 |
+| **运行归档** | `outputs/runs/<timestamp>_<slug>_<runid>/`（含 `input.json`、`final.pptx`、`run_report.json`） |
+| **异步接口** | `POST /generate_ppt`（202 + `job_id`）+ `GET /jobs/{job_id}?wait=20` 长轮询 |
+| **实验框架** | 12 指标 × 5 基线；矩阵跑批、Judge、Bootstrap 统计（见 `experiments/README.md`） |
 
 **演进主线**
 
-- **v4.1**（2026-05-19 ~ 05-23）：SVFP 协议 → 输出目录统一 → LibreOffice 稳定性 → 异步 Job + 长轮询 → 布局质量收敛（`image_focus` + 防反馈退化）
-- **v5.0**（2026-05-24）：实验框架落地 → 生产代码与评测解耦 → 可选 JSONL 遥测 → 5 篇论文试点跑通（3 基线 × 10 指标）
+- **v4.1**（2026-05-19 ~ 05-23）：SVFP 协议 → 输出目录统一 → LibreOffice 稳定性 → 异步 Job + 长轮询 → 布局质量收敛
+- **v5.0**（2026-05-24）：实验框架落地 → JSONL 遥测 → 5 篇试点（3 基线 × 10 指标）
+- **v5.1**（2026-05-25 ~ 05-26）：Dify 批跑自动化 → `dify/` Prompt 与设计文档 → **30 份 planner 快照** → 完整实验流水线（L0–L8）
 
 ---
 
-## 试点实验结果（n=5）
+## 实验流水线（L0 → L8）
 
-在 5 篇 Dify 上传论文上完成 `ours_svfp` / `ours_no_svfp` / `gpt4o_zeroshot` 对比（完整 30 篇矩阵见 `experiments/configs/papers_30.json`，需自行准备 PDF）。
-
-| 指标 | ours_svfp | ours_no_svfp | gpt4o_zeroshot | 解读 |
-|------|-----------|--------------|----------------|------|
-| **B1 布局合理性** | **0.781** | 0.766 | 0.745 | SVFP 闭环带来最明显布局提升 |
-| **B2 可读性** | **0.782** | 0.748 | 0.748 | 反馈迭代改善字号与留白 |
-| **A1 信息保留** | 0.448 | 0.448 | 0.544 | 小样本下内容规划仍有空间 |
-| **A3 幻觉率** | 0.117 | **0.100** | 0.117 | 三条基线接近 |
-| **D1 延迟 (ms)** | 160,612 | **38** | 23,025 | SVFP 以时间换布局质量 |
-| **D2 成本 ($)** | 0.012 | **0** | 0.004 | VLM 多轮调用增加 API 成本 |
-
-复现聚合表：
-
-```bash
-python -m experiments.scripts.run_matrix --papers experiments/configs/papers_5.json --baselines ours_svfp,ours_no_svfp,gpt4o_zeroshot
-python -m experiments.scripts.compute_metrics --all
-python -m experiments.scripts.aggregate_stats --out experiments/results/aggregate/
-python -m experiments.scripts.print_paper_table
+```
+[L0] PDF 论文           experiments/datasets/papers/*.pdf
+        │  batch_dify_runs.py（触发 Dify Chatflow）
+[L1] PosterTask 草稿    outputs/runs/<ts>_<slug>_<id>/input.json
+        │  import_dify_runs.py（标题 ↔ PDF 匹配）
+[L2] Planner 缓存       experiments/datasets/planner_cache/<stem>.json   ← 已缓存 30 份
+        │  构建 papers_30.json
+[L3] Paper Manifest     experiments/configs/papers_30.json
+        │  run_matrix.py（30 篇 × 3 基线）
+[L4] 渲染产物           experiments/results/artifacts/<baseline>_<stem>/
+        │  compute_metrics.py
+[L5] 指标分数           experiments/results/metrics/
+        │  aggregate_stats.py
+[L6] 汇总表             experiments/results/aggregate/{aggregate,pairwise}.tsv
+        │  plot_figures.py / print_paper_table.py
+[L7–L8] 论文图表与表格
 ```
 
-> 原始 metrics / aggregate TSV 与 LLM 缓存已在 `.gitignore` 中排除，克隆后需本地重跑生成。
+逐步命令详见 [`INTERNAL_EXPERIMENT_GUIDE.md`](INTERNAL_EXPERIMENT_GUIDE.md)（维护者操作手册）。
+
+**试点结果（n=5，v5.0）** — 仍可作为 sanity check：
+
+| 指标 | ours_svfp | ours_no_svfp | gpt4o_zeroshot |
+|------|-----------|--------------|----------------|
+| B1 布局合理性 | **0.781** | 0.766 | 0.745 |
+| B2 可读性 | **0.782** | 0.748 | 0.748 |
+| D1 延迟 (ms) | 160,612 | **38** | 23,025 |
+
+30 篇完整数据需在本地跑完 `run_matrix` → `compute_metrics` → `aggregate_stats` 后生成（结果目录已 gitignore）。
 
 ---
 
@@ -62,17 +72,19 @@ python -m experiments.scripts.print_paper_table
 ```mermaid
 flowchart LR
   PDF[PDF 论文] --> A["/extract_pdf_assets"]
-  A --> Dify[Dify Agents<br/>解析 / 配图 / 规划]
-  Dify --> B["/generate_ppt<br/>或 /generate_ppt_file"]
+  A --> Dify[Dify Chatflow<br/>Text / Visual / Planner]
+  Dify --> B["/generate_ppt"]
   B --> R[PPTX 海报]
   B -.->|use_commenter=true| Loop[SVFP 反馈闭环]
   Loop --> R
+  Dify -.->|batch_dify_runs.py| Cache[planner_cache/]
+  Cache -.->|run_matrix 回放| B
 ```
 
-1. **`/extract_pdf_assets`**：提取文本预览与插图元数据（`include_images=false` 时适合 Dify，避免超大 base64）。
-2. **Dify**：解析正文、分析图表、规划 `panels` / `figures` / 模板与配色。
-3. **`/generate_ppt`**（推荐 Dify）：异步生成，轮询 Job 状态后下载。
-4. **`/generate_ppt_file`**（本地调试）：同步跑完整流程，直接返回 `download_url` 与反馈轨迹。
+1. **`/extract_pdf_assets`**：提取文本与插图元数据（Dify 侧建议 `include_images=false`）。
+2. **Dify Chatflow**：三 Agent 解析正文、分析图元数据、输出 `PosterTask` JSON。
+3. **`/generate_ppt`**：异步生成 + 可选 SVFP；轮询 Job 后下载。
+4. **实验**：回放冻结的 planner 快照，保证各基线使用**完全相同**的规划。
 
 ---
 
@@ -80,28 +92,28 @@ flowchart LR
 
 ```
 poster_agent_backend/
-├── app/                         # 生产 FastAPI 服务（不被 experiments 反向依赖）
-│   ├── main.py                  # 路由与异步 Job（v5.0）
+├── app/                         # 生产 FastAPI 服务
+│   ├── main.py                  # 路由与异步 Job（v5.1）
+│   ├── models.py                # PosterTask  schema（Dify ↔ 渲染器契约）
 │   ├── pdf_assets.py            # PDF 图文提取
 │   ├── ppt_renderer.py          # PPTX 渲染
-│   ├── feedback_loop.py         # SVFP 闭环 + 可选实验遥测
-│   ├── vlm_commenter.py         # SVFP 协议 + Qwen-VL 评审
-│   ├── job_store.py             # 内存 Job 状态
-│   ├── run_archive.py           # runs 目录归档
+│   ├── feedback_loop.py         # SVFP 闭环 + 可选 JSONL 遥测
 │   └── ...
-├── experiments/                 # 离线批量评测（详见 experiments/README.md）
+├── dify/                        # Dify Chatflow 设计与 Agent Prompt
+│   ├── DIFY_WORKFLOW_AND_PAPER_DESIGN.md
+│   └── prompts/                 # text-parse / visual-parse / planner
+├── experiments/                 # 离线批量评测
 │   ├── baselines/               # ours_svfp, ours_no_svfp, gpt4o_zeroshot, …
 │   ├── metrics/                 # A1–A4, B1–B3, C1–C3, D1–D3
-│   ├── judges/                  # NLI / VLM / PaperQuiz 等 Judge
-│   ├── scripts/                 # run_matrix, compute_metrics, aggregate_stats
-│   ├── configs/                 # YAML + papers_5.json / papers_30.json
-│   ├── datasets/                # planner_cache（Dify 规划缓存，可提交）
-│   └── tools/                   # experiment_logger, run_analysis（自 app/ 迁入）
-├── tests/                       # SVFP 等单元测试
-├── static/assets/               # 运行时提取的插图（gitignore）
-├── outputs/runs/                # 每次生成的完整运行记录（gitignore）
+│   ├── scripts/                 # batch_dify_runs, import_dify_runs, run_matrix, …
+│   ├── datasets/
+│   │   ├── papers/              # PDF（gitignore）
+│   │   └── planner_cache/       # 冻结的 PosterTask 快照（可提交）
+│   └── tools/                   # experiment_logger, run_analysis
+├── tests/
+├── INTERNAL_EXPERIMENT_GUIDE.md # L0–L8 完整操作手册
 ├── requirements.txt
-├── experiments/requirements.txt # 评测额外依赖（pandas, scipy, matplotlib）
+├── experiments/requirements.txt
 └── .env.example
 ```
 
@@ -109,10 +121,12 @@ poster_agent_backend/
 
 ## 环境要求
 
-- **Python 3.12**（推荐；3.13 在 macOS 上可能迫使 PyMuPDF 源码编译）
-- 可选：**LibreOffice**（`soffice`），用于 Stage 2 真实 PPTX 预览图
-- 可选：**DashScope API Key**，启用 Qwen-VL 结构化评审；未配置时自动回退启发式规则
-- 跑实验额外需要：`pip install -r experiments/requirements.txt`，以及 `OPENAI_API_KEY` / `DASHSCOPE_API_KEY`（Judge 与基线 LLM）
+- **Python 3.12**（推荐）
+- 可选：**LibreOffice**（`soffice`），Stage 2 真 PPTX 预览
+- 可选：**DashScope API Key**，Qwen-VL 评审
+- 实验额外：`pip install -r experiments/requirements.txt`
+- Dify 批跑：自建或云端 Dify + `.env` 中配置 `DIFY_API_KEY`
+- FastAPI 需被 Dify 容器访问（macOS Docker 常用 `http://host.docker.internal:8000`）
 
 ---
 
@@ -121,17 +135,13 @@ poster_agent_backend/
 ```bash
 cd poster_agent_backend
 python3.12 -m venv .venv312
-source .venv312/bin/activate   # Windows: .venv312\Scripts\activate
+source .venv312/bin/activate
 pip install -r requirements.txt
-cp .env.example .env           # 按需填写 DASHSCOPE_API_KEY
+cp .env.example .env           # 填写 DASHSCOPE_API_KEY、DIFY_*（批跑时需要）
 python -m app.main
 ```
 
-健康检查：
-
-```bash
-curl http://127.0.0.1:8000/health
-```
+健康检查：`curl http://127.0.0.1:8000/health`
 
 ---
 
@@ -140,125 +150,77 @@ curl http://127.0.0.1:8000/health
 | 方法 | 路径 | 说明 |
 |------|------|------|
 | `GET` | `/health` | 服务状态 |
-| `POST` | `/extract_pdf_assets` | 上传 PDF 或 `pdf_url`，返回 `asset_token` + 插图 URL |
-| `POST` | `/generate_ppt` | **异步**生成（202 + `job_id`），适合 Dify |
-| `GET` | `/jobs/{job_id}?wait=20` | 查询任务；`wait` 0–50s 长轮询至完成/失败 |
-| `POST` | `/generate_ppt_file` | **同步**生成（本地调试 / 短任务） |
-| `GET` | `/download/run/{run_folder}` | 下载 `final.pptx`（文件名基于论文标题） |
+| `POST` | `/extract_pdf_assets` | 上传 PDF，返回 `asset_token` + 插图 URL |
+| `POST` | `/generate_ppt` | **异步**生成（202 + `job_id`） |
+| `GET` | `/jobs/{job_id}?wait=20` | 长轮询任务状态 |
+| `POST` | `/generate_ppt_file` | **同步**生成（本地调试） |
+| `GET` | `/download/run/{run_folder}` | 下载 `final.pptx` |
 | `GET` | `/assets/{asset_token}/{filename}` | 访问提取的插图 |
 
 ---
 
-## 快速测试
+## Dify 对接
 
-### 提取 PDF 资产
+### Chatflow 三 Agent
 
-```bash
-curl -X POST "http://127.0.0.1:8000/extract_pdf_assets" \
-  -F "file=@/path/to/paper.pdf"
-```
+| Agent | Prompt 文件 | 职责 |
+|-------|-------------|------|
+| Text Parse | `dify/prompts/text-parseagent.txt` | 从 `text_preview` 提取章节与 bullet |
+| Visual Parse | `dify/prompts/visual-parseagent.txt` | 基于 metadata-only 图列表做图文角色分配 |
+| Planner | `dify/prompts/planneragent.txt` | 模板、配色、panels、figures → `PosterTask` JSON |
 
-### 异步生成（Dify 推荐）
+完整节点拓扑与设计理由见 [`dify/DIFY_WORKFLOW_AND_PAPER_DESIGN.md`](dify/DIFY_WORKFLOW_AND_PAPER_DESIGN.md)。
 
-```bash
-curl -X POST "http://127.0.0.1:8000/generate_ppt" \
-  -H "Content-Type: application/json" \
-  -d @tests/test_payload_feedback.json
-
-curl "http://127.0.0.1:8000/jobs/<job_id>?wait=30"
-
-curl -OJ "http://127.0.0.1:8000/download/run/<run_folder>"
-```
-
-### 同步生成（本地）
+### 批量跑 30 篇
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/generate_ppt_file" \
-  -H "Content-Type: application/json" \
-  -d @tests/test_payload_feedback.json
+# 1. 启动后端（终端 1）
+python -m app.main
+
+# 2. 预览待跑 PDF 列表（终端 2）
+python -m experiments.scripts.batch_dify_runs --limit 25 --skip-cached --dry-run
+
+# 3. 批量触发 Chatflow（M3 Mac 约 145 秒/篇）
+python -m experiments.scripts.batch_dify_runs --limit 25 --skip-cached
+
+# 4. 导入 planner_cache
+python -m experiments.scripts.import_dify_runs
+
+# 5. 完整实验矩阵
+python -m experiments.scripts.run_matrix --papers experiments/configs/papers_30.json --baselines ours_svfp,ours_no_svfp,gpt4o_zeroshot
+python -m experiments.scripts.compute_metrics --all
+python -m experiments.scripts.aggregate_stats --out experiments/results/aggregate/
+python -m experiments.scripts.print_paper_table
 ```
+
+**上传类型注意**：若 Chatflow Start 节点变量 `paper` 配置为 **「Other file types」**，API 需用 `"type": "custom"`（不是 `"document"`）——`batch_dify_runs.py` 已内置。
+
+### 云端 / 隧道
+
+云端 Dify 需 `ngrok http 8000` 或 `cloudflared tunnel`，Chatflow HTTP 节点指向公网 URL。
+
+生成海报请走 **`POST /generate_ppt` + `GET /jobs/{job_id}`** 轮询，避免单次 HTTP 超过约 60 秒超时。
 
 ---
 
 ## 视觉反馈闭环（SVFP）
 
-在 Planner JSON 中开启：
-
 ```json
-{
-  "use_commenter": true,
-  "max_iterations": 3
-}
+{ "use_commenter": true, "max_iterations": 3 }
 ```
 
-**两阶段评审**
-
-- **Stage 1**：Pillow 快速预览 PNG → VLM 结构化反馈（SVFP）或启发式回退
-- **Stage 2**：若已安装 LibreOffice，将真实 PPTX 转为 PNG 再评一轮
-
-**SVFP 问题类型**
-
-| Issue | 典型修复动作 |
-|-------|----------------|
+| Issue | 典型修复 |
+|-------|----------|
 | `overlapping_elements` | 减少 bullet、缩小字号 |
 | `empty_space` | 放大字号、补内容 |
-| `low_contrast` | 切换配色主题 |
-| `figure_too_small` | 纵向面板切 `image_focus`；横向布局忽略此项以防退化 |
+| `low_contrast` | 切换配色 |
+| `figure_too_small` | 纵向面板切 `image_focus` |
 
-**单次运行分析**（消融 / 调试）：
+单次运行分析：
 
 ```bash
 python -m experiments.tools.run_analysis outputs/runs/<run_folder>/run_report.json
 ```
-
----
-
-## 实验评测
-
-完整说明见 [`experiments/README.md`](experiments/README.md)。
-
-**12 项指标**
-
-| 类别 | ID | 说明 |
-|------|-----|------|
-| 内容 | A1–A4 | 信息保留、图文对齐、幻觉、章节覆盖 |
-| 视觉 | B1–B3 | 布局合理性、可读性、学术规范 |
-| 用户 | C1–C3 | PaperQuiz、SUS、省时（需用户研究 CSV） |
-| 工程 | D1–D3 | 延迟、成本、失败率 |
-
-**5 条基线**：`ours_svfp` · `ours_no_svfp` · `gpt4o_zeroshot` · `paper2poster` · `posteragent`（后两者需 `experiments/baselines/bootstrap_vendor.sh` 拉取 vendor）
-
-**最小 smoke 测试**：
-
-```bash
-pip install -r experiments/requirements.txt
-python -m experiments.scripts.run_one_paper \
-  --paper experiments/datasets/papers/<paper>.pdf \
-  --baseline ours_svfp
-python -m experiments.scripts.compute_metrics --artifact experiments/results/artifacts/_smoke --metrics all
-```
-
----
-
-## 模板与配色
-
-```json
-{
-  "template": "template_dashboard",
-  "color_theme": "academic_blue",
-  "layout_variant": "auto",
-  "emphasis_level": "normal"
-}
-```
-
-| 模板 | 适用场景 |
-|------|----------|
-| `template_dashboard` | 六区仪表盘；方法/基准类论文 |
-| `template_classic` | 经典三栏均衡布局 |
-| `template_storyflow` | 横向六步叙事；流程/系统类 |
-| `template_minimal` | 高留白卡片式；概念/综述 |
-
-**配色**：`academic_blue` · `engineering_green` · `warm_orange` · `minimal_gray`
 
 ---
 
@@ -268,32 +230,22 @@ python -m experiments.scripts.compute_metrics --artifact experiments/results/art
 |------|--------|------|
 | `PORT` | `8000` | 服务端口 |
 | `OUTPUT_DIR` | `outputs` | 输出根目录 |
-| `DASHSCOPE_API_KEY` | （空） | DashScope，启用 Qwen-VL |
-| `QWEN_VL_MODEL` | `Qwen/Qwen2.5-VL-7B-Instruct` | VLM 模型名 |
-| `POSTER_EXPERIMENT_MODE` | `1`（`python -m app.main` 时） | 开启 JSONL 遥测；设为 `0` 关闭 |
-| `POSTER_EXPERIMENT_LOG` | （空，自动写入 run 目录） | 遥测 JSONL 路径 |
-
----
-
-## Dify 云端对接
-
-```bash
-ngrok http 8000
-# 或
-cloudflared tunnel --url http://localhost:8000
-```
-
-生成海报请走 **`POST /generate_ppt` + `GET /jobs/{job_id}`** 轮询，避免同步等待超过 HTTP 节点超时（约 60s）导致重复提交。
+| `DASHSCOPE_API_KEY` | （空） | Qwen-VL + 部分 Judge |
+| `OPENAI_API_KEY` | （空） | 指标 Judge（OpenAI 兼容协议） |
+| `QWEN_VL_MODEL` | `Qwen/Qwen2.5-VL-7B-Instruct` | VLM 模型 |
+| `POSTER_EXPERIMENT_MODE` | `1`（`python -m app.main`） | JSONL 遥测；`0` 关闭 |
+| `DIFY_API_KEY` | （空） | Chatflow 应用 Key（`app-…`） |
+| `DIFY_BASE_URL` | `http://localhost/v1` | Dify API 地址 |
+| `DIFY_WORKFLOW_INPUT_NAME` | `paper` | Start 节点 PDF 变量名 |
+| `DIFY_USER_ID` | `experiment-batch` | Dify 用户标识 |
+| `DIFY_QUERY` | 见 `.env.example` | Chatflow 必填 `query` 字段 |
 
 ---
 
 ## 测试
 
 ```bash
-# 生产路径
 python -m pytest tests/ -q
-
-# 实验框架
 python -m pytest experiments/tests/ -q
 ```
 
@@ -301,11 +253,6 @@ python -m pytest experiments/tests/ -q
 
 ## 提交 GitHub 说明
 
-以下内容已在 `.gitignore` 中排除，**不会**被提交：
+**不会提交：** `.env`、`outputs/`、PDF、`experiments/.cache/`、metrics/aggregate/artifacts、vendor 基线、调试 PNG。
 
-- `.env`、虚拟环境、`.pytest_cache`
-- `outputs/`、`static/assets/`、本地调试 PNG
-- 实验 PDF、`experiments/.cache/`、metrics/aggregate/artifacts 结果
-- 外部基线 vendor（`experiments/baselines/_vendor/`）
-
-**会**提交：源码、`experiments/configs/`、`experiments/datasets/planner_cache/`（Dify 规划缓存）、`tests/`、文档。
+**会提交：** 源码、`dify/prompts/`、`experiments/datasets/planner_cache/`（30 份冻结规划快照）、configs、tests、文档。

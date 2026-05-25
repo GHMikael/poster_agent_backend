@@ -1,0 +1,144 @@
+{
+  "asset_token": "e15f25fbf87c4397",
+  "template": "template_classic",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "Take a Step Back: Evoking Reasoning via Abstraction in Large Language Models",
+  "authors": "Huaixiu Steven Zheng, Swaroop Mishra, Xinyun Chen, Heng-Tze Cheng, Ed H. Chi, Quoc V Le, Denny Zhou",
+  "paper_info": "arXiv:2310.06117v2 [cs.LG] 12 Mar 2024",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "classic_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "LLMs have improved NLP tasks but struggle with complex reasoning involving low-level details.",
+        "Intermediate reasoning steps often introduce errors, reducing overall model accuracy.",
+        "Need for a method to enhance reasoning by abstracting high-level concepts."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "LLMs face challenges in multi-step reasoning tasks.",
+        "Errors in intermediate steps can propagate and affect final results.",
+        "Current prompting techniques are not sufficient to handle complex reasoning."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "STEP-BACK PROMPTING: Two-step technique of abstraction and reasoning.",
+        "Abstraction: Derive high-level concepts from the original question.",
+        "Reasoning: Use high-level concepts to guide the reasoning process."
+      ],
+      "figure": null,
+      "figure_id": "Fig1",
+      "figure_caption": "Strong Performance of STEP-BACK PROMPTING: our proposed Abstraction-and-Reasoning",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Conducted using PaLM-2L, GPT-4, and Llama2-70B models.",
+        "Tasks: MMLU (Physics and Chemistry), TimeQA, and MuSiQue.",
+        "Compared with chain-of-thought (CoT) prompting."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "7% and 11% improvement on MMLU (Physics and Chemistry) for PaLM-2L.",
+        "27% performance gain on TimeQA and 7% on MuSiQue.",
+        "Up to 36% performance improvement over CoT prompting."
+      ],
+      "figure": null,
+      "figure_id": "Fig2",
+      "figure_caption": "Error Analysis of STEP-BACK PROMPTING",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Key Findings",
+      "content": [
+        "STEP-BACK PROMPTING reduces errors in intermediate reasoning steps.",
+        "The technique fixes a large portion of errors (up to 40%) while introducing few new errors (max 12%).",
+        "Ablation studies show the effectiveness of the method in various tasks."
+      ],
+      "figure": null,
+      "figure_id": "Fig4",
+      "figure_caption": "Ablation and error analysis of STEP-BACK PROMPTING on TimeQA",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "STEP-BACK PROMPTING is a promising approach to enhance reasoning in LLMs.",
+        "The technique grounds reasoning on high-level concepts, reducing errors.",
+        "Future work should focus on improving LLM reasoning capabilities."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig1": {
+      "caption": "Strong Performance of STEP-BACK PROMPTING: our proposed Abstraction-and-Reasoning",
+      "type": "method_diagram",
+      "description": "展示 STEP-BACK PROMPTING 方法的性能，强调其抽象和推理能力。",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/e15f25fbf87c4397/Fig1.png",
+      "image_url": "http://host.docker.internal:8000/assets/e15f25fbf87c4397/Fig1.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/e15f25fbf87c4397/Fig1_thumb.jpg"
+    },
+    "Fig2": {
+      "caption": "Error Analysis of STEP-BACK PROMPT-",
+      "type": "result_chart",
+      "description": "分析 STEP-BACK PROMPTING 方法的错误。",
+      "best_matched_section": "Results",
+      "importance": "medium",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/e15f25fbf87c4397/Fig2.png",
+      "image_url": "http://host.docker.internal:8000/assets/e15f25fbf87c4397/Fig2.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/e15f25fbf87c4397/Fig2_thumb.jpg"
+    },
+    "Fig4": {
+      "caption": "Ablation and error analysis of STEP-BACK PROMPTING on TimeQA",
+      "type": "ablation_study",
+      "description": "STEP-BACK PROMPTING 在 TimeQA 上的消融实验和错误分析。",
+      "best_matched_section": "Results",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/e15f25fbf87c4397/Fig4.png",
+      "image_url": "http://host.docker.internal:8000/assets/e15f25fbf87c4397/Fig4.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/e15f25fbf87c4397/Fig4_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

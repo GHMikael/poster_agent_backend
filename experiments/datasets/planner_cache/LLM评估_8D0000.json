@@ -1,0 +1,147 @@
+{
+  "asset_token": "536872d2190240ba",
+  "template": "template_classic",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "Agent-as-a-Judge: Evaluate Agents with Agents",
+  "authors": "Mingchen Zhuge1,2, Changsheng Zhao1, Dylan R. Ashley2, Wenyi Wang2, Dmitrii Khizbullin2, Yunyang Xiong1, Zechun Liu1, Ernie Chang1, Raghuraman Krishnamoorthi1, Yuandong Tian1, Yangyang Shi1, Vikas Chandra1, Jürgen Schmidhuber2",
+  "paper_info": "arXiv:2410.10934v2 [cs.AI] 16 Oct 2024; Date: October 18, 2024",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "classic_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "Advances in multimodal agentic systems address real-world challenges.",
+        "Current evaluation methods are inadequate, focusing on final outcomes or requiring extensive manual labor.",
+        "Lack of feedback during intermediate task-solving stages in non-traditional systems.",
+        "Need for a more comprehensive and efficient evaluation framework.",
+        "Introduction of Agent-as-a-Judge to provide rich and cost-effective evaluation."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "Current benchmarks do not reflect realistic challenges in code generation.",
+        "Evaluation methods focus only on final outcomes, missing intermediate feedback.",
+        "Manual evaluation is time-consuming and expensive.",
+        "Need for a benchmark that covers a wide range of real-world tasks."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "Agent-as-a-Judge framework extends LLM-as-a-Judge.",
+        "Provides rich intermediate feedback throughout task-solving.",
+        "Evaluates code generation tasks effectively."
+      ],
+      "figure": null,
+      "figure_id": "Fig1",
+      "figure_caption": "Introduction of the Agent-as-a-Judge framework.",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Development of DevAI benchmark with 55 real-world AI development tasks.",
+        "Evaluation of MetaGPT, GPT-Pilot, and OpenHands on DevAI.",
+        "Comparison of Agent-as-a-Judge with LLM-as-a-Judge and human evaluators."
+      ],
+      "figure": null,
+      "figure_id": "Fig6",
+      "figure_caption": "Agent-as-a-Judge framework applied to code generation tasks.",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "Agent-as-a-Judge aligns 90% with human evaluators, outperforming LLM-as-a-Judge (70%).",
+        "Saves 97.72% of time and 97.64% of cost compared to human evaluation.",
+        "DevAI presents a high level of challenge, with only one full task satisfied by evaluated systems."
+      ],
+      "figure": null,
+      "figure_id": "Fig12",
+      "figure_caption": "Comparison of Agent-as-a-Judge with LLM-as-a-Judge and human evaluators.",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Key Findings",
+      "content": [
+        "Agent-as-a-Judge provides valuable intermediate feedback.",
+        "Cost-effective and time-efficient compared to human evaluation.",
+        "High alignment with human evaluators in complex tasks."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "Agent-as-a-Judge marks a significant step forward in evaluating agentic systems.",
+        "Framework is cost-effective and aligns closely with human evaluation.",
+        "Viable replacement for manual evaluators in real-world applications."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig1": {
+      "caption": "Figure 1 We introduce the Agent-as-a-Judge framework wherein agentic systems are used to evaluate agentic systems.",
+      "type": "method_diagram",
+      "description": "Introduction of the Agent-as-a-Judge framework.",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/536872d2190240ba/Fig1.png",
+      "image_url": "http://host.docker.internal:8000/assets/536872d2190240ba/Fig1.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/536872d2190240ba/Fig1_thumb.jpg"
+    },
+    "Fig6": {
+      "caption": "Figure 1 We introduce the Agent-as-a-Judge framework wherein agentic systems are used to evaluate agentic systems.",
+      "type": "method_diagram",
+      "description": "Introduction of the Agent-as-a-Judge framework.",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/536872d2190240ba/Fig6.png",
+      "image_url": "http://host.docker.internal:8000/assets/536872d2190240ba/Fig6.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/536872d2190240ba/Fig6_thumb.jpg"
+    },
+    "Fig12": {
+      "caption": "Figure 1 We introduce the Agent-as-a-Judge framework wherein agentic systems are used to evaluate agentic systems.",
+      "type": "method_diagram",
+      "description": "Introduction of the Agent-as-a-Judge framework.",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/536872d2190240ba/Fig12.png",
+      "image_url": "http://host.docker.internal:8000/assets/536872d2190240ba/Fig12.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/536872d2190240ba/Fig12_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

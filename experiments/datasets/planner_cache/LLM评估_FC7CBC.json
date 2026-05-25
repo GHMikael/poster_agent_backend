@@ -1,0 +1,129 @@
+{
+  "asset_token": "9a7cdec32b074f2d",
+  "template": "template_dashboard",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "DataGovBench: Benchmarking LLM Agents for Real-World Data Governance Workflows",
+  "authors": "Zhou Liu1* Zhaoyang Han1* Guochen Yan1 Hao Liang1 Bohan Zeng1 Xing Chen2 Yuanfeng Song2 Wentao Zhang1",
+  "paper_info": "arXiv:2512.04416v2 [cs.AI] 6 Dec 2025",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "dashboard_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "Data governance is crucial for modern AI development.",
+        "Practitioners spend significant time on data cleaning and validation.",
+        "Existing benchmarks do not capture data governance challenges."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "Current LLMs and frameworks struggle with complex workflows.",
+        "Lack of robust error-correction mechanisms in data governance tasks."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "150 real-world data governance tasks covering six scenarios.",
+        "Novel 'reversed-objective' methodology for realistic noise synthesis.",
+        "Auto-generated, task-specific evaluation scripts for pipeline reliability."
+      ],
+      "figure": null,
+      "figure_id": "Fig2",
+      "figure_caption": "Semi-automated pipeline for building DataGovBench",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Evaluated on 150 tasks from real-world data sources.",
+        "Compared DataGovAgent with general-purpose baselines and SOTA LLMs."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "DataGovAgent increases Average Task Score (ATS) from 39.7 to 54.9.",
+        "Reduces debugging iterations by over 77.9%."
+      ],
+      "figure": null,
+      "figure_id": "Fig1",
+      "figure_caption": "Distribution of 100 operator-level tasks",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Key Findings",
+      "content": [
+        "DataGovAgent significantly outperforms general-purpose baselines.",
+        "Proposed framework enhances reliability and efficiency in data governance."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "DataGovBench and DataGovAgent address critical gaps in data governance.",
+        "Demonstrate the potential of LLMs in this domain."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig1": {
+      "caption": "Figure 1: Distribution of the 100 operator-level tasks in",
+      "type": "result_chart",
+      "description": "显示了100个操作级任务的分布情况",
+      "best_matched_section": "Results",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/9a7cdec32b074f2d/Fig1.png",
+      "image_url": "http://host.docker.internal:8000/assets/9a7cdec32b074f2d/Fig1.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/9a7cdec32b074f2d/Fig1_thumb.jpg"
+    },
+    "Fig2": {
+      "caption": "Figure 2: Illustration of the semi-automated pipeline designed for building DataGovbench, including real-world",
+      "type": "pipeline",
+      "description": "展示了用于构建DataGovbench的半自动化流水线图，包括真实世界的数据处理流程",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/9a7cdec32b074f2d/Fig2.png",
+      "image_url": "http://host.docker.internal:8000/assets/9a7cdec32b074f2d/Fig2.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/9a7cdec32b074f2d/Fig2_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

@@ -1,0 +1,111 @@
+{
+  "asset_token": "f0724274377f4f1f",
+  "template": "template_minimal",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "Retrieval-Augmented Generation with Graphs (GraphRAG)",
+  "authors": "Haoyu Han, Yu Wang, Harry Shomer, Kai Guo, Jiayuan Ding, Yongjia Lei, Mahantesh Halappanavar, Ryan A. Rossi, Subhabrata Mukherjee, Xianfeng Tang, Qi He, Zhigang Hua, Bo Long, Tong Zhao, Neil Shah, Amin Javari, Yinglong Xia, Jiliang Tang",
+  "paper_info": "Preprint. Under review. arXiv:2501.00309v2 [cs.IR] 8 Jan 2025",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "dashboard_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Overview",
+      "content": [
+        "GraphRAG enhances downstream tasks by integrating graph-structured data with LLMs.",
+        "Survey of GraphRAG techniques and applications.",
+        "Key design challenges and future research directions."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Motivation",
+      "content": [
+        "RAG leverages external data to improve task performance.",
+        "Graphs provide rich relational and structural information.",
+        "GraphRAG addresses social responsibility issues like hallucinations."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "Diverse graph formats and interdependent information.",
+        "Domain-specific relational patterns and knowledge.",
+        "Specialized designs for retrievers and generators."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "Holistic GraphRAG framework: query processor, retriever, organizer, generator, data source.",
+        "Domain-specific techniques for capturing relational patterns.",
+        "Importance of geometric expressiveness and multi-hop reasoning."
+      ],
+      "figure": null,
+      "figure_id": "Fig13",
+      "figure_caption": "A holistic framework of GraphRAG and representative techniques for its key components.",
+      "layout_hint": "image_top_text_bottom",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Surveyed real-world applications and datasets.",
+        "Highlighted GraphRAG's advantages in relational knowledge capture.",
+        "Identified key design challenges and provided insights."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "GraphRAG is applicable to various real-world scenarios.",
+        "Further research needed to develop more effective techniques.",
+        "Inspires cross-disciplinary opportunities."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig13": {
+      "caption": "A holistic framework of GraphRAG and representative techniques for its key components.",
+      "type": "method_diagram",
+      "description": "GraphRAG 的整体框架及其关键组件的代表性技术",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/f0724274377f4f1f/Fig13.png",
+      "image_url": "http://host.docker.internal:8000/assets/f0724274377f4f1f/Fig13.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/f0724274377f4f1f/Fig13_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

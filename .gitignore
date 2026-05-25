@@ -31,6 +31,8 @@ static/*.jpeg
 *.log
 
 PROJECT_CONVERSATION_SUMMARY.md
+PROJECT_CONVERSATION_SUMMARY_v2.md
+PAPER_DRAFT_v0.md
 
 # Experiments — heavy / generated artifacts (don't commit)
 experiments/datasets/papers/*.pdf
@@ -40,6 +42,9 @@ experiments/results/artifacts/
 experiments/results/metrics/
 experiments/results/aggregate/
 experiments/results/figures/
+experiments/results/batch_dify_report.json
+experiments/results/batch_dify_console.log
+experiments/results/import_report.json
 experiments/scratch/_workspace/
 experiments/.cache/
 experiments/results/user_study/

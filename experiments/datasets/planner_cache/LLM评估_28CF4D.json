@@ -1,0 +1,139 @@
+{
+  "asset_token": "a70cf3910b5049a3",
+  "template": "template_dashboard",
+  "layout_variant": "auto",
+  "color_theme": "warm_orange",
+  "emphasis_level": "normal",
+  "poster_title": "ESSAYBENCH: Evaluating Large Language Models in Multi-Genre Chinese Essay Writing",
+  "authors": "Fan Gao1, Dongyuan Li1, Ding Xia1, Fei Mi2, Yasheng Wang2, Lifeng Shang2, Baojun Wang2",
+  "paper_info": "arXiv:2506.02596v1 [cs.CL] 3 Jun 2025",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "dashboard_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "Current evaluation methods for LLM-generated essays are coarse-grained.",
+        "Chinese essays have unique characteristics and genre-specific criteria.",
+        "Different genres of Chinese essays have distinct requirements."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "Existing frameworks fail to capture nuanced demands of Chinese essay writing.",
+        "Lack of a robust evaluation framework limits LLMs in educational settings."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "Developed ESSAYBENCH with 728 real-world prompts.",
+        "Prompts categorized into Open-Ended and Constrained sets.",
+        "Proposed fine-grained and genre-specific evaluation framework."
+      ],
+      "figure": null,
+      "figure_id": "Fig2",
+      "figure_caption": "Overview of the ESSAYBENCH dataset curation, representative prompts, and the evaluation framework.",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Human agreement study and quality sensitivity analysis.",
+        "Benchmarking 15 large-scale LLMs on Chinese essay writing."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "Evaluation protocol aligns closely with human judgments.",
+        "Significant improvement in distinguishing essay quality."
+      ],
+      "figure": null,
+      "figure_id": "Fig1",
+      "figure_caption": "Comparison between coarse-grained evaluation and the proposed protocol.",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Key Findings",
+      "content": [
+        "Performance varies across different prompt sets.",
+        "LLMs show strengths and weaknesses in specific genres."
+      ],
+      "figure": null,
+      "figure_id": "Fig4",
+      "figure_caption": "Comparison of Performance by Sets.",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "ESSAYBENCH is a valuable tool for evaluating LLM-generated Chinese essays.",
+        "Proposed evaluation protocol enhances ability to distinguish essay quality."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig1": {
+      "caption": "Comparison between coarse-grained evaluation and the proposed protocol.",
+      "type": "comparison_table",
+      "description": "图1展示了粗粒度评估的比较结果。",
+      "best_matched_section": "Results",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/a70cf3910b5049a3/Fig1.png",
+      "image_url": "http://host.docker.internal:8000/assets/a70cf3910b5049a3/Fig1.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/a70cf3910b5049a3/Fig1_thumb.jpg"
+    },
+    "Fig2": {
+      "caption": "Overview of the ESSAYBENCH dataset curation, representative prompts, and the evaluation framework.",
+      "type": "architecture",
+      "description": "图2概述了ESSAYBENCH数据集的构建、代表性提示以及评估框架。",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/a70cf3910b5049a3/Fig2.png",
+      "image_url": "http://host.docker.internal:8000/assets/a70cf3910b5049a3/Fig2.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/a70cf3910b5049a3/Fig2_thumb.jpg"
+    },
+    "Fig4": {
+      "caption": "Comparison of Performance by Sets.",
+      "type": "comparison_table",
+      "description": "图4展示了不同集合的性能比较。",
+      "best_matched_section": "Results",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/a70cf3910b5049a3/Fig4.png",
+      "image_url": "http://host.docker.internal:8000/assets/a70cf3910b5049a3/Fig4.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/a70cf3910b5049a3/Fig4_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

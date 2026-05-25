@@ -1,0 +1,132 @@
+{
+  "asset_token": "f168755563324a60",
+  "template": "template_dashboard",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "LifelongAgentBench: Evaluating LLM Agents as Lifelong Learners",
+  "authors": "Junhao Zheng, Xidi Cai, Qiuke Li, Duzhen Zhang, Zhong-Zhi Li, Yingying Zhang, Le Song, Qianli Ma",
+  "paper_info": "arXiv:2505.11942v3 [cs.AI] 30 May 2025",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "dashboard_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "LLMs have transformed NLP tasks, achieving state-of-the-art performance.",
+        "Research focus has shifted to LLM-based agents for dynamic environments.",
+        "Current benchmarks lack evaluation of lifelong learning capabilities.",
+        "Label inaccuracies and poor reproducibility hinder practical adoption.",
+        "LifelongAgentBench addresses these issues with a unified benchmark."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "LLM-based agents lack memory and incremental knowledge accumulation.",
+        "Existing benchmarks do not evaluate lifelong learning.",
+        "Prior benchmarks have issues with label accuracy and reproducibility."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "LifelongAgentBench evaluates lifelong learning in LLM agents.",
+        "Includes skill-grounded, interdependent tasks in three environments.",
+        "Key features: automatic label verification, reproducibility, and modular extensibility."
+      ],
+      "figure": null,
+      "figure_id": "Fig5",
+      "figure_caption": "Overview of LifelongAgentBench: a unified dataset and evaluation framework with skill-grounded tasks.",
+      "layout_hint": "text_top_image_bottom",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Tasks test agents' skill acquisition, transfer, and stable performance.",
+        "Experiments use various LLM backbones to evaluate experience replay.",
+        "Group self-consistency mechanism is also evaluated."
+      ],
+      "figure": null,
+      "figure_id": "Fig11",
+      "figure_caption": "Example of using our RPC Toolkit.",
+      "layout_hint": "text_top_image_bottom",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "Conventional experience replay is limited by irrelevant information and context length.",
+        "Group self-consistency mechanism significantly improves lifelong learning performance."
+      ],
+      "figure": null,
+      "figure_id": "Fig6",
+      "figure_caption": "Illustration of group self-consistency.",
+      "layout_hint": "text_top_image_bottom",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "LifelongAgentBench provides a robust platform for evaluating LLM agents.",
+        "Group self-consistency is a promising approach for lifelong learning.",
+        "Future work will explore different model sizes and architectures."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig5": {
+      "caption": "Overview of LifelongAgentBench: a unified dataset and evaluation framework with skill-grounded tasks.",
+      "type": "architecture",
+      "description": "LifelongAgentBench 的概述图，展示了一个统一的数据集和评估框架",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/f168755563324a60/Fig5.png",
+      "image_url": "http://host.docker.internal:8000/assets/f168755563324a60/Fig5.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/f168755563324a60/Fig5_thumb.jpg"
+    },
+    "Fig6": {
+      "caption": "Illustration of group self-consistency.",
+      "type": "method_diagram",
+      "description": "群体自一致性示意图",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/f168755563324a60/Fig6.png",
+      "image_url": "http://host.docker.internal:8000/assets/f168755563324a60/Fig6.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/f168755563324a60/Fig6_thumb.jpg"
+    },
+    "Fig11": {
+      "caption": "Example of using our RPC Toolkit.",
+      "type": "dataset_example",
+      "description": "使用 RPC 工具包的示例图",
+      "best_matched_section": "Experiments",
+      "importance": "medium",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/f168755563324a60/Fig11.png",
+      "image_url": "http://host.docker.internal:8000/assets/f168755563324a60/Fig11.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/f168755563324a60/Fig11_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

@@ -1,0 +1,129 @@
+{
+  "asset_token": "dd38c24365d64fb4",
+  "template": "template_dashboard",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "HELLOBENCH: EVALUATING LONG TEXT GENERATION CAPABILITIES OF LARGE LANGUAGE MODELS",
+  "authors": "Haoran Que, Feiyu Duan, Liqun He, Yutao Mou, Wangchunshu Zhou, Jiaheng Liu, Wenge Rong, Zekun Moore Wang, Jian Yang, Ge Zhang, Junran Peng, Zhaoxiang Zhang, Songyang Zhang, Kai Chen",
+  "paper_info": "arXiv:2409.16191v1 [cs.CL] 24 Sep 2024",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "dashboard_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "LLMs have shown impressive performance in various NLP tasks.",
+        "Existing research focuses on understanding and processing long input text.",
+        "Limited focus on long text generation capabilities of LLMs."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "Shortfall in comprehensive benchmarks for long text generation.",
+        "LLMs struggle to generate text longer than 4000 words.",
+        "Open-source LLMs can generate long text but with quality issues."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "HelloBench categorizes long text generation into five subtasks.",
+        "HelloEval reduces time and effort in human evaluation."
+      ],
+      "figure": null,
+      "figure_id": "Fig7",
+      "figure_caption": "The pipeline of HelloEval has two stages. (top): In the preparation stage, we aim to",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Conducted across 30 mainstream LLMs.",
+        "HelloBench includes 647 samples, 5 categories, 38 subcategories."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "Most LLMs cannot generate text longer than 4000 words.",
+        "HelloEval shows highest correlation with human evaluation."
+      ],
+      "figure": null,
+      "figure_id": "Fig10",
+      "figure_caption": "Scores of different model sizes for open-source LLMs",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Key Findings",
+      "content": [
+        "Open-source LLMs can generate long text but with repetition and quality degradation.",
+        "HelloEval significantly reduces time and effort in human evaluation."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "HelloBench and HelloEval provide valuable tools for evaluating LLMs.",
+        "Further research needed to improve long text generation."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig7": {
+      "caption": "The pipeline of HelloEval has two stages. (top): In the preparation stage, we aim to",
+      "type": "pipeline",
+      "description": "图注描述了 HelloEval 的两个阶段的流程，顶部为准备阶段。",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/dd38c24365d64fb4/Fig7.png",
+      "image_url": "http://host.docker.internal:8000/assets/dd38c24365d64fb4/Fig7.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/dd38c24365d64fb4/Fig7_thumb.jpg"
+    },
+    "Fig10": {
+      "caption": "Figure 4 shows the scores of different model sizes for open-source LLMs. Overall, we observed",
+      "type": "result_chart",
+      "description": "图注描述了不同模型大小的开源 LLMs 的得分情况。",
+      "best_matched_section": "Results",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/dd38c24365d64fb4/Fig10.png",
+      "image_url": "http://host.docker.internal:8000/assets/dd38c24365d64fb4/Fig10.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/dd38c24365d64fb4/Fig10_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

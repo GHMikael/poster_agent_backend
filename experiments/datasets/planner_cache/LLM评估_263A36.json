@@ -1,0 +1,132 @@
+{
+  "asset_token": "3d4ffd4d9fbd4e07",
+  "template": "template_storyflow",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "Multi-Agent-as-Judge: Aligning LLM-Agent-Based Automated Evaluation with Multi-Dimensional Human Evaluation",
+  "authors": "Jiaju Chen, Yuxuan Lu, Xiaojie Wang, Huimin Zeng, Jing Huang, Jiri Gesi, Ying Xu, Bingsheng Yao, Dakuo Wang",
+  "paper_info": "arXiv:2507.21028v1 [cs.CL] 28 Jul 2025",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "storyflow_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation / Background",
+      "content": [
+        "Collaborative human work requires multi-dimensional evaluations.",
+        "Human expert annotation is costly and labor-intensive.",
+        "Current LLM-as-a-judge approaches lack systematic design.",
+        "Task-specific evaluation setups are not easily adaptable.",
+        "MAJ-EVAL aims to provide a generalizable solution."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem / Challenge",
+      "content": [
+        "Lack of systematic methodology for designing agent personas.",
+        "Non-generalizable evaluation setups for new domains or scenarios.",
+        "Need for robust and scalable evaluation methods.",
+        "Alignment with human ratings is crucial for NLG evaluation.",
+        "MAJ-EVAL addresses these challenges."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method / Framework",
+      "content": [
+        "Extract diverse perspectives from research papers.",
+        "Construct corresponding personas for LLM agents.",
+        "Agents engage in in-group debates to refine judgments.",
+        "Aggregator agent synthesizes ratings from all groups."
+      ],
+      "figure": null,
+      "figure_id": "Fig7",
+      "figure_caption": "MAJ-EVAL’s multi-agent-as-judge debate evaluation process (Step 2).",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments / Results",
+      "content": [
+        "Evaluated on QAG for children’s storybook reading.",
+        "Evaluated on multi-document summarization of medical literature.",
+        "Compared with traditional automated metrics and existing methods.",
+        "Achieved better alignment with human ratings in both domains.",
+        "Demonstrated potential as a generalizable solution."
+      ],
+      "figure": null,
+      "figure_id": "Fig15",
+      "figure_caption": "Spearman’s ρ (rank-based correlation) between evaluation methods and human ratings on StorySparkQA.",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Key Findings",
+      "content": [
+        "MAJ-EVAL outperformed traditional metrics and existing methods.",
+        "The framework is effective across different domains and tasks.",
+        "Agent personas and debate process enhance evaluation robustness.",
+        "Initial and final scores show significant improvement.",
+        "Scalable and consistent multi-dimensional evaluation is possible."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion / Takeaways",
+      "content": [
+        "MAJ-EVAL provides a systematic and generalizable framework.",
+        "The method shows promise for real-world NLG applications.",
+        "Further fine-tuning may be required for specific tasks.",
+        "Quality of personas depends on input text documents.",
+        "Future work includes expanding to more domains and tasks."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig7": {
+      "caption": "MAJ-EVAL’s multi-agent-as-judge debate evaluation process (Step 2). Each agent first independently",
+      "type": "pipeline",
+      "description": "描述 MAJ-EVAL 的多代理评估过程的第二步，每个代理首先独立评估。",
+      "best_matched_section": "Method",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/3d4ffd4d9fbd4e07/Fig7.png",
+      "image_url": "http://host.docker.internal:8000/assets/3d4ffd4d9fbd4e07/Fig7.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/3d4ffd4d9fbd4e07/Fig7_thumb.jpg"
+    },
+    "Fig15": {
+      "caption": "Spearman’s ρ (rank-based correlation) between evaluation methods and human ratings on StorySparkQA",
+      "type": "result_chart",
+      "description": "展示不同评估方法与人类评分在 StorySparkQA 数据集上的斯皮尔曼等级相关性。",
+      "best_matched_section": "Results",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/3d4ffd4d9fbd4e07/Fig15.png",
+      "image_url": "http://host.docker.internal:8000/assets/3d4ffd4d9fbd4e07/Fig15.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/3d4ffd4d9fbd4e07/Fig15_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

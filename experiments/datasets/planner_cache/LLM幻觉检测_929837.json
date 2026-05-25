@@ -1,0 +1,137 @@
+{
+  "asset_token": "a9731901ceeb45d4",
+  "template": "template_classic",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "Revisiting Hallucination Detection with Effective Rank-based Uncertainty",
+  "authors": "Rui Wang, Zeming Wei, Guanzhang Yue, Meng Sun (Peking University)",
+  "paper_info": "arXiv:2510.08389v1 [cs.AI] 9 Oct 2025",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "classic_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "LLMs have transformed AI with generative and reasoning capabilities.",
+        "Hallucinations pose a significant challenge for trustworthy deployment.",
+        "High-stakes domains like healthcare and scientific discovery are particularly affected.",
+        "Existing UQ methods are computationally impractical or add system complexity.",
+        "A new, efficient method is needed to detect hallucinations in LLMs."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "Hallucinations are factually incorrect but contextually plausible outputs.",
+        "They are particularly dangerous in high-stakes domains.",
+        "Current UQ methods are not suitable for real-time applications.",
+        "A lightweight, training-free method is required to enhance trustworthiness."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "Quantify uncertainty using effective rank of hidden states.",
+        "Measure semantic variations through spectral analysis.",
+        "Detect semantic divergences indicative of hallucinations."
+      ],
+      "figure": null,
+      "figure_id": "Fig3",
+      "figure_caption": "Visualization of Effective Ranks",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Conducted extensive experiments on multiple benchmark datasets.",
+        "Evaluated performance in detecting hallucinations.",
+        "Assessed efficiency and scalability of the method."
+      ],
+      "figure": null,
+      "figure_id": "Fig1",
+      "figure_caption": "Examples of detecting hallucinations using Effective Rank-based Uncertainty",
+      "layout_hint": "text_left_image_right",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "Effective rank is a highly predictive signal for hallucination detection.",
+        "Consistently outperforms or matches established strong baselines.",
+        "Significantly efficient and scalable for real-time applications."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Key Findings",
+      "content": [
+        "Spectral analysis provides interpretable insights into internal reasoning.",
+        "Effective rank detects semantic divergences without additional tools.",
+        "Method is lightweight and training-free, suitable for practical use."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "Proposed method offers a new paradigm for hallucination detection.",
+        "Enhances trustworthiness and reliability of LLMs.",
+        "Further research needed on internal-external semantic relationships."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig1": {
+      "caption": "Examples of detecting hallucinations using Effective Rank-based Uncertainty",
+      "type": "dataset_example",
+      "description": "展示了使用有效秩基不确定度检测幻觉的示例。",
+      "best_matched_section": "Experiments",
+      "importance": "medium",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/a9731901ceeb45d4/Fig1.png",
+      "image_url": "http://host.docker.internal:8000/assets/a9731901ceeb45d4/Fig1.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/a9731901ceeb45d4/Fig1_thumb.jpg"
+    },
+    "Fig3": {
+      "caption": "Visualization of Effective Ranks",
+      "type": "result_chart",
+      "description": "有效秩的可视化。",
+      "best_matched_section": "Results",
+      "importance": "high",
+      "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/a9731901ceeb45d4/Fig3.png",
+      "image_url": "http://host.docker.internal:8000/assets/a9731901ceeb45d4/Fig3.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/a9731901ceeb45d4/Fig3_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

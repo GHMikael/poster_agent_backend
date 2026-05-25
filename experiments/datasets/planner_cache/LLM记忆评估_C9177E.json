@@ -1,0 +1,122 @@
+{
+  "asset_token": "6bf44962b9084c15",
+  "template": "template_dashboard",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "MEMTRACK: Evaluating Long-Term Memory and State Tracking in Multi-Platform Dynamic Agent Environments",
+  "authors": "Darshan Deshpande, Varun Gangal, Hersh Mehta, Anand Kannappan, Rebecca Qian Peng, Wang Patronus AI",
+  "paper_info": "39th Conference on Neural Information Processing Systems (NeurIPS 2025) Workshop: Scaling Environments for Agents (SEA). arXiv:2510.01353v1 [cs.AI] 1 Oct 2025",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "dashboard_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "Context and memory benchmarking focused on conversational instances.",
+        "Evaluating memory in dynamic enterprise environments is crucial.",
+        "Existing benchmarks are non-cohesive and susceptible to biases."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "Current memory evaluation limited to conversational setups.",
+        "Real-world tasks require live context switches and multi-platform reasoning.",
+        "Asynchronous tools and environments are essential for realistic testing."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "Introduction of MEMTRACK benchmark for multi-platform agent environments.",
+        "Integration of asynchronous events across platforms like Slack, Linear, and Git.",
+        "Curation of MEMTRACK dataset through expert design and agent-based synthesis."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Experiments on state-of-the-art LLMs and memory backends.",
+        "Metrics for Correctness, Efficiency, and Redundancy utilized.",
+        "Evaluation of LLMs in complex, multi-platform scenarios."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "GPT-5 achieves 60% Correctness on MEMTRACK.",
+        "LLMs struggle with context retention and repeated data reading."
+      ],
+      "figure": null,
+      "figure_id": "Fig1",
+      "figure_caption": "GPT-5 performance on MEMTRACK metrics",
+      "layout_hint": "text_top_image_bottom",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Contributions",
+      "content": [
+        "Extensible framework for memory-augmented agent evaluation.",
+        "Robust set of asynchronous tools and dockerized environment.",
+        "Scalable design for automated data curation."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "MEMTRACK highlights error patterns in LLMs regarding memory usage.",
+        "Framework suitable for complex organizational settings and multi-agent, multi-platform benchmarking."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {
+    "Fig1": {
+      "caption": "GPT-5 performance on MEMTRACK metrics",
+      "type": "other",
+      "description": "Performance metrics of GPT-5 on the MEMTRACK benchmark",
+      "best_matched_section": "Results",
+      "importance": "high",
+      "image_source": "",
+      "image_url": "http://host.docker.internal:8000/assets/xxx/Fig1.png",
+      "thumbnail_url": "http://host.docker.internal:8000/assets/xxx/Fig1_thumb.jpg"
+    }
+  },
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}

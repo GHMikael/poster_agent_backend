@@ -1,0 +1,100 @@
+{
+  "asset_token": "bcaae8c83af24fb8",
+  "template": "template_classic",
+  "layout_variant": "auto",
+  "color_theme": "academic_blue",
+  "emphasis_level": "normal",
+  "poster_title": "Generalist Reward Models: Found Inside Large Language Models",
+  "authors": "Yi-Chen Li, Tian Xu, Yang Yu, Xuqin Zhang, Xiong-Hui Chen, Zhongxiang Ling, Ningjing Chao, Lei Yuan, Zhi-Hua Zhou",
+  "paper_info": "arXiv:2506.23235v1 [cs.CL] 29 Jun 2025",
+  "layout": {
+    "page_size": "A3",
+    "layout_type": "classic_grid",
+    "reading_order": "top_to_bottom_left_to_right"
+  },
+  "panels": [
+    {
+      "section": "Motivation",
+      "content": [
+        "Aligning LLMs with human values is crucial in AI.",
+        "RLHF is effective but expensive and slow.",
+        "Alternative methods lack theoretical foundation and can be biased."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Problem",
+      "content": [
+        "Building high-quality RMs is challenging and costly.",
+        "Existing methods for reward modeling are not scalable.",
+        "There is a need for a more efficient and principled approach."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Method",
+      "content": [
+        "Discovered a generalist reward model within LLMs.",
+        "The reward function can be recovered from next-token prediction.",
+        "Language model logits are interpreted as the soft Q-function."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Experiments",
+      "content": [
+        "Validated the theory with extensive experiments.",
+        "Used various LLMs to test the method.",
+        "Compared endogenous reward with LLM-as-a-judge and explicitly trained RMs."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Results",
+      "content": [
+        "Endogenous reward outperformed LLM-as-a-judge methods.",
+        "Endogenous reward surpassed reward models trained on human-labeled data.",
+        "The method shows promise for efficient and scalable reward modeling."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    },
+    {
+      "section": "Conclusion",
+      "content": [
+        "Reward modeling can be replaced by eliciting knowledge from the base model.",
+        "This approach offers a more efficient and theoretically grounded paradigm.",
+        "Future work can explore the application in multi-modal models."
+      ],
+      "figure": null,
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
+      "body_font_scale": 1.0
+    }
+  ],
+  "figures": {},
+  "use_commenter": true,
+  "max_iterations": 4,
+  "save_debug_images": true,
+  "global_font_scale": 1.0
+}
