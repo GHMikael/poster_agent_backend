@@ -49,9 +49,9 @@
         "Estimates relative advantages at intra-tree and inter-tree levels."
       ],
       "figure": null,
-      "figure_id": "Fig2",
-      "figure_caption": "Overview of the Tree-GRPO training pipeline with tree-search rollout.",
-      "layout_hint": "text_top_image_bottom",
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
       "body_font_scale": 1.0
     },
     {
@@ -62,9 +62,9 @@
         "Demonstrated consistent improvements in performance."
       ],
       "figure": null,
-      "figure_id": "Fig1",
-      "figure_caption": "Comparison of chain-based and tree-based sampling strategies in LLM multi-turn agent.",
-      "layout_hint": "text_top_image_bottom",
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
       "body_font_scale": 1.0
     },
     {
@@ -102,7 +102,8 @@
       "importance": "high",
       "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/7daa7059af864abe/Fig1.png",
       "image_url": "http://host.docker.internal:8000/assets/7daa7059af864abe/Fig1.png",
-      "thumbnail_url": "http://host.docker.internal:8000/assets/7daa7059af864abe/Fig1_thumb.jpg"
+      "thumbnail_url": "http://host.docker.internal:8000/assets/7daa7059af864abe/Fig1_thumb.jpg",
+      "audit_status": "broken"
     },
     "Fig2": {
       "caption": "Figure 3: The overview of the Tree-GRPO training pipeline. The rollout is conducted in a tree-search",
@@ -112,7 +113,8 @@
       "importance": "high",
       "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/7daa7059af864abe/Fig2.png",
       "image_url": "http://host.docker.internal:8000/assets/7daa7059af864abe/Fig2.png",
-      "thumbnail_url": "http://host.docker.internal:8000/assets/7daa7059af864abe/Fig2_thumb.jpg"
+      "thumbnail_url": "http://host.docker.internal:8000/assets/7daa7059af864abe/Fig2_thumb.jpg",
+      "audit_status": "broken"
     }
   },
   "use_commenter": true,

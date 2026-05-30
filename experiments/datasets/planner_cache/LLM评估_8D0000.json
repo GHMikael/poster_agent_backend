@@ -50,9 +50,9 @@
         "Evaluates code generation tasks effectively."
       ],
       "figure": null,
-      "figure_id": "Fig1",
-      "figure_caption": "Introduction of the Agent-as-a-Judge framework.",
-      "layout_hint": "text_left_image_right",
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
       "body_font_scale": 1.0
     },
     {
@@ -63,9 +63,9 @@
         "Comparison of Agent-as-a-Judge with LLM-as-a-Judge and human evaluators."
       ],
       "figure": null,
-      "figure_id": "Fig6",
-      "figure_caption": "Agent-as-a-Judge framework applied to code generation tasks.",
-      "layout_hint": "text_left_image_right",
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
       "body_font_scale": 1.0
     },
     {
@@ -76,9 +76,9 @@
         "DevAI presents a high level of challenge, with only one full task satisfied by evaluated systems."
       ],
       "figure": null,
-      "figure_id": "Fig12",
-      "figure_caption": "Comparison of Agent-as-a-Judge with LLM-as-a-Judge and human evaluators.",
-      "layout_hint": "text_left_image_right",
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
       "body_font_scale": 1.0
     },
     {
@@ -117,7 +117,8 @@
       "importance": "high",
       "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/536872d2190240ba/Fig1.png",
       "image_url": "http://host.docker.internal:8000/assets/536872d2190240ba/Fig1.png",
-      "thumbnail_url": "http://host.docker.internal:8000/assets/536872d2190240ba/Fig1_thumb.jpg"
+      "thumbnail_url": "http://host.docker.internal:8000/assets/536872d2190240ba/Fig1_thumb.jpg",
+      "audit_status": "broken"
     },
     "Fig6": {
       "caption": "Figure 1 We introduce the Agent-as-a-Judge framework wherein agentic systems are used to evaluate agentic systems.",
@@ -127,7 +128,8 @@
       "importance": "high",
       "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/536872d2190240ba/Fig6.png",
       "image_url": "http://host.docker.internal:8000/assets/536872d2190240ba/Fig6.png",
-      "thumbnail_url": "http://host.docker.internal:8000/assets/536872d2190240ba/Fig6_thumb.jpg"
+      "thumbnail_url": "http://host.docker.internal:8000/assets/536872d2190240ba/Fig6_thumb.jpg",
+      "audit_status": "broken"
     },
     "Fig12": {
       "caption": "Figure 1 We introduce the Agent-as-a-Judge framework wherein agentic systems are used to evaluate agentic systems.",
@@ -137,7 +139,8 @@
       "importance": "high",
       "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/536872d2190240ba/Fig12.png",
       "image_url": "http://host.docker.internal:8000/assets/536872d2190240ba/Fig12.png",
-      "thumbnail_url": "http://host.docker.internal:8000/assets/536872d2190240ba/Fig12_thumb.jpg"
+      "thumbnail_url": "http://host.docker.internal:8000/assets/536872d2190240ba/Fig12_thumb.jpg",
+      "audit_status": "broken"
     }
   },
   "use_commenter": true,

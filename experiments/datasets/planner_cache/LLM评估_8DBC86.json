@@ -62,9 +62,9 @@
         "Group self-consistency mechanism is also evaluated."
       ],
       "figure": null,
-      "figure_id": "Fig11",
-      "figure_caption": "Example of using our RPC Toolkit.",
-      "layout_hint": "text_top_image_bottom",
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
       "body_font_scale": 1.0
     },
     {
@@ -122,7 +122,8 @@
       "importance": "medium",
       "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/f168755563324a60/Fig11.png",
       "image_url": "http://host.docker.internal:8000/assets/f168755563324a60/Fig11.png",
-      "thumbnail_url": "http://host.docker.internal:8000/assets/f168755563324a60/Fig11_thumb.jpg"
+      "thumbnail_url": "http://host.docker.internal:8000/assets/f168755563324a60/Fig11_thumb.jpg",
+      "audit_status": "broken"
     }
   },
   "use_commenter": true,

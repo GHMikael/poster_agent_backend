@@ -51,9 +51,9 @@
         "Uses a hybrid probe strategy combining spectral clustering and attention head saliency scoring."
       ],
       "figure": null,
-      "figure_id": "Fig22",
-      "figure_caption": "Framework of the proposed SPACE model.",
-      "layout_hint": "text_top_image_bottom",
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
       "body_font_scale": 1.0
     },
     {
@@ -107,7 +107,8 @@
       "importance": "high",
       "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/d9347fae887b426b/Fig22.png",
       "image_url": "http://host.docker.internal:8000/assets/d9347fae887b426b/Fig22.png",
-      "thumbnail_url": "http://host.docker.internal:8000/assets/d9347fae887b426b/Fig22_thumb.jpg"
+      "thumbnail_url": "http://host.docker.internal:8000/assets/d9347fae887b426b/Fig22_thumb.jpg",
+      "audit_status": "broken"
     },
     "Fig17": {
       "caption": "Figure 2: Activation Distributions of Factual and Faithful Tasks. Subfigure (a) shows the proportion",

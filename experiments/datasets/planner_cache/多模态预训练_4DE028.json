@@ -52,9 +52,9 @@
         "Model architecture and objectives are illustrated in Fig5."
       ],
       "figure": null,
-      "figure_id": "Fig5",
-      "figure_caption": "Pre-training model architecture and objectives of BLIP (same parameters have the same color).",
-      "layout_hint": "text_top_image_bottom",
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
       "body_font_scale": 1.0
     },
     {
@@ -79,9 +79,9 @@
         "Examples of web text and synthetic text are shown in Fig6."
       ],
       "figure": null,
-      "figure_id": "Fig6",
-      "figure_caption": "Examples of the web text Tw and the synthetic text Ts. Green texts are accepted by the filter, whereas red texts are rejected.",
-      "layout_hint": "text_top_image_bottom",
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
       "body_font_scale": 1.0
     },
     {
@@ -121,7 +121,8 @@
       "importance": "high",
       "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/bd2841e2e4e8465d/Fig5.png",
       "image_url": "http://host.docker.internal:8000/assets/bd2841e2e4e8465d/Fig5.png",
-      "thumbnail_url": "http://host.docker.internal:8000/assets/bd2841e2e4e8465d/Fig5_thumb.jpg"
+      "thumbnail_url": "http://host.docker.internal:8000/assets/bd2841e2e4e8465d/Fig5_thumb.jpg",
+      "audit_status": "broken"
     },
     "Fig6": {
       "caption": "Examples of the web text Tw and the synthetic text Ts. Green texts are accepted by the filter, whereas red texts are rejected.",
@@ -131,7 +132,8 @@
       "importance": "medium",
       "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/bd2841e2e4e8465d/Fig6.png",
       "image_url": "http://host.docker.internal:8000/assets/bd2841e2e4e8465d/Fig6.png",
-      "thumbnail_url": "http://host.docker.internal:8000/assets/bd2841e2e4e8465d/Fig6_thumb.jpg"
+      "thumbnail_url": "http://host.docker.internal:8000/assets/bd2841e2e4e8465d/Fig6_thumb.jpg",
+      "audit_status": "broken"
     }
   },
   "use_commenter": true,

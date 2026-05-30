@@ -47,9 +47,9 @@
         "TPO operates as an online, on-policy learning paradigm."
       ],
       "figure": null,
-      "figure_id": "Fig9",
-      "figure_caption": "Framework of test-time preference optimization (TPO)",
-      "layout_hint": "text_left_image_right",
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
       "body_font_scale": 1.0
     },
     {
@@ -114,7 +114,8 @@
       "importance": "high",
       "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/215fd4e17d844c9b/Fig9.png",
       "image_url": "http://host.docker.internal:8000/assets/215fd4e17d844c9b/Fig9.png",
-      "thumbnail_url": "http://host.docker.internal:8000/assets/215fd4e17d844c9b/Fig9_thumb.jpg"
+      "thumbnail_url": "http://host.docker.internal:8000/assets/215fd4e17d844c9b/Fig9_thumb.jpg",
+      "audit_status": "broken"
     }
   },
   "use_commenter": true,

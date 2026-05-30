@@ -21,6 +21,17 @@ baselines:
     max_iterations: 1
     timeout_s: 600
 
+  - name: ours_freeform
+    module: experiments.baselines.ours_freeform
+    class: OursFreeformRunner
+    description: |
+      E1 contrast arm — identical VLM / renderer / max_iterations to ours_svfp,
+      but the visual feedback is FREE-FORM prose (not the SVFP closed schema) and
+      is applied by an LLM best-effort rewrite (not deterministic dispatch).
+      Emits action_executability / content_drift to quantify closed-set vs free-form.
+    max_iterations: 4
+    timeout_s: 1800
+
   - name: gpt4o_zeroshot
     module: experiments.baselines.gpt4o_zeroshot
     class: GPT4oZeroShotRunner

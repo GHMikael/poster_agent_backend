@@ -1,90 +1,95 @@
 **English** | [简体中文](README.zh-CN.md)
 
-# Paper-to-Poster Backend
+# PosterCSP — Paper-to-Poster Backend
 
-> **Current version: v5.1** · FastAPI backend decoupled from a Dify paper-to-poster **Chatflow**, plus an offline **experiments** harness for reproducible paper evaluation.
+> **Current version: v5.2** · FastAPI backend + **SVFP** (Structured Visual Feedback Protocol) + reproducible **CS-Poster-30** evaluation harness.
 
-Extract figures and text from PDFs, accept structured panel plans from Dify Planner agents, render editable PPTX posters, and optionally run an **SVFP visual feedback loop** (VLM scoring → structured repairs → archived traces). Long-running generation uses **async jobs with server-side long polling** for Dify compatibility.
+Given a CS paper PDF, the system produces an editable A3 conference poster PPTX through a Dify **Chatflow** (content planning) and a Python renderer with an optional **SVFP closed-loop** (VLM critique → deterministic repair → convergence trace). Long-running jobs use **async HTTP + server-side long polling** for Dify compatibility.
 
-**v5.1** adds a **Dify batch runner** (`batch_dify_runs.py`), version-controlled agent prompts under `dify/`, planner snapshot replay via `planner_cache/`, and a documented **L0→L8 experiment pipeline** ready for the full **30-paper** matrix.
+**Research framing (v2):** one primary contribution (**SVFP protocol**), two secondary ones (**CS-Poster-30 benchmark** + **CS vertical instantiation**). See [`RESEARCH_DIRECTION_v2.md`](RESEARCH_DIRECTION_v2.md) for the full pivot rationale after the 5-paper pilot.
 
 ---
 
-## Version snapshot (v5.1)
+## What this project is (and is not)
+
+| | |
+|---|---|
+| **Is** | A **planner-agnostic** structured visual feedback protocol (4 issue types × 9 atomic actions) that can plug into any poster planner |
+| **Is** | A reproducible **CS-Poster-30** pipeline (30 frozen planner snapshots, 12-metric suite, L0→L8 scripts) |
+| **Is not** | A claim that structured planning beats zero-shot on **content recall** (pilot: a1 lower than gpt4o_zeroshot) |
+| **Is not** | A lightweight system (pilot: SVFP ~160 s vs 38 ms no-feedback vs 23 s zero-shot) |
+| **Is not** | Proof of 100 % figure reuse until the figure pipeline is fully audited (B1 in progress) |
+
+**One-line pitch (paper):**
+
+> We propose **SVFP** — constraining VLM visual critique to a closed `{4 issues × 9 actions}` schema with a deterministic `FeedbackApplier`, yielding executable, convergent layout repairs. On CS-Poster-30, SVFP shows large-effect gains on visual quality (B1/B2, Cohen's d ≈ 1.8 at n=5) while honestly reporting a content precision–recall trade-off.
+
+---
+
+## Version snapshot (v5.2)
 
 | Area | Capability |
 |------|------------|
-| **Dify Chatflow** | Three-agent pipeline (Text Parse → Visual Parse → Planner); prompts in `dify/prompts/`; design doc in `dify/DIFY_WORKFLOW_AND_PAPER_DESIGN.md` |
-| **Batch Dify runs** | `batch_dify_runs.py` uploads PDFs and triggers Chatflow via Dify API (`/v1/chat-messages`); self-hosted + Chatflow `type: custom` upload supported |
-| **Planner replay** | Dify runs archived as `outputs/runs/.../input.json` → matched to PDFs → `experiments/datasets/planner_cache/<stem>.json` via `import_dify_runs.py` |
-| **PDF assets** | `POST /extract_pdf_assets`: text preview + figures under `static/assets/{asset_token}/`, lightweight `image_url` by default |
-| **PPT render** | 4 templates × 4 color themes; `image_focus` layout; vertical figure squash detection |
-| **SVFP loop** | Structured issues/actions (incl. `figure_too_small`); `FeedbackApplier` routing; guards against horizontal layout regression |
-| **Two-stage review** | Stage 1: Pillow preview + VLM/heuristics; Stage 2: LibreOffice PPTX→PNG (isolated profile per call) |
-| **Run archive** | Each run under `outputs/runs/<timestamp>_<slug>_<runid>/` (`input.json`, `final.pptx`, `run_report.json`, optional `experiment_log.jsonl`) |
-| **Async API** | `POST /generate_ppt` returns `job_id` (HTTP 202); `GET /jobs/{job_id}?wait=20` server long-poll for Dify |
-| **Experiments** | 12 metrics × 5 baselines; matrix runner, metric judges, bootstrap stats (see `experiments/README.md`) |
+| **SVFP protocol** | 4 root-cause issues × 9 deterministic actions (`vlm_commenter.py`); FSM-style convergence (`feedback_loop.py`); layout-only repairs (content bullets unchanged by design) |
+| **E1 baseline** | `ours_freeform` — free-text VLM critique + LLM best-effort apply (closed-set vs free-form ablation) |
+| **A3 fix** | NLI hallucination: neutral/abstain no longer counted as hallucination; split `contradicted_rate` vs `unsupported_rate` |
+| **Figure audit** | `audit_figures.py` — VLM alignment scan for planner_cache figure pollution (B1 diagnostic) |
+| **Planner cache** | 30 frozen `PosterTask` snapshots; cleaned figure refs; `clean_planner_cache.py` + `import_dify_runs.py` |
+| **Dify Chatflow** | Three-agent pipeline; prompts in `dify/prompts/`; design in `dify/DIFY_WORKFLOW_AND_PAPER_DESIGN.md` |
+| **Batch Dify** | `batch_dify_runs.py` triggers Chatflow via API for scale runs |
+| **Renderer** | 4 templates × 4 themes; six-panel CS domain prior; async jobs + run archive |
+| **Experiments** | Baselines: `ours_svfp` · `ours_no_svfp` · `ours_freeform` · `gpt4o_zeroshot` · external SOTA (optional) |
 
 **Evolution**
 
-- **v4.1** (2026-05-19 – 05-23): SVFP protocol → unified run folders → LibreOffice stability → async jobs + long poll → layout quality
-- **v5.0** (2026-05-24): experiments framework → JSONL telemetry → 5-paper pilot (3 baselines × 10 metrics)
-- **v5.1** (2026-05-25 – 05-26): Dify batch automation → `dify/` prompts & design docs → **30 planner snapshots** → full experiment pipeline (L0–L8)
+- **v4.1**: SVFP protocol, async jobs, layout quality guards
+- **v5.0**: experiments framework, 5-paper pilot, JSONL telemetry
+- **v5.1**: Dify batch automation, 30 planner snapshots, L0→L8 pipeline docs
+- **v5.2**: research re-anchor (PosterCSP / SVFP spine), E1 free-form baseline, A3 metric fix, figure audit + planner cache cleanup
 
 ---
 
-## End-to-end experiment pipeline (L0 → L8)
+## Pilot findings (n=5, honest summary)
 
-```
-[L0] PDFs              experiments/datasets/papers/*.pdf
-        │  batch_dify_runs.py  (Dify Chatflow trigger)
-[L1] PosterTask draft  outputs/runs/<ts>_<slug>_<id>/input.json
-        │  import_dify_runs.py  (title ↔ PDF matching)
-[L2] Planner cache     experiments/datasets/planner_cache/<stem>.json   ← 30 cached
-        │  build papers_30.json manifest
-[L3] Paper manifest    experiments/configs/papers_30.json
-        │  run_matrix.py  (30 papers × 3 baselines)
-[L4] Artifacts         experiments/results/artifacts/<baseline>_<stem>/
-        │  compute_metrics.py
-[L5] Per-cell scores   experiments/results/metrics/
-        │  aggregate_stats.py
-[L6] Summary tables    experiments/results/aggregate/{aggregate,pairwise}.tsv
-        │  plot_figures.py / print_paper_table.py
-[L7–L8] Paper figures & tables
-```
+Aggregated from 15 metric JSON files (5 papers × 3 baselines). **None survive BH-FDR correction at n=5** — treat as directional only.
 
-Detailed step-by-step commands: [`INTERNAL_EXPERIMENT_GUIDE.md`](INTERNAL_EXPERIMENT_GUIDE.md) (maintainer ops manual).
+| Cluster | Metric | gpt4o_zeroshot | ours_no_svfp | ours_svfp | Reading |
+|---------|--------|----------------|--------------|-----------|---------|
+| Content | A1 retention | **0.544** | 0.448 | 0.448 | Structured planner sacrifices recall |
+| Content | A3 hallucination | 0.117 | **0.100** | 0.117 | No clear winner (A3 logic fixed in v5.2) |
+| Visual | B1 layout | 0.745 | 0.766 | **0.781** | SVFP's clearest gain |
+| Visual | B2 readability | 0.748 | 0.748 | **0.782** | Same pattern as B1 |
+| Engineering | D1 latency (ms) | 23,025 | **38** | 160,612 | Quality–latency trade-off |
+| Engineering | D2 cost ($) | **0.004** | 0 | 0.012 | Multi-round VLM cost |
 
-**Pilot results (n=5, v5.0)** — still valid as a sanity check:
+**Key design fact:** `ours_svfp` vs `ours_no_svfp` differs only in `use_commenter` — all repairs are layout-only, so content metrics are identical between them by construction.
 
-| Metric | ours_svfp | ours_no_svfp | gpt4o_zeroshot |
-|--------|-----------|--------------|----------------|
-| B1 layout | **0.781** | 0.766 | 0.745 |
-| B2 readability | **0.782** | 0.748 | 0.748 |
-| D1 latency (ms) | 160,612 | **38** | 23,025 |
-
-Full 30-paper numbers are produced locally after `run_matrix` + `compute_metrics` + `aggregate_stats` (results are gitignored).
+**Next experiments (backlog):** E1 three-arm (no-feedback / free-form / SVFP), E4 n=30 matrix, B1 figure pipeline fix. Full backlog in [`RESEARCH_DIRECTION_v2.md`](RESEARCH_DIRECTION_v2.md).
 
 ---
 
-## Workflow
+## Architecture
 
 ```mermaid
-flowchart LR
-  PDF[PDF paper] --> A["/extract_pdf_assets"]
-  A --> Dify[Dify Chatflow<br/>Text / Visual / Planner agents]
-  Dify --> B["/generate_ppt"]
-  B --> R[PPTX poster]
-  B -.->|use_commenter=true| Loop[SVFP feedback loop]
-  Loop --> R
-  Dify -.->|batch_dify_runs.py| Cache[planner_cache/]
-  Cache -.->|run_matrix replay| B
+flowchart TB
+  PDF[PDF paper] --> Extract["/extract_pdf_assets"]
+  Extract --> Dify[Dify Chatflow<br/>Text / Visual / Planner]
+  Dify --> Task[PosterTask JSON]
+  Task --> Render[PPTX renderer]
+  Render --> SVFP{SVFP loop?}
+  SVFP -->|yes| VLM[VLM closed-schema critique]
+  VLM --> Apply[FeedbackApplier]
+  Apply --> Render
+  SVFP -->|no| Out[final.pptx + run_report]
+  Render --> Out
+  Dify -.-> Cache[planner_cache/]
+  Cache -.->|run_matrix replay| Task
 ```
 
-1. **`/extract_pdf_assets`**: text preview and figure metadata (`include_images=false` for Dify).
-2. **Dify Chatflow**: three agents parse text, analyze figure metadata, and emit a `PosterTask` JSON (see `dify/prompts/`).
-3. **`/generate_ppt`**: async generation with optional SVFP loop; poll job, then download.
-4. **Experiments**: replay frozen planner snapshots so all baselines share identical plans.
+1. **`/extract_pdf_assets`** — text preview + figure metadata (lightweight URLs for Dify).
+2. **Dify Chatflow** — three agents emit a `PosterTask` JSON.
+3. **Renderer + optional SVFP** — deterministic layout repair loop.
+4. **Experiments** — replay frozen planner snapshots; compare baselines on identical plans.
 
 ---
 
@@ -92,56 +97,30 @@ flowchart LR
 
 ```
 poster_agent_backend/
-├── app/                         # Production FastAPI service
-│   ├── main.py                  # Routes + async jobs (v5.1)
-│   ├── models.py                # PosterTask schema (Dify ↔ renderer contract)
-│   ├── pdf_assets.py            # PDF text & figure extraction
-│   ├── ppt_renderer.py          # PPTX rendering
-│   ├── feedback_loop.py         # SVFP loop + optional JSONL telemetry
-│   └── ...
-├── dify/                        # Dify Chatflow design & agent prompts
-│   ├── DIFY_WORKFLOW_AND_PAPER_DESIGN.md
-│   └── prompts/                 # text-parse / visual-parse / planner agents
-├── experiments/                 # Offline batch evaluation
-│   ├── baselines/               # ours_svfp, ours_no_svfp, gpt4o_zeroshot, …
+├── app/                         # Production FastAPI + SVFP + renderer
+├── dify/                        # Chatflow design & agent prompts
+├── experiments/
+│   ├── baselines/               # ours_svfp, ours_no_svfp, ours_freeform, gpt4o_zeroshot, …
 │   ├── metrics/                 # A1–A4, B1–B3, C1–C3, D1–D3
-│   ├── scripts/                 # batch_dify_runs, import_dify_runs, run_matrix, …
-│   ├── datasets/
-│   │   ├── papers/              # PDFs (gitignored)
-│   │   └── planner_cache/       # Frozen PosterTask snapshots (committable)
-│   └── tools/                   # experiment_logger, run_analysis
-├── tests/
-├── INTERNAL_EXPERIMENT_GUIDE.md # Full L0–L8 ops manual
-├── requirements.txt
-├── experiments/requirements.txt
+│   ├── scripts/                 # batch_dify_runs, run_matrix, audit_figures, …
+│   └── datasets/planner_cache/  # 30 frozen PosterTask snapshots
+├── RESEARCH_DIRECTION_v2.md     # Research pivot & experiment backlog (read this)
+├── INTERNAL_EXPERIMENT_GUIDE.md # L0→L8 step-by-step ops manual
 └── .env.example
 ```
 
 ---
 
-## Requirements
-
-- **Python 3.12** recommended
-- Optional: **LibreOffice** (`soffice`) for Stage 2 PPTX previews
-- Optional: **DashScope API key** for Qwen-VL; heuristics fallback when unset
-- For experiments: `pip install -r experiments/requirements.txt`
-- For Dify batch runs: self-hosted or cloud Dify + `DIFY_API_KEY` in `.env`
-- FastAPI must be reachable from Dify (e.g. `http://host.docker.internal:8000` on macOS Docker)
-
----
-
-## Setup & run
+## Quick start
 
 ```bash
 cd poster_agent_backend
-python3.12 -m venv .venv312
-source .venv312/bin/activate
+python3.12 -m venv .venv312 && source .venv312/bin/activate
 pip install -r requirements.txt
-cp .env.example .env          # fill DASHSCOPE_API_KEY, DIFY_* if batching
+cp .env.example .env          # DASHSCOPE_API_KEY, DIFY_* for batch runs
 python -m app.main
+curl http://127.0.0.1:8000/health
 ```
-
-Health check: `curl http://127.0.0.1:8000/health`
 
 ---
 
@@ -150,73 +129,31 @@ Health check: `curl http://127.0.0.1:8000/health`
 | Method | Path | Description |
 |--------|------|-------------|
 | `GET` | `/health` | Service status |
-| `POST` | `/extract_pdf_assets` | Upload PDF or `pdf_url`; returns `asset_token` + figure URLs |
-| `POST` | `/generate_ppt` | **Async** generation (202 + `job_id`); use with Dify |
-| `GET` | `/jobs/{job_id}?wait=20` | Job status; `wait` 0–50s server long-poll |
-| `POST` | `/generate_ppt_file` | **Sync** generation (local debugging) |
+| `POST` | `/extract_pdf_assets` | PDF → `asset_token` + figure URLs |
+| `POST` | `/generate_ppt` | Async generation (202 + `job_id`) |
+| `GET` | `/jobs/{job_id}?wait=20` | Long-poll job status |
+| `POST` | `/generate_ppt_file` | Sync generation (debug) |
 | `GET` | `/download/run/{run_folder}` | Download `final.pptx` |
-| `GET` | `/assets/{asset_token}/{filename}` | Served extracted figures |
+| `GET` | `/assets/{asset_token}/{filename}` | Extracted figures |
 
 ---
 
-## Dify integration
+## SVFP protocol
 
-### Chatflow architecture
-
-| Agent | Prompt file | Role |
-|-------|-------------|------|
-| Text Parse | `dify/prompts/text-parseagent.txt` | Sections, bullets, key claims from `text_preview` |
-| Visual Parse | `dify/prompts/visual-parseagent.txt` | Figure roles & panel hints from metadata-only figure list |
-| Planner | `dify/prompts/planneragent.txt` | Template, theme, panels, figures → `PosterTask` JSON |
-
-Read [`dify/DIFY_WORKFLOW_AND_PAPER_DESIGN.md`](dify/DIFY_WORKFLOW_AND_PAPER_DESIGN.md) for the full node topology and design rationale.
-
-### Batch trigger (30 papers)
-
-```bash
-# 1. FastAPI running (terminal 1)
-python -m app.main
-
-# 2. Dry-run PDF selection (terminal 2)
-python -m experiments.scripts.batch_dify_runs --limit 25 --skip-cached --dry-run
-
-# 3. Run Chatflow for each PDF (~145 s/paper on M3 Mac)
-python -m experiments.scripts.batch_dify_runs --limit 25 --skip-cached
-
-# 4. Match runs → planner_cache
-python -m experiments.scripts.import_dify_runs
-
-# 5. Full experiment matrix
-python -m experiments.scripts.run_matrix --papers experiments/configs/papers_30.json --baselines ours_svfp,ours_no_svfp,gpt4o_zeroshot
-python -m experiments.scripts.compute_metrics --all
-python -m experiments.scripts.aggregate_stats --out experiments/results/aggregate/
-python -m experiments.scripts.print_paper_table
-```
-
-**Dify Chatflow upload note:** if the Start node variable `paper` is configured as **"Other file types"**, the API requires `"type": "custom"` (not `"document"`) — already handled in `batch_dify_runs.py`.
-
-### Cloud / tunnel
-
-For cloud Dify: `ngrok http 8000` or `cloudflared tunnel --url http://localhost:8000`, and point Chatflow HTTP nodes at the public URL.
-
-Use **`POST /generate_ppt` + `GET /jobs/{job_id}`** polling — do not block a single HTTP call beyond ~60 s.
-
----
-
-## Visual feedback loop (SVFP)
+Enable in Planner JSON:
 
 ```json
 { "use_commenter": true, "max_iterations": 3 }
 ```
 
-| Issue | Typical action |
-|-------|----------------|
-| `overlapping_elements` | Fewer bullets, smaller text |
-| `empty_space` | Larger fonts, add content |
-| `low_contrast` | Switch color theme |
+| Issue | Typical deterministic action |
+|-------|------------------------------|
+| `overlapping_elements` | Reduce bullets, shrink font |
+| `empty_space` | Enlarge font, rebalance whitespace |
+| `low_contrast` | Switch palette (2-color guard) |
 | `figure_too_small` | Vertical panels → `image_focus` |
 
-Per-run analysis:
+Per-run trace analysis:
 
 ```bash
 python -m experiments.tools.run_analysis outputs/runs/<run_folder>/run_report.json
@@ -224,21 +161,50 @@ python -m experiments.tools.run_analysis outputs/runs/<run_folder>/run_report.js
 
 ---
 
+## Experiments
+
+**Baselines**
+
+| Name | What it isolates |
+|------|------------------|
+| `ours_svfp` | Full SVFP closed-loop |
+| `ours_no_svfp` | Same renderer, no feedback (layout ablation) |
+| `ours_freeform` | Free-text VLM critique + LLM apply (E1 arm) |
+| `gpt4o_zeroshot` | LLM planner only, same renderer & template |
+
+**Full matrix (local)**
+
+```bash
+python -m experiments.scripts.run_matrix \
+  --papers experiments/configs/papers_30.json \
+  --baselines ours_svfp,ours_no_svfp,ours_freeform,gpt4o_zeroshot
+python -m experiments.scripts.compute_metrics --all
+python -m experiments.scripts.aggregate_stats --out experiments/results/aggregate/
+python -m experiments.scripts.print_paper_table
+```
+
+**Figure audit (B1 diagnostic)**
+
+```bash
+python experiments/scripts/audit_figures.py --dry-run   # no API calls
+python experiments/scripts/audit_figures.py --limit 3   # smoke
+```
+
+Details: [`experiments/README.md`](experiments/README.md) · [`INTERNAL_EXPERIMENT_GUIDE.md`](INTERNAL_EXPERIMENT_GUIDE.md)
+
+---
+
 ## Environment variables
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `PORT` | `8000` | Server port |
-| `OUTPUT_DIR` | `outputs` | Output root |
-| `DASHSCOPE_API_KEY` | (empty) | Qwen-VL + some judges |
-| `OPENAI_API_KEY` | (empty) | Metric judges (OpenAI-compatible) |
-| `QWEN_VL_MODEL` | `Qwen/Qwen2.5-VL-7B-Instruct` | VLM model id |
-| `POSTER_EXPERIMENT_MODE` | `1` via `python -m app.main` | JSONL telemetry; set `0` to disable |
-| `DIFY_API_KEY` | (empty) | Chatflow app key (`app-…`) for batch runner |
-| `DIFY_BASE_URL` | `http://localhost/v1` | Dify API base |
-| `DIFY_WORKFLOW_INPUT_NAME` | `paper` | Start node PDF variable name |
-| `DIFY_USER_ID` | `experiment-batch` | Dify user tag |
-| `DIFY_QUERY` | (see `.env.example`) | Required chatflow `query` field |
+| Variable | Purpose |
+|----------|---------|
+| `DASHSCOPE_API_KEY` | Qwen-VL critic + judges |
+| `OPENAI_API_KEY` | Metric judges (OpenAI-compatible) |
+| `POSTER_EXPERIMENT_MODE` | `1` = JSONL telemetry per run |
+| `DIFY_API_KEY` / `DIFY_BASE_URL` | Batch Chatflow trigger |
+| `DIFY_WORKFLOW_INPUT_NAME` | Start node PDF variable (default `paper`) |
+
+See [`.env.example`](.env.example) for the full list.
 
 ---
 
@@ -251,8 +217,19 @@ python -m pytest experiments/tests/ -q
 
 ---
 
-## GitHub commit notes
+## Documentation map
 
-**Gitignored:** `.env`, `outputs/`, PDFs, `experiments/.cache/`, metrics/aggregate/artifacts, vendor baselines, debug PNGs.
+| Doc | Audience | Content |
+|-----|----------|---------|
+| **README** (this file) | New clones | Overview, quick start, honest pilot summary |
+| [`RESEARCH_DIRECTION_v2.md`](RESEARCH_DIRECTION_v2.md) | Paper authors | Positioning, metric v2, experiment backlog |
+| [`INTERNAL_EXPERIMENT_GUIDE.md`](INTERNAL_EXPERIMENT_GUIDE.md) | Operators | L0→L8 commands, pitfalls |
+| [`dify/DIFY_WORKFLOW_AND_PAPER_DESIGN.md`](dify/DIFY_WORKFLOW_AND_PAPER_DESIGN.md) | Method section | Chatflow topology & agent design |
 
-**Committed:** source, `dify/prompts/`, `experiments/datasets/planner_cache/` (30 frozen planner snapshots), configs, tests, docs.
+---
+
+## GitHub notes
+
+**Gitignored:** `.env`, `outputs/`, PDFs, `experiments/.cache/`, metrics/aggregate/artifacts, `PAPER_DRAFT_v0.md`, internal conversation logs.
+
+**Committed:** source, `dify/prompts/`, `planner_cache/` (30 snapshots), `RESEARCH_DIRECTION*.md`, configs, tests.

@@ -46,9 +46,9 @@
         "Entity-centric memory structure ensures coherence and consistency."
       ],
       "figure": null,
-      "figure_id": "Fig3",
-      "figure_caption": "Architecture of M3-Agent",
-      "layout_hint": "text_left_image_right",
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
       "body_font_scale": 1.0
     },
     {
@@ -58,9 +58,9 @@
         "M3-Bench includes 100 robot-perspective and 920 web-sourced videos."
       ],
       "figure": null,
-      "figure_id": "Fig5",
-      "figure_caption": "Examples from M3-Bench",
-      "layout_hint": "text_left_image_right",
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
       "body_font_scale": 1.0
     },
     {
@@ -70,9 +70,9 @@
         "Ablation studies show significant drops when key components are removed."
       ],
       "figure": null,
-      "figure_id": "Fig19",
-      "figure_caption": "Training curves of DAPO",
-      "layout_hint": "text_left_image_right",
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
       "body_font_scale": 1.0
     },
     {
@@ -110,7 +110,8 @@
       "importance": "high",
       "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/7982d7c948f54151/Fig3.png",
       "image_url": "http://host.docker.internal:8000/assets/7982d7c948f54151/Fig3.png",
-      "thumbnail_url": "http://host.docker.internal:8000/assets/7982d7c948f54151/Fig3_thumb.jpg"
+      "thumbnail_url": "http://host.docker.internal:8000/assets/7982d7c948f54151/Fig3_thumb.jpg",
+      "audit_status": "broken"
     },
     "Fig5": {
       "caption": "Figure 2 Examples from M3-Bench. M3-Bench-robot features long videos from realistic robotic work scenarios, while",
@@ -120,7 +121,8 @@
       "importance": "medium",
       "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/7982d7c948f54151/Fig5.png",
       "image_url": "http://host.docker.internal:8000/assets/7982d7c948f54151/Fig5.png",
-      "thumbnail_url": "http://host.docker.internal:8000/assets/7982d7c948f54151/Fig5_thumb.jpg"
+      "thumbnail_url": "http://host.docker.internal:8000/assets/7982d7c948f54151/Fig5_thumb.jpg",
+      "audit_status": "broken"
     },
     "Fig19": {
       "caption": "Figure 4 Average scores (on training set) and accuracy (on dev set) curves during the DAPO training process. The",
@@ -130,7 +132,8 @@
       "importance": "high",
       "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/7982d7c948f54151/Fig19.png",
       "image_url": "http://host.docker.internal:8000/assets/7982d7c948f54151/Fig19.png",
-      "thumbnail_url": "http://host.docker.internal:8000/assets/7982d7c948f54151/Fig19_thumb.jpg"
+      "thumbnail_url": "http://host.docker.internal:8000/assets/7982d7c948f54151/Fig19_thumb.jpg",
+      "audit_status": "broken"
     }
   },
   "use_commenter": true,

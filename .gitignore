@@ -45,7 +45,10 @@ experiments/results/figures/
 experiments/results/batch_dify_report.json
 experiments/results/batch_dify_console.log
 experiments/results/import_report.json
+experiments/results/figure_audit.json
+experiments/datasets/planner_cache_raw/
 experiments/scratch/_workspace/
+experiments/scratch/reextract_test/
 experiments/.cache/
 experiments/results/user_study/
 experiments/results/expert_ratings.csv

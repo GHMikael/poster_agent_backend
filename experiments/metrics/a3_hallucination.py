@@ -1,11 +1,17 @@
 """A3 — Hallucination Rate.
 
 For each poster bullet, retrieve the top-K paper sentences by BM25,
-then run an LLM NLI judge (Qwen3-32B via SiliconFlow, by default):
+then run a 3-way LLM NLI judge (Qwen3-32B via SiliconFlow, by default).
+We classify each bullet by the *winning* NLI label (argmax of the soft
+distribution). This fixes a prior bug where neutral / abstained bullets
+(p ≈ 0.33 / 0.34 / 0.33) were mislabelled as hallucinations:
 
-    bullet is hallucinated  ⇔  P(entail) < entail_min  AND  P(contradict) > contradict_max
+    contradicted (= hallucination)  ⇔  P(contradict) is argmax AND ≥ contradict_min
+    unsupported  (NOT penalised)    ⇔  neutral wins: paper neither supports nor refutes
+    supported                       ⇔  entailment wins
 
-The rate is (# hallucinated bullets) / (total bullets). Robustness
+Headline hallucination rate = (# contradicted bullets) / (total bullets);
+unsupported_rate is reported separately as a softer signal. Robustness
 re-runs with a second model are configurable but disabled by default
 for the 5-paper smoke; M4 turns them on at full matrix scale.
 
@@ -58,28 +64,46 @@ class A3Hallucination(Metric):
         # NLI batch
         nli_model = cfg.get("llm_nli", {}).get("model", "Qwen/Qwen3-32B")
         top_k = int(cfg.get("retrieval", {}).get("top_k", 3))
-        entail_min = float(cfg.get("entail_min", 0.4))
-        contradict_max = float(cfg.get("contradict_max", 0.3))
+        contradict_min = float(cfg.get("contradict_min", 0.45))
 
         results = bm25_topk_then_nli(bullets, sentences, top_k=top_k, model=nli_model)
 
-        halluc: List[Dict[str, Any]] = []
+        contradicted: List[Dict[str, Any]] = []
+        unsupported: List[Dict[str, Any]] = []
+        supported: List[Dict[str, Any]] = []
         for r in results:
-            if r["p_entail"] < entail_min and r["p_contradict"] > contradict_max:
-                halluc.append(r)
+            pe, pn, pc = r["p_entail"], r["p_neutral"], r["p_contradict"]
+            if pc >= pe and pc >= pn and pc >= contradict_min:
+                contradicted.append(r)   # paper explicitly refutes the bullet → hallucination
+            elif pe >= pn and pe >= pc:
+                supported.append(r)      # paper entails the bullet
+            else:
+                unsupported.append(r)    # neutral: paper is silent — NOT a hallucination
 
-        rate = len(halluc) / max(1, len(bullets))
+        n = max(1, len(results))
+        # Headline hallucination = contradicted only (semantically correct; ↓ better)
+        rate = len(contradicted) / n
         return MetricResult(
             metric_id=self.metric_id,
             score=rate,
             extra={
-                "n_bullets": len(bullets),
-                "halluc_bullets": len(halluc),
-                "thresholds": {"entail_min": entail_min, "contradict_max": contradict_max},
-                "examples": [
+                "n_bullets": len(results),
+                "contradicted_bullets": len(contradicted),
+                "unsupported_bullets": len(unsupported),
+                "supported_bullets": len(supported),
+                "contradicted_rate": round(len(contradicted) / n, 4),
+                "unsupported_rate": round(len(unsupported) / n, 4),
+                "supported_rate": round(len(supported) / n, 4),
+                "contradict_min": contradict_min,
+                "examples_contradicted": [
                     {"bullet": r["bullet"][:140], "p_entail": round(r["p_entail"], 3),
-                     "p_contradict": round(r["p_contradict"], 3)}
-                    for r in halluc[:5]
+                     "p_neutral": round(r["p_neutral"], 3), "p_contradict": round(r["p_contradict"], 3)}
+                    for r in contradicted[:5]
+                ],
+                "examples_unsupported": [
+                    {"bullet": r["bullet"][:140], "p_entail": round(r["p_entail"], 3),
+                     "p_neutral": round(r["p_neutral"], 3), "p_contradict": round(r["p_contradict"], 3)}
+                    for r in unsupported[:5]
                 ],
             },
         )

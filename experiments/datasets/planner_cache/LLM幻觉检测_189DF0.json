@@ -47,9 +47,9 @@
         "Evaluated three CoT prompting strategies and four hallucination detection methods."
       ],
       "figure": null,
-      "figure_id": "Fig9",
-      "figure_caption": "Workflow for evaluating the impact of CoT prompting on hallucination detection.",
-      "layout_hint": "text_left_image_right",
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
       "body_font_scale": 1.0
     },
     {
@@ -60,9 +60,9 @@
         "Assessed changes in hallucination score distributions, detection accuracy, and confidence."
       ],
       "figure": null,
-      "figure_id": "Fig1",
-      "figure_caption": "Example of CoT prompting confusing hallucination detection.",
-      "layout_hint": "text_left_image_right",
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
       "body_font_scale": 1.0
     },
     {
@@ -101,7 +101,8 @@
       "importance": "medium",
       "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/b72fe3f441d7407b/Fig1.png",
       "image_url": "http://host.docker.internal:8000/assets/b72fe3f441d7407b/Fig1.png",
-      "thumbnail_url": "http://host.docker.internal:8000/assets/b72fe3f441d7407b/Fig1_thumb.jpg"
+      "thumbnail_url": "http://host.docker.internal:8000/assets/b72fe3f441d7407b/Fig1_thumb.jpg",
+      "audit_status": "broken"
     },
     "Fig9": {
       "caption": "The workflow for evaluating the impact of CoT prompting on hallucination detection. The upper section",
@@ -111,7 +112,8 @@
       "importance": "high",
       "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/b72fe3f441d7407b/Fig9.png",
       "image_url": "http://host.docker.internal:8000/assets/b72fe3f441d7407b/Fig9.png",
-      "thumbnail_url": "http://host.docker.internal:8000/assets/b72fe3f441d7407b/Fig9_thumb.jpg"
+      "thumbnail_url": "http://host.docker.internal:8000/assets/b72fe3f441d7407b/Fig9_thumb.jpg",
+      "audit_status": "broken"
     }
   },
   "use_commenter": true,

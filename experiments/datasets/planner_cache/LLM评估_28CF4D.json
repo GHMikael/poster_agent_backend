@@ -82,9 +82,9 @@
         "LLMs show strengths and weaknesses in specific genres."
       ],
       "figure": null,
-      "figure_id": "Fig4",
-      "figure_caption": "Comparison of Performance by Sets.",
-      "layout_hint": "text_left_image_right",
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
       "body_font_scale": 1.0
     },
     {
@@ -129,7 +129,8 @@
       "importance": "high",
       "image_source": "/Users/mikaelsnow/Documents/ECNU/Paper_Comment_Poster/poster_agent_backend/static/assets/a70cf3910b5049a3/Fig4.png",
       "image_url": "http://host.docker.internal:8000/assets/a70cf3910b5049a3/Fig4.png",
-      "thumbnail_url": "http://host.docker.internal:8000/assets/a70cf3910b5049a3/Fig4_thumb.jpg"
+      "thumbnail_url": "http://host.docker.internal:8000/assets/a70cf3910b5049a3/Fig4_thumb.jpg",
+      "audit_status": "broken"
     }
   },
   "use_commenter": true,
