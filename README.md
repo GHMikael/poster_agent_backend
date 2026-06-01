@@ -2,11 +2,11 @@
 
 # PosterCSP — Paper-to-Poster Backend
 
-> **Current version: v5.2** · FastAPI backend + **SVFP** (Structured Visual Feedback Protocol) + reproducible **CS-Poster-30** evaluation harness.
+> **Current version: v5.3** · FastAPI backend + **SVFP** (Structured Visual Feedback Protocol) + reproducible **CS-Poster-30** evaluation harness.
 
 Given a CS paper PDF, the system produces an editable A3 conference poster PPTX through a Dify **Chatflow** (content planning) and a Python renderer with an optional **SVFP closed-loop** (VLM critique → deterministic repair → convergence trace). Long-running jobs use **async HTTP + server-side long polling** for Dify compatibility.
 
-**Research framing (v2):** one primary contribution (**SVFP protocol**), two secondary ones (**CS-Poster-30 benchmark** + **CS vertical instantiation**). See [`RESEARCH_DIRECTION_v2.md`](RESEARCH_DIRECTION_v2.md) for the full pivot rationale after the 5-paper pilot.
+**Research framing (v3):** SVFP remains the primary contribution, now with E1/E2 preflight code in place, bounded-latency VLM calls, a cleaner figure pipeline, and an explicit list of remaining paper-strengthening work. See [`RESEARCH_DIRECTION_v3.md`](RESEARCH_DIRECTION_v3.md).
 
 ---
 
@@ -15,10 +15,10 @@ Given a CS paper PDF, the system produces an editable A3 conference poster PPTX 
 | | |
 |---|---|
 | **Is** | A **planner-agnostic** structured visual feedback protocol (4 issue types × 9 atomic actions) that can plug into any poster planner |
-| **Is** | A reproducible **CS-Poster-30** pipeline (30 frozen planner snapshots, 12-metric suite, L0→L8 scripts) |
+| **Is** | A reproducible **CS-Poster-30** pipeline (30 frozen planner snapshots, headline/appendix/protocol metrics, L0→L8 scripts) |
 | **Is not** | A claim that structured planning beats zero-shot on **content recall** (pilot: a1 lower than gpt4o_zeroshot) |
-| **Is not** | A lightweight system (pilot: SVFP ~160 s vs 38 ms no-feedback vs 23 s zero-shot) |
-| **Is not** | Proof of 100 % figure reuse until the figure pipeline is fully audited (B1 in progress) |
+| **Is not** | A claim that SVFP is faster than no-feedback; current framing is quality-latency Pareto |
+| **Is not** | Proof of 100 % figure reuse; figure extraction is guarded and audited, but reuse rate must be measured |
 
 **One-line pitch (paper):**
 
@@ -26,19 +26,20 @@ Given a CS paper PDF, the system produces an editable A3 conference poster PPTX 
 
 ---
 
-## Version snapshot (v5.2)
+## Version snapshot (v5.3)
 
 | Area | Capability |
 |------|------------|
-| **SVFP protocol** | 4 root-cause issues × 9 deterministic actions (`vlm_commenter.py`); FSM-style convergence (`feedback_loop.py`); layout-only repairs (content bullets unchanged by design) |
-| **E1 baseline** | `ours_freeform` — free-text VLM critique + LLM best-effort apply (closed-set vs free-form ablation) |
+| **SVFP protocol** | 4 root-cause issues × 9 deterministic actions; configurable convergence; bounded VLM calls |
+| **E1 baseline** | `ours_freeform` — free-text VLM critique + LLM best-effort apply; failures are recorded as non-executable feedback rather than crashed cells |
+| **E2 baseline** | `gpt4o_zeroshot_svfp` — zero-shot planner followed by SVFP, used to test planner-agnostic behavior |
 | **A3 fix** | NLI hallucination: neutral/abstain no longer counted as hallucination; split `contradicted_rate` vs `unsupported_rate` |
-| **Figure audit** | `audit_figures.py` — VLM alignment scan for planner_cache figure pollution (B1 diagnostic) |
+| **Figure pipeline** | PDF extraction filters low-information images, records xref/bbox metadata, and supports VLM figure audit |
 | **Planner cache** | 30 frozen `PosterTask` snapshots; cleaned figure refs; `clean_planner_cache.py` + `import_dify_runs.py` |
 | **Dify Chatflow** | Three-agent pipeline; prompts in `dify/prompts/`; design in `dify/DIFY_WORKFLOW_AND_PAPER_DESIGN.md` |
 | **Batch Dify** | `batch_dify_runs.py` triggers Chatflow via API for scale runs |
 | **Renderer** | 4 templates × 4 themes; six-panel CS domain prior; async jobs + run archive |
-| **Experiments** | Baselines: `ours_svfp` · `ours_no_svfp` · `ours_freeform` · `gpt4o_zeroshot` · external SOTA (optional) |
+| **Experiments** | Baselines: `ours_svfp` · `ours_no_svfp` · `ours_freeform` · `gpt4o_zeroshot` · `gpt4o_zeroshot_svfp` · external SOTA (optional) |
 
 **Evolution**
 
@@ -46,6 +47,7 @@ Given a CS paper PDF, the system produces an editable A3 conference poster PPTX 
 - **v5.0**: experiments framework, 5-paper pilot, JSONL telemetry
 - **v5.1**: Dify batch automation, 30 planner snapshots, L0→L8 pipeline docs
 - **v5.2**: research re-anchor (PosterCSP / SVFP spine), E1 free-form baseline, A3 metric fix, figure audit + planner cache cleanup
+- **v5.3**: bounded-latency VLM calls, PDF figure filtering, protocol metrics, E1 smoke, E2 cross-planner baseline, v3 planning docs
 
 ---
 
@@ -62,9 +64,9 @@ Aggregated from 15 metric JSON files (5 papers × 3 baselines). **None survive B
 | Engineering | D1 latency (ms) | 23,025 | **38** | 160,612 | Quality–latency trade-off |
 | Engineering | D2 cost ($) | **0.004** | 0 | 0.012 | Multi-round VLM cost |
 
-**Key design fact:** `ours_svfp` vs `ours_no_svfp` differs only in `use_commenter` — all repairs are layout-only, so content metrics are identical between them by construction.
+**Historical pilot note:** in the original n=5 pilot, `ours_svfp` and `ours_no_svfp` had identical content because the loop was effectively layout-only. In v5.3, `reduce_bullet_count` is content-preserving rather than content-dropping, so content metrics must be recomputed before making new claims.
 
-**Next experiments (backlog):** E1 three-arm (no-feedback / free-form / SVFP), E4 n=30 matrix, B1 figure pipeline fix. Full backlog in [`RESEARCH_DIRECTION_v2.md`](RESEARCH_DIRECTION_v2.md).
+**Current state:** E1/E2 preflight code paths are implemented and smoke-tested. Official n=30, independent visual validation, E3 ablation, user study, and external SOTA remain open. See [`RESEARCH_DIRECTION_v3.md`](RESEARCH_DIRECTION_v3.md).
 
 ---
 
@@ -101,10 +103,10 @@ poster_agent_backend/
 ├── dify/                        # Chatflow design & agent prompts
 ├── experiments/
 │   ├── baselines/               # ours_svfp, ours_no_svfp, ours_freeform, gpt4o_zeroshot, …
-│   ├── metrics/                 # A1–A4, B1–B3, C1–C3, D1–D3
+│   ├── metrics/                 # content, visual, protocol, user/pending, engineering
 │   ├── scripts/                 # batch_dify_runs, run_matrix, audit_figures, …
 │   └── datasets/planner_cache/  # 30 frozen PosterTask snapshots
-├── RESEARCH_DIRECTION_v2.md     # Research pivot & experiment backlog (read this)
+├── RESEARCH_DIRECTION_v3.md     # Current technical status & next optimization plan
 ├── INTERNAL_EXPERIMENT_GUIDE.md # L0→L8 step-by-step ops manual
 └── .env.example
 ```
@@ -171,13 +173,14 @@ python -m experiments.tools.run_analysis outputs/runs/<run_folder>/run_report.js
 | `ours_no_svfp` | Same renderer, no feedback (layout ablation) |
 | `ours_freeform` | Free-text VLM critique + LLM apply (E1 arm) |
 | `gpt4o_zeroshot` | LLM planner only, same renderer & template |
+| `gpt4o_zeroshot_svfp` | Zero-shot planner + SVFP post-processor (E2 arm) |
 
 **Full matrix (local)**
 
 ```bash
 python -m experiments.scripts.run_matrix \
   --papers experiments/configs/papers_30.json \
-  --baselines ours_svfp,ours_no_svfp,ours_freeform,gpt4o_zeroshot
+  --baselines ours_no_svfp,ours_freeform,ours_svfp,gpt4o_zeroshot_svfp
 python -m experiments.scripts.compute_metrics --all
 python -m experiments.scripts.aggregate_stats --out experiments/results/aggregate/
 python -m experiments.scripts.print_paper_table
@@ -201,6 +204,9 @@ Details: [`experiments/README.md`](experiments/README.md) · [`INTERNAL_EXPERIME
 | `DASHSCOPE_API_KEY` | Qwen-VL critic + judges |
 | `OPENAI_API_KEY` | Metric judges (OpenAI-compatible) |
 | `POSTER_EXPERIMENT_MODE` | `1` = JSONL telemetry per run |
+| `POSTER_LLM_TIMEOUT_S` | SDK request timeout for text/VLM calls |
+| `POSTER_VLM_WALL_TIMEOUT_S` | Hard wall-clock guard for SVFP VLM review |
+| `POSTER_VLM_ALLOW_FALLBACK` | `0` avoids a second non-JSON VLM call in experiments |
 | `DIFY_API_KEY` / `DIFY_BASE_URL` | Batch Chatflow trigger |
 | `DIFY_WORKFLOW_INPUT_NAME` | Start node PDF variable (default `paper`) |
 
@@ -222,7 +228,8 @@ python -m pytest experiments/tests/ -q
 | Doc | Audience | Content |
 |-----|----------|---------|
 | **README** (this file) | New clones | Overview, quick start, honest pilot summary |
-| [`RESEARCH_DIRECTION_v2.md`](RESEARCH_DIRECTION_v2.md) | Paper authors | Positioning, metric v2, experiment backlog |
+| [`RESEARCH_DIRECTION_v3.md`](RESEARCH_DIRECTION_v3.md) | Paper authors | Current status, remaining risks, next optimization plan |
+| [`RESEARCH_DIRECTION_v2.md`](RESEARCH_DIRECTION_v2.md) | Paper authors | Historical v2 pivot and original backlog |
 | [`INTERNAL_EXPERIMENT_GUIDE.md`](INTERNAL_EXPERIMENT_GUIDE.md) | Operators | L0→L8 commands, pitfalls |
 | [`dify/DIFY_WORKFLOW_AND_PAPER_DESIGN.md`](dify/DIFY_WORKFLOW_AND_PAPER_DESIGN.md) | Method section | Chatflow topology & agent design |
 

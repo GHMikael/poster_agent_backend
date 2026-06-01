@@ -17,12 +17,15 @@ import sys
 from pathlib import Path
 
 # Column order for baselines (known ones first, unknown appended).
-_BASELINE_ORDER = ["ours_no_svfp", "gpt4o_zeroshot", "paper2poster", "posteragent", "ours_freeform", "ours_svfp"]
+_BASELINE_ORDER = [
+    "ours_no_svfp", "gpt4o_zeroshot", "gpt4o_zeroshot_svfp",
+    "paper2poster", "posteragent", "ours_freeform", "ours_svfp",
+]
 
 # Headline clusters (v2 §三). Metrics absent from aggregate.tsv are skipped.
 _CLUSTERS = [
     ("Content fidelity", ["a1_information_retention", "a2_figure_text_alignment", "a3_hallucination"]),
-    ("Visual quality", ["b1_layout_rationality", "b2_readability", "b3_academic_compliance"]),
+    ("Visual quality", ["b1_layout_rationality", "b2_readability", "figure_reuse_rate", "visual_smoke_check", "b3_academic_compliance"]),
     ("Protocol (SVFP)", ["action_executability", "convergence_rate", "mean_iters_to_converge", "per_iter_visual_gain"]),
     ("Engineering", ["d1_latency", "d2_cost", "d3_failure_rate"]),
 ]

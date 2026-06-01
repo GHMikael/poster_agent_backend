@@ -29,6 +29,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     p.add_argument("--out-manifest", type=Path, default=Path("experiments/configs/papers_30.json"))
     p.add_argument("--out-papers", type=Path, default=Path("experiments/datasets/papers"))
     p.add_argument("--out-gold", type=Path, default=Path("experiments/datasets/gold"))
+    p.add_argument("--planner-cache", type=Path, default=Path("experiments/datasets/planner_cache"),
+                   help="Use existing planner_cache stems to build a local manifest when present.")
     p.add_argument("--seed-list", type=Path, default=None, help="Optional JSON list of arxiv_ids to seed.")
     p.add_argument("--target-n", type=int, default=30)
     p.add_argument("--source", choices=["paper2poster", "arxiv", "mixed"], default="mixed")
@@ -69,10 +71,22 @@ def main(argv: Optional[List[str]] = None) -> int:
         print(f"     (Semantic Scholar query) to land in this script.")
         return 0
 
-    # Minimal manifest stub for whatever PDFs are already on disk —
-    # downstream scripts can begin smoke-running before M3 lands.
+    # Minimal manifest stub for the current local benchmark. Prefer the 30
+    # planner_cache stems so run_matrix/compute_metrics operate on the same
+    # paper set as the cached Dify plans; fall back to all PDFs on disk.
+    cache_stems = []
+    if args.planner_cache.exists():
+        cache_stems = [p.stem for p in sorted(args.planner_cache.glob("*.json"))]
+    pdf_by_stem = {p.stem: p for p in sorted(args.out_papers.glob("*.pdf"))}
+    selected_stems = [s for s in cache_stems if s in pdf_by_stem]
+    if selected_stems:
+        selected_stems = selected_stems[: args.target_n]
+    else:
+        selected_stems = [p.stem for p in sorted(args.out_papers.glob("*.pdf"))[: args.target_n]]
+
     rows: List[Dict[str, Any]] = []
-    for pdf in sorted(args.out_papers.glob("*.pdf")):
+    for stem in selected_stems:
+        pdf = pdf_by_stem[stem]
         arxiv_id = pdf.stem
         rows.append({
             "arxiv_id": arxiv_id,

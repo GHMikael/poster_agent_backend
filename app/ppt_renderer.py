@@ -1,4 +1,5 @@
 import io
+import math
 import re
 from dataclasses import dataclass
 from functools import lru_cache
@@ -12,7 +13,7 @@ from pptx.util import Inches, Pt
 
 from app.image_utils import image_size, load_image_from_source
 from app.layout_engine import classify_panel, sort_panels_for_dashboard
-from app.models import Panel, PosterTask
+from app.models import FigureAsset, Panel, PosterTask
 
 
 @dataclass(frozen=True)
@@ -134,6 +135,54 @@ def clean_text(text: str, max_len: int = 120) -> str:
     return text
 
 
+def _emu_to_inches(value) -> float:
+    return float(value) / 914400.0
+
+
+def estimate_fit_font_size(
+    text: str,
+    w,
+    h,
+    *,
+    max_size: float,
+    min_size: float,
+    line_height: float = 1.14,
+    bold: bool = False,
+) -> float:
+    """Estimate a font size that fits wrapped text inside a PPTX box.
+
+    LibreOffice's handling of PowerPoint auto-fit is inconsistent in headless
+    rendering, so the renderer sizes text before writing the PPTX. The estimate
+    is deliberately conservative; it prefers a slightly smaller font to clipped
+    titles or over-eager ellipses.
+    """
+
+    text = re.sub(r"\s+", " ", text or "").strip()
+    if not text:
+        return max_size
+    width_pt = max(_emu_to_inches(w) * 72.0, 1.0)
+    height_pt = max(_emu_to_inches(h) * 72.0, 1.0)
+    longest_word = max((len(part) for part in re.split(r"\s+", text)), default=1)
+    avg_width = 0.55 if bold else 0.50
+    for size in [max_size - 0.25 * i for i in range(int((max_size - min_size) / 0.25) + 1)]:
+        chars_per_line = max(int(width_pt / max(size * avg_width, 1.0)), 1)
+        line_count = max(
+            math.ceil(len(text) / chars_per_line),
+            math.ceil(longest_word / max(chars_per_line, 1)),
+        )
+        if line_count * size * line_height <= height_pt:
+            return round(size, 2)
+    return min_size
+
+
+def adaptive_max_len(w, h, font_size: float, *, lines: Optional[int] = None) -> int:
+    width_pt = max(_emu_to_inches(w) * 72.0, 1.0)
+    height_pt = max(_emu_to_inches(h) * 72.0, 1.0)
+    max_lines = lines or max(1, int(height_pt / max(font_size * 1.12, 1.0)))
+    chars_per_line = max(int(width_pt / max(font_size * 0.50, 1.0)), 8)
+    return max(24, chars_per_line * max_lines)
+
+
 def add_shape(slide, shape_type, x, y, w, h, fill, line=None, line_width=1):
     shape = slide.shapes.add_shape(shape_type, x, y, w, h)
     shape.fill.solid()
@@ -151,7 +200,7 @@ def add_rect(slide, x, y, w, h, fill, line=None, radius=True, line_width=1):
     return add_shape(slide, shape_type, x, y, w, h, fill, line, line_width)
 
 
-def add_textbox(slide, x, y, w, h, text="", font_size=12, color=None, bold=False, align=PP_ALIGN.LEFT):
+def add_textbox(slide, x, y, w, h, text="", font_size=12, color=None, bold=False, align=PP_ALIGN.LEFT, fit=False, min_font_size=6.0):
     box = slide.shapes.add_textbox(x, y, w, h)
     tf = box.text_frame
     tf.clear()
@@ -164,6 +213,8 @@ def add_textbox(slide, x, y, w, h, text="", font_size=12, color=None, bold=False
     p = tf.paragraphs[0]
     p.text = text
     p.alignment = align
+    if fit:
+        font_size = estimate_fit_font_size(text, w, h, max_size=font_size, min_size=min_font_size, bold=bold)
     p.font.size = Pt(font_size)
     p.font.bold = bold
     if color:
@@ -171,7 +222,7 @@ def add_textbox(slide, x, y, w, h, text="", font_size=12, color=None, bold=False
     return box
 
 
-def add_rich_textbox(slide, x, y, w, h, text, palette: Palette, font_size=9.2, bold=False, max_len=105):
+def add_rich_textbox(slide, x, y, w, h, text, palette: Palette, font_size=9.2, bold=False, max_len=105, min_font_size=6.2):
     box = slide.shapes.add_textbox(x, y, w, h)
     tf = box.text_frame
     tf.clear()
@@ -182,7 +233,10 @@ def add_rich_textbox(slide, x, y, w, h, text, palette: Palette, font_size=9.2, b
     tf.margin_bottom = Inches(0)
     p = tf.paragraphs[0]
     p.alignment = PP_ALIGN.LEFT
+    if max_len <= 0:
+        max_len = adaptive_max_len(w, h, font_size)
     text = clean_text(text, max_len)
+    font_size = estimate_fit_font_size(text, w, h, max_size=font_size, min_size=min_font_size, bold=bold)
     pos = 0
     for match in KEYWORD_RE.finditer(text):
         if match.start() > pos:
@@ -237,6 +291,78 @@ def get_panel_figure(panel: Panel, task: PosterTask) -> Tuple[Optional[str], str
         fig = task.figures[panel.figure_id]
         return fig.image_source or fig.image_url, panel.figure_caption or fig.caption or panel.figure_id
     return None, panel.figure_caption or ""
+
+
+def _normalise_label(text: str) -> str:
+    return re.sub(r"[^a-z0-9]+", " ", (text or "").lower()).strip()
+
+
+def _figure_target_keywords(fig: FigureAsset) -> List[str]:
+    text = _normalise_label(" ".join([fig.best_matched_section, fig.type, fig.caption, fig.description]))
+    targets: List[str] = []
+    if any(k in text for k in ["method", "model", "architecture", "framework", "algorithm", "pipeline"]):
+        targets.extend(["method", "framework", "approach"])
+    if any(k in text for k in ["result", "experiment", "evaluation", "performance", "benchmark", "table"]):
+        targets.extend(["result", "experiment", "evaluation", "benchmark"])
+    if any(k in text for k in ["dataset", "data", "example", "case"]):
+        targets.extend(["experiment", "benchmark", "result"])
+    if any(k in text for k in ["finding", "analysis", "ablation"]):
+        targets.extend(["finding", "analysis", "result"])
+    return targets or _normalise_label(fig.best_matched_section).split()
+
+
+def bind_available_figures(task: PosterTask, max_auto_figures: int = 2) -> None:
+    """Attach unused source figures to matching CS poster panels.
+
+    Dify/cached plans sometimes carry usable figure assets but leave every
+    panel's ``figure_id`` empty. That makes the CS poster look text-only and
+    also makes figure-reuse evaluation misleadingly zero. This deterministic
+    binding is conservative: it only fills empty panel slots, never rewrites
+    bullets, and caps the number of automatic figures.
+    """
+
+    if not task.figures or not task.panels:
+        return
+    used = {p.figure_id for p in task.panels if p.figure_id}
+    candidates = []
+    for fid, fig in task.figures.items():
+        if fid in used:
+            continue
+        if (fig.audit_status or "").lower() != "ok":
+            continue
+        if not (fig.image_source or fig.image_url or fig.thumbnail_url):
+            continue
+        importance_rank = {"high": 0, "medium": 1, "low": 2}.get((fig.importance or "").lower(), 1)
+        candidates.append((importance_rank, fid, fig))
+    if not candidates:
+        return
+    candidates.sort(key=lambda item: (item[0], item[1]))
+
+    assigned = 0
+    for _, fid, fig in candidates:
+        if assigned >= max_auto_figures:
+            break
+        targets = _figure_target_keywords(fig)
+        direct_section = _normalise_label(fig.best_matched_section)
+        best_panel: Optional[Panel] = None
+        best_score = 0
+        for panel in task.panels:
+            if panel.figure_id or panel.figure:
+                continue
+            section = _normalise_label(panel.section)
+            score = sum(1 for target in targets if target and target in section)
+            if direct_section and (direct_section in section or section in direct_section):
+                score += 3
+            if score > best_score:
+                best_panel = panel
+                best_score = score
+        if best_panel is None or best_score <= 0:
+            continue
+        best_panel.figure_id = fid
+        best_panel.figure_caption = best_panel.figure_caption or fig.caption
+        if best_panel.layout_hint == "text_only":
+            best_panel.layout_hint = "text_left_image_right"
+        assigned += 1
 
 
 def fit_picture_box(img_w: int, img_h: int, x, y, w, h):
@@ -326,7 +452,7 @@ def add_panel_header(slide, x, y, w, title: str, idx: int, palette: Palette, acc
     add_rect(slide, x, y, w, bar_h, palette.primary, radius=True)
     add_rect(slide, x, y, Inches(0.06), bar_h, accent, radius=False)
 
-    add_textbox(slide, x + Inches(0.18), y + Inches(0.045), w - Inches(0.72), Inches(0.22), clean_text(title, 55), 12.5, palette.white, True)
+    add_textbox(slide, x + Inches(0.18), y + Inches(0.045), w - Inches(0.72), Inches(0.22), clean_text(title, 55), 12.5, palette.white, True, fit=True, min_font_size=8.8)
 
     badge = add_shape(slide, MSO_SHAPE.OVAL, x + w - Inches(0.34), y + Inches(0.055), Inches(0.20), Inches(0.20), accent)
     badge.line.fill.background()
@@ -345,8 +471,21 @@ def add_bullets(slide, x, y, w, h, panel: Panel, palette: Palette, accent: RGBCo
         size = Inches(0.20)
         dot = add_shape(slide, MSO_SHAPE.OVAL, x, item_y + Inches(0.045), size, size, c)
         dot.line.fill.background()
-        add_textbox(slide, x, item_y + Inches(0.045), size, size, str(idx + 1), badge_size, palette.white, True, PP_ALIGN.CENTER)
-        add_rich_textbox(slide, x + Inches(0.27), item_y + Inches(0.01), w - Inches(0.30), min(Inches(0.42), row_h), item, palette, font_size=body_size, bold=idx == 0, max_len=92)
+        add_textbox(slide, x, item_y + Inches(0.045), size, size, str(idx + 1), badge_size, palette.white, True, PP_ALIGN.CENTER, fit=True, min_font_size=5.6)
+        text_h = min(max(Inches(0.42), row_h - Inches(0.02)), row_h)
+        add_rich_textbox(
+            slide,
+            x + Inches(0.27),
+            item_y + Inches(0.01),
+            w - Inches(0.30),
+            text_h,
+            item,
+            palette,
+            font_size=body_size,
+            bold=idx == 0,
+            max_len=0,
+            min_font_size=6.4,
+        )
 
 
 def add_goal_callout(slide, x, y, w, h, text: str, palette: Palette, task: Optional[PosterTask] = None, panel: Optional[Panel] = None):
@@ -409,14 +548,26 @@ def add_mini_pipeline(slide, x, y, w, h, panel: Panel, palette: Palette, accent:
     gap = Inches(0.10)
     box_w = (w - gap * (len(steps) - 1)) / len(steps)
     badge_size = _panel_font_size(8, panel, task)
-    step_size = _panel_font_size(7.9, panel, task)
+    step_size = _panel_font_size(7.4, panel, task)
     for idx, step in enumerate(steps):
         sx = x + idx * (box_w + gap)
         add_rect(slide, sx, y, box_w, h, RGBColor(250, 252, 255), palette.border, radius=True, line_width=0.8)
         badge = add_shape(slide, MSO_SHAPE.OVAL, sx + box_w / 2 - Inches(0.11), y + Inches(0.08), Inches(0.22), Inches(0.22), accent)
         badge.line.fill.background()
-        add_textbox(slide, sx + box_w / 2 - Inches(0.11), y + Inches(0.08), Inches(0.22), Inches(0.22), str(idx + 1), badge_size, palette.white, True, PP_ALIGN.CENTER)
-        add_rich_textbox(slide, sx + Inches(0.05), y + Inches(0.34), box_w - Inches(0.10), h - Inches(0.38), step, palette, font_size=step_size, bold=True, max_len=38)
+        add_textbox(slide, sx + box_w / 2 - Inches(0.11), y + Inches(0.08), Inches(0.22), Inches(0.22), str(idx + 1), badge_size, palette.white, True, PP_ALIGN.CENTER, fit=True, min_font_size=5.8)
+        add_rich_textbox(
+            slide,
+            sx + Inches(0.05),
+            y + Inches(0.33),
+            box_w - Inches(0.10),
+            h - Inches(0.36),
+            step,
+            palette,
+            font_size=step_size,
+            bold=True,
+            max_len=0,
+            min_font_size=5.9,
+        )
         if idx < len(steps) - 1:
             add_textbox(slide, sx + box_w - Inches(0.02), y + h / 2 - Inches(0.11), Inches(0.14), Inches(0.18), ">", 13, palette.text, True, PP_ALIGN.CENTER)
 
@@ -546,11 +697,26 @@ class DashboardTemplate(BasePosterTemplate):
 
     def add_header(self, slide, prs, task: PosterTask):
         p = self.palette
-        add_rect(slide, 0, 0, prs.slide_width, Inches(0.76), p.navy, radius=False)
-        add_textbox(slide, Inches(0.34), Inches(0.10), prs.slide_width - Inches(3.3), Inches(0.32), clean_text(task.poster_title, 86), 22, p.white, True)
+        add_rect(slide, 0, 0, prs.slide_width, Inches(0.82), p.navy, radius=False)
+        title_w = prs.slide_width - Inches(3.38)
+        title_text = clean_text(task.poster_title, 132)
+        title_size = estimate_fit_font_size(title_text, title_w, Inches(0.48), max_size=21.0, min_size=13.5, bold=True)
+        add_textbox(
+            slide,
+            Inches(0.34),
+            Inches(0.06),
+            title_w,
+            Inches(0.48),
+            title_text,
+            title_size,
+            p.white,
+            True,
+            fit=True,
+            min_font_size=13.5,
+        )
         subtitle = task.paper_info or "AI Agent workflow for paper-to-poster generation"
-        add_textbox(slide, Inches(0.36), Inches(0.45), prs.slide_width - Inches(3.4), Inches(0.24), clean_text(subtitle, 110), 12, RGBColor(224, 236, 250), True)
-        add_textbox(slide, prs.slide_width - Inches(2.80), Inches(0.16), Inches(2.44), Inches(0.38), task.authors or "Auto-generated Poster", 11, p.white, False, PP_ALIGN.RIGHT)
+        add_textbox(slide, Inches(0.36), Inches(0.56), prs.slide_width - Inches(3.4), Inches(0.20), clean_text(subtitle, 120), 10.4, RGBColor(224, 236, 250), True, fit=True, min_font_size=7.5)
+        add_textbox(slide, prs.slide_width - Inches(2.80), Inches(0.13), Inches(2.44), Inches(0.48), clean_text(task.authors or "Auto-generated Poster", 92), 10.3, p.white, False, PP_ALIGN.RIGHT, fit=True, min_font_size=7.0)
 
     def add_footer(self, slide, prs, task: PosterTask):
         p = self.palette
@@ -573,9 +739,9 @@ class ClassicTemplate(DashboardTemplate):
         self.add_header(slide, prs, task)
 
         body_x = Inches(0.12)
-        body_y = Inches(0.92)
+        body_y = Inches(0.98)
         body_w = prs.slide_width - Inches(0.24)
-        body_h = prs.slide_height - Inches(1.48)
+        body_h = prs.slide_height - Inches(1.54)
         grid = Grid(prs, body_x, body_y, body_w, body_h, cols=12, rows=7, gap=Inches(0.10))
         spans = [
             grid.box(0, 0, 4, 4),
@@ -586,7 +752,7 @@ class ClassicTemplate(DashboardTemplate):
             grid.box(8, 4, 4, 3),
         ]
 
-        add_textbox(slide, Inches(0.18), Inches(0.78), prs.slide_width - Inches(0.36), Inches(0.13), "Classic academic poster layout: balanced columns for scanning, comparison and discussion", 7.6, p.muted, False, PP_ALIGN.CENTER)
+        add_textbox(slide, Inches(0.18), Inches(0.84), prs.slide_width - Inches(0.36), Inches(0.13), "Classic academic poster layout: balanced columns for scanning, comparison and discussion", 7.2, p.muted, False, PP_ALIGN.CENTER)
 
         for idx, panel in enumerate(sort_panels_for_dashboard(task.panels)[:6], start=1):
             pos = spans[idx - 1]
@@ -774,9 +940,12 @@ class MinimalTemplate(DashboardTemplate):
     def add_minimal_header(self, slide, prs, task: PosterTask):
         p = self.palette
         add_rect(slide, Inches(0.42), Inches(0.28), Inches(0.08), Inches(0.56), p.accent, radius=False)
-        add_textbox(slide, Inches(0.60), Inches(0.22), prs.slide_width - Inches(3.30), Inches(0.34), clean_text(task.poster_title, 86), 21, p.text, True)
-        add_textbox(slide, Inches(0.60), Inches(0.58), prs.slide_width - Inches(3.30), Inches(0.22), clean_text(task.paper_info or "Paper-to-poster summary", 112), 10.5, p.muted, False)
-        add_textbox(slide, prs.slide_width - Inches(2.80), Inches(0.30), Inches(2.30), Inches(0.34), task.authors or "Auto-generated Poster", 10.2, p.muted, False, PP_ALIGN.RIGHT)
+        title_w = prs.slide_width - Inches(3.30)
+        title_text = clean_text(task.poster_title, 132)
+        title_size = estimate_fit_font_size(title_text, title_w, Inches(0.44), max_size=20.0, min_size=12.8, bold=True)
+        add_textbox(slide, Inches(0.60), Inches(0.18), title_w, Inches(0.44), title_text, title_size, p.text, True, fit=True, min_font_size=12.8)
+        add_textbox(slide, Inches(0.60), Inches(0.64), prs.slide_width - Inches(3.30), Inches(0.20), clean_text(task.paper_info or "Paper-to-poster summary", 120), 9.6, p.muted, False, fit=True, min_font_size=7.0)
+        add_textbox(slide, prs.slide_width - Inches(2.80), Inches(0.26), Inches(2.30), Inches(0.42), clean_text(task.authors or "Auto-generated Poster", 92), 9.8, p.muted, False, PP_ALIGN.RIGHT, fit=True, min_font_size=6.8)
         add_rect(slide, Inches(0.42), Inches(0.96), prs.slide_width - Inches(0.84), Inches(0.02), p.border, radius=False)
 
     def add_minimal_card(self, slide, x, y, w, h, panel: Panel, task: PosterTask, idx: int):
@@ -827,6 +996,7 @@ def choose_template(task: PosterTask, palette: Palette) -> BasePosterTemplate:
 
 
 def generate_dashboard_pptx(task: PosterTask) -> io.BytesIO:
+    bind_available_figures(task)
     palette = choose_palette(task)
     template = choose_template(task, palette)
     return template.render(task)

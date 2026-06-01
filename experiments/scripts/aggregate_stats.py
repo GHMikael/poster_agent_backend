@@ -12,8 +12,9 @@ Multiple-comparison correction:
   to control the false-discovery rate.
 
 For higher-is-better metrics (A1, A2, A4, B1, B2, B3, C1, C2,
-1 - normalized C3) the Wilcoxon alternative is one-sided ``Ours > base``.
-For lower-is-better (A3, D1, D2, D3) it is ``Ours < base``.
+1 - normalized C3, protocol success rates) the Wilcoxon alternative is
+one-sided ``Ours > base``. For lower-is-better (A3, D1, D2, D3,
+iterations-to-converge) it is ``Ours < base``.
 """
 
 from __future__ import annotations
@@ -29,9 +30,14 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 _HIGHER_IS_BETTER = {
     "a1_information_retention", "a2_figure_text_alignment", "a4_section_coverage",
     "b1_layout_rationality", "b2_readability", "b3_academic_compliance",
+    "figure_reuse_rate", "visual_smoke_check",
     "c1_paperquiz", "c2_sus_likert", "c3_time_saving",
+    "action_executability", "convergence_rate", "per_iter_visual_gain",
 }
-_LOWER_IS_BETTER = {"a3_hallucination", "d1_latency", "d2_cost", "d3_failure_rate"}
+_LOWER_IS_BETTER = {
+    "a3_hallucination", "d1_latency", "d2_cost", "d3_failure_rate",
+    "mean_iters_to_converge",
+}
 
 
 def _load_metrics_dir(metrics_dir: Path) -> Dict[str, Dict[str, Dict[str, Any]]]:
@@ -53,7 +59,8 @@ def _split_cell(name: str) -> Tuple[str, str]:
     # gpt4o_zeroshot, paper2poster, posteragent). Heuristic: longest prefix
     # that we know about. Fallback: split on the last underscore-then-digit.
     for candidate in [
-        "ours_svfp", "ours_no_svfp", "gpt4o_zeroshot", "paper2poster", "posteragent",
+        "ours_svfp", "ours_no_svfp", "ours_freeform", "gpt4o_zeroshot",
+        "gpt4o_zeroshot_svfp", "paper2poster", "posteragent",
     ]:
         if name.startswith(candidate + "_"):
             return candidate, name[len(candidate) + 1:]

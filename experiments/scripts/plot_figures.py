@@ -2,7 +2,7 @@
 
 Outputs to ``experiments/results/figures/``:
 
-* ``fig01_quality_bars``   — quality metrics in [0,1] (a4 / b1 / b2 / d3-inv)
+* ``fig01_quality_bars``   — headline quality metrics in [0,1]
 * ``fig02_d1_log_bar``     — wall-clock latency on a log axis
 * ``fig03_d2_cost_bar``    — USD per poster, grouped by baseline
 * ``fig04_d1_d2_pareto``   — cost-vs-latency scatter (Pareto view)
@@ -22,20 +22,20 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 
-_BASELINE_ORDER = ["ours_no_svfp", "gpt4o_zeroshot", "ours_svfp"]
+_BASELINE_ORDER = ["ours_no_svfp", "gpt4o_zeroshot", "gpt4o_zeroshot_svfp", "ours_freeform", "ours_svfp"]
 _BASELINE_COLORS = {
     "ours_no_svfp": "#888888",
     "gpt4o_zeroshot": "#5b8def",
+    "gpt4o_zeroshot_svfp": "#9467bd",
+    "ours_freeform": "#ff9f1c",
     "ours_svfp": "#2ca02c",
 }
 _QUALITY_METRICS = [
     "a1_information_retention",
     "a2_figure_text_alignment",
     "a3_hallucination",
-    "a4_section_coverage",
     "b1_layout_rationality",
     "b2_readability",
-    "c1_paperquiz",
 ]
 
 

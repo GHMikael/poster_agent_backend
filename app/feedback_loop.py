@@ -1,5 +1,6 @@
 import copy
 import json
+import os
 import shutil
 import subprocess
 import tempfile
@@ -420,7 +421,17 @@ class FeedbackApplier:
     # ------------------------------------------------------------------
 
     def _reduce_bullets(self, panel: Panel, target_count: int) -> None:
-        panel.content = [self._shorten(item) for item in panel.content[: max(1, target_count)]]
+        target = max(1, target_count)
+        bullets = [str(item).strip() for item in panel.content if str(item).strip()]
+        if len(bullets) <= target:
+            panel.content = [self._shorten(item) for item in bullets]
+            return
+        if target == 1:
+            panel.content = [self._shorten("; ".join(bullets), 140)]
+            return
+        kept = [self._shorten(item) for item in bullets[: target - 1]]
+        merged_tail = "; ".join(bullets[target - 1 :])
+        panel.content = kept + [self._shorten(merged_tail, 140)]
 
     def _truncate_bullets(self, panel: Panel, max_len: int) -> None:
         panel.content = [self._shorten(b, max_len) for b in panel.content]
@@ -775,10 +786,21 @@ class VisualFeedbackLoop:
 
         current = copy.deepcopy(task)
         max_iterations = max(1, min(current.max_iterations or 1, 20))
+        convergence_detector = ConvergenceDetector(
+            ConvergenceConfig(
+                max_iterations=max_iterations,
+                excellent_threshold=float(os.getenv("POSTER_CONVERGENCE_EXCELLENT", "9.0")),
+                min_delta=float(os.getenv("POSTER_CONVERGENCE_MIN_DELTA", "0.2")),
+                stagnant_patience=int(os.getenv("POSTER_CONVERGENCE_PATIENCE", "1")),
+                adaptive=os.getenv("POSTER_CONVERGENCE_ADAPTIVE", "1") != "0",
+                min_iterations=int(os.getenv("POSTER_CONVERGENCE_MIN_ITERATIONS", "1")),
+            )
+        )
         best_task = copy.deepcopy(current)
         best_score = -1.0
         best_issue_count: Optional[int] = None
         history: List[Dict[str, Any]] = []
+        convergence_states: List[Dict[str, Any]] = []
         stop_reason = "max_iterations_reached"
         converged = False
 
@@ -903,9 +925,14 @@ class VisualFeedbackLoop:
             elif best_issue_count is None or current_issue_count < best_issue_count:
                 best_issue_count = current_issue_count
 
-            if not feedback.global_issues and not feedback.panel_feedback:
+            convergence_state = convergence_detector.update(
+                score=feedback.score,
+                feedback=feedback.to_dict(),
+            )
+            convergence_states.append(convergence_state.to_dict())
+            if convergence_state.converged:
                 converged = True
-                stop_reason = "no_issues"
+                stop_reason = convergence_state.reason
                 break
 
             current = self.applier.apply(current, feedback)
@@ -922,11 +949,13 @@ class VisualFeedbackLoop:
             "converged": converged,
             "convergence_reason": stop_reason,
             "score_curve": [r["score"] for r in history],
+            "per_iter_visual_gain": _mean_positive_delta([r["score"] for r in history]),
             "issue_curve": [
                 len(r["feedback"].get("global_issues") or [])
                 + sum(len(pf.get("issues") or []) for pf in (r["feedback"].get("panel_feedback") or []))
                 for r in history
             ],
+            "convergence_states": convergence_states,
             "vlm_sources": [r["feedback"].get("source") for r in history],
             "best_task_snapshot": best_task.model_dump(),
         }
@@ -1261,6 +1290,13 @@ def check_convergence(
         "iterations_used": detector.iteration,
         "states": [s.to_dict() for s in detector.history],
     }
+
+
+def _mean_positive_delta(scores: List[float]) -> float:
+    if len(scores) < 2:
+        return 0.0
+    deltas = [b - a for a, b in zip(scores, scores[1:]) if b > a]
+    return sum(deltas) / len(deltas) if deltas else 0.0
 
 
 # A standalone convergence demo previously lived here; it is now at

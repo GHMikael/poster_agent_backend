@@ -72,9 +72,9 @@
         "LLMs struggle with context retention and repeated data reading."
       ],
       "figure": null,
-      "figure_id": "Fig1",
-      "figure_caption": "GPT-5 performance on MEMTRACK metrics",
-      "layout_hint": "text_top_image_bottom",
+      "figure_id": "",
+      "figure_caption": "",
+      "layout_hint": "text_only",
       "body_font_scale": 1.0
     },
     {
@@ -112,7 +112,8 @@
       "importance": "high",
       "image_source": "",
       "image_url": "http://host.docker.internal:8000/assets/xxx/Fig1.png",
-      "thumbnail_url": "http://host.docker.internal:8000/assets/xxx/Fig1_thumb.jpg"
+      "thumbnail_url": "http://host.docker.internal:8000/assets/xxx/Fig1_thumb.jpg",
+      "audit_status": "missing_image_file"
     }
   },
   "use_commenter": true,

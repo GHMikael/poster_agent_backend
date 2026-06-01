@@ -9,6 +9,10 @@ class FigureAsset(BaseModel):
     description: str = ""
     best_matched_section: str = ""
     importance: str = "medium"
+    # Optional result from experiments/scripts/audit_figures.py. Empty means
+    # not independently verified; automatic figure binding should treat it as
+    # unsafe for new bindings.
+    audit_status: str = ""
     image_source: str = ""
     image_url: str = ""
     thumbnail_url: str = ""
@@ -71,6 +75,9 @@ class ExtractedFigure(BaseModel):
     image_source: str = ""
     image_url: str = ""
     thumbnail_url: str = ""
+    source_xref: int = 0
+    bbox: List[float] = Field(default_factory=list)
+    extraction_note: str = ""
 
 
 class PdfAssetResponse(BaseModel):

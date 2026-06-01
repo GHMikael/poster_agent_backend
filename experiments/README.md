@@ -1,68 +1,164 @@
-# Experiments — Paper-to-Poster
+# Experiments
 
-Reproduction package for the experiments section. Everything here is **offline / batch**: nothing in this folder is imported by the FastAPI production path.
+Offline/batch evaluation harness for PosterCSP. Nothing here is imported by
+the FastAPI production path except optional telemetry helpers.
+
+## Current Scope
+
+The experiment stack is v5.3/v3-aligned:
+
+- E1 three-arm protocol smoke is implemented:
+  `ours_no_svfp` / `ours_freeform` / `ours_svfp`.
+- E2 cross-planner baseline is implemented:
+  `gpt4o_zeroshot_svfp`.
+- Protocol metrics are first-class:
+  `action_executability`, `convergence_rate`,
+  `mean_iters_to_converge`, `per_iter_visual_gain`.
+- Ceiling metrics (`a4`, current `c1`) are appendix-only.
+- Human/expert metrics (`b3`, `c2`, `c3`) are implemented but pending CSV data.
 
 ## Layout
 
-```
+```text
 experiments/
-├── configs/          YAML configs (default, baselines, metrics) + papers_30.json manifest
-├── datasets/         30 papers (PDFs gitignored), per-paper gold figures/sections/claims
-├── baselines/        4 baselines: ours_svfp, ours_no_svfp, gpt4o_zeroshot, paper2poster, posteragent
-├── metrics/          12 metric implementations (A1-A4 content, B1-B3 visual, C1-C3 user, D1-D3 engineering)
-├── judges/           LLM/VLM-as-judge: claim extractor, NLI, AltCLIP, layout rubric, PaperQuiz gen+answer
-├── scripts/          run_one_paper, run_matrix, compute_metrics, aggregate_stats, plot_figures
-├── results/          artifacts/, metrics/, aggregate/, figures/ (all gitignored)
-├── notebooks/        exploration + paper-figure prep
-├── tools/            shared utilities: experiment_logger, history_logger (moved), pdf_text, pricing
-├── scratch/          ad-hoc dev scripts, never imported
-└── tests/            smoke tests for metrics + baselines
+├── configs/          baselines, metrics, papers_5/papers_30 manifests
+├── datasets/         PDFs and frozen planner_cache snapshots
+├── baselines/        ours_svfp, ours_no_svfp, ours_freeform, gpt4o_zeroshot_svfp, ...
+├── metrics/          content, visual, protocol, user/pending, engineering metrics
+├── judges/           LLM/VLM-as-judge helpers
+├── scripts/          run_matrix, compute_metrics, aggregate_stats, audit_figures, ...
+├── results/          artifacts*, metrics*, aggregate*, figures* (local outputs)
+├── tools/            telemetry, pricing, JSONL helpers
+├── scratch/          ad-hoc scripts, never imported by core
+└── tests/            smoke/unit tests
 ```
 
-## Milestones
+## Preflight Before Official n=30
 
-| Acceptance gate | When | How to verify |
-|---|---|---|
-| **M2** infra ready | 6/01 | `python -m experiments.scripts.run_one_paper --paper <pdf> --baseline ours_svfp` produces poster + all 12 metric outputs in < 8 min |
-| **M3** main data done | 6/08 | `run_matrix` over `configs/papers_30.json × 4 baselines` writes 120 artifacts; `compute_metrics --all` fills `results/metrics/`. ~12 h wall-clock |
-| **M4** figures done | 6/15 | `aggregate_stats` produces `results/aggregate/{aggregate,pairwise}.tsv`; `plot_figures` produces ≥ 10 PDFs in `results/figures/` |
-
-## Running
-
-Prerequisites:
-- The FastAPI backend running at `http://127.0.0.1:8000` (the `Ours*` baselines call it over HTTP).
-- `OPENAI_API_KEY`, `DASHSCOPE_API_KEY` for judges and answerers.
-- Optional: GPU for DeBERTa-v3 NLI (A3) and AltCLIP (A2) — CPU works but slower.
+Run tests:
 
 ```bash
-# M2 smoke (single paper)
-.venv312/bin/python -m experiments.scripts.run_one_paper \
-  --paper experiments/datasets/papers/2405.12345.pdf \
-  --baseline ours_svfp \
-  --out experiments/results/artifacts/_smoke
-
-.venv312/bin/python -m experiments.scripts.compute_metrics \
-  --artifact experiments/results/artifacts/_smoke --metrics all
-
-# M3 full matrix
-.venv312/bin/python -m experiments.scripts.run_matrix \
-  --papers experiments/configs/papers_30.json --baselines all --workers 4
-.venv312/bin/python -m experiments.scripts.compute_metrics --all
-.venv312/bin/python -m experiments.scripts.aggregate_stats --out experiments/results/aggregate/
-.venv312/bin/python -m experiments.scripts.plot_figures --out experiments/results/figures/
+python -m pytest experiments/tests tests
 ```
+
+Run figure audit:
+
+```bash
+python -m experiments.scripts.audit_figures
+python -m experiments.scripts.clean_planner_cache
+```
+
+Run E1 smoke:
+
+```bash
+POSTER_LLM_TIMEOUT_S=15 \
+POSTER_LLM_MAX_RETRIES=1 \
+POSTER_VLM_ALLOW_FALLBACK=0 \
+POSTER_VLM_WALL_TIMEOUT_S=20 \
+python -m experiments.scripts.run_matrix \
+  --papers experiments/configs/papers_5.json \
+  --baselines ours_no_svfp,ours_freeform,ours_svfp \
+  --baselines-yaml experiments/configs/e1_smoke_baselines.yaml \
+  --out experiments/results/artifacts_e1_preflight \
+  --workers 1 \
+  --timeout 300
+```
+
+Compute E1 protocol/engineering metrics:
+
+```bash
+python -m experiments.scripts.compute_metrics \
+  --artifact experiments/results/artifacts_e1_preflight \
+  --metrics action_executability,convergence_rate,mean_iters_to_converge,per_iter_visual_gain,d1_latency,d2_cost,d3_failure_rate \
+  --papers-manifest experiments/configs/papers_5.json \
+  --out experiments/results/metrics_e1_preflight
+
+python -m experiments.scripts.aggregate_stats \
+  --metrics-dir experiments/results/metrics_e1_preflight \
+  --out experiments/results/aggregate_e1_preflight \
+  --reference ours_svfp
+```
+
+Run one E2 cross-planner preflight:
+
+```bash
+POSTER_LLM_TIMEOUT_S=10 \
+POSTER_LLM_MAX_RETRIES=1 \
+POSTER_VLM_ALLOW_FALLBACK=0 \
+POSTER_VLM_WALL_TIMEOUT_S=12 \
+python -m experiments.scripts.run_one_paper \
+  --paper experiments/datasets/papers/多模态预训练_4DE028.pdf \
+  --baseline gpt4o_zeroshot_svfp \
+  --baselines-yaml experiments/configs/e1_smoke_baselines.yaml \
+  --out experiments/results/artifacts_e2_preflight \
+  --timeout 90
+```
+
+## Official Matrix Template
+
+Run only after preflight gates pass.
+
+```bash
+POSTER_LLM_TIMEOUT_S=10 \
+POSTER_LLM_MAX_RETRIES=1 \
+POSTER_VLM_ALLOW_FALLBACK=0 \
+POSTER_VLM_WALL_TIMEOUT_S=12 \
+python -m experiments.scripts.run_matrix \
+  --papers experiments/configs/papers_30.json \
+  --baselines ours_no_svfp,ours_freeform,ours_svfp,gpt4o_zeroshot_svfp \
+  --baselines-yaml experiments/configs/baselines.yaml \
+  --out experiments/results/artifacts \
+  --workers 1 \
+  --timeout 900
+
+python -m experiments.scripts.compute_metrics \
+  --all \
+  --metrics all \
+  --papers-manifest experiments/configs/papers_30.json \
+  --out experiments/results/metrics
+
+python -m experiments.scripts.aggregate_stats \
+  --metrics-dir experiments/results/metrics \
+  --out experiments/results/aggregate \
+  --reference ours_svfp
+```
+
+## Metric Policy
+
+| Scope | Metrics | Notes |
+|---|---|---|
+| Headline content | `a1`, `a2`, `a3` | A3 uses contradiction-only hallucination. |
+| Headline visual | `b1`, `b2` | Needs independent/human validation before final claim strength. |
+| Headline protocol | `action_executability`, `convergence_rate`, `mean_iters_to_converge`, `per_iter_visual_gain` | E1 main evidence. |
+| Headline engineering | `d1`, `d2`, `d3` | Use Pareto framing, not "fast" claims. |
+| Appendix sanity | `a4`, current `c1` | Kept for reproducibility, excluded from headline. |
+| Pending data | `b3`, `c2`, `c3` | Require expert/user-study CSVs. |
+
+Do not delete metric files just because they are appendix or pending. Use
+`experiments/configs/metrics.yaml` and table scripts to control reporting.
 
 ## Instrumentation
 
-When `POSTER_EXPERIMENT_MODE=1` is set, `app/feedback_loop.py` and `app/vlm_commenter.py` emit per-call JSONL events (token counts, latency, raw VLM responses, soffice exit codes) into `$POSTER_EXPERIMENT_LOG`. With the env unset (production default), the hook is a single `None` check — zero overhead.
+`POSTER_EXPERIMENT_MODE=1` makes baselines write per-cell
+`experiment_log.jsonl`. `d1_latency` and `d2_cost` read that log directly.
 
-## Statistical analysis
+Recommended latency guards:
 
-See `scripts/aggregate_stats.py`. For each (metric, baseline) cell:
+```bash
+export POSTER_LLM_TIMEOUT_S=10
+export POSTER_LLM_MAX_RETRIES=1
+export POSTER_VLM_ALLOW_FALLBACK=0
+export POSTER_VLM_WALL_TIMEOUT_S=12
+```
 
-- mean ± 95% bootstrap CI (BCa, n=1000)
-- Wilcoxon signed-rank Ours-SVFP vs each of 3 baselines, paired by paper
-- Bonferroni α=0.05/3 within a metric; Benjamini-Hochberg FDR q=0.10 across all 36 (metric × baseline) tests
-- rank-biserial r and Cohen's d effect sizes (both reported because n=30)
+## Statistical Analysis
 
-User study (C2/C3) is pilot-scale (n=10-15): descriptives + within-subject paired diffs only, no inferential stats.
+`aggregate_stats.py` reports:
+
+- mean + bootstrap CI per metric/baseline
+- Wilcoxon signed-rank pairwise tests vs reference
+- Bonferroni and BH-FDR fields
+- Cohen's d and rank-biserial r
+
+At n=5, treat all inferential stats as smoke/trend only. Official claims need
+n=30 plus independent visual validation.

@@ -14,9 +14,8 @@ a2_figure_text_alignment:
   embedder: BAAI/AltCLIP-XLMR-L
   enabled: true
 a3_hallucination:
-  contradict_max: 0.3
+  contradict_min: 0.5
   enabled: true
-  entail_min: 0.4
   llm_nli:
     model: Qwen/Qwen3-32B
   nli_model: MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli
@@ -36,6 +35,8 @@ a4_section_coverage:
   - Results
   - Conclusion
   enabled: true
+  report_scope: appendix
+  v2_note: "Template-enforced sanity check; excluded from headline tables because it saturates."
   levenshtein_min: 0.8
   llm_fallback_judge:
     model: Qwen/Qwen3-32B
@@ -64,6 +65,8 @@ b2_readability:
   font_pt_reference: 24
 b3_academic_compliance:
   enabled: true
+  report_scope: pending_human
+  v3_note: "Requires expert_ratings.csv; keep implementation for appendix/user-study extension, exclude from headline until data exists."
   rubric_items:
   - title_accuracy
   - author_completeness
@@ -71,24 +74,50 @@ b3_academic_compliance:
   - citation_compliance
   - section_order
   source_csv: experiments/results/expert_ratings.csv
+figure_reuse_rate:
+  enabled: true
+  report_scope: headline_visual_support
+  v3_note: "Structural metric: valid original figures referenced by panels / valid source figures. Semantic alignment remains A2/audit."
+visual_smoke_check:
+  enabled: true
+  report_scope: preflight_quality_gate
+  v3_note: "Cheap PPTX structural guard for text overflow, ellipsis pressure and top-banner overlaps before n=30."
 c1_paperquiz:
   answerers:
   - id: qwen_vl_32b
     model: Qwen/Qwen3-VL-32B-Instruct
     temperature: 0.0
   enabled: true
+  report_scope: appendix
+  v2_note: "Current 5-MCQ version saturates; redesign before using as a headline metric."
   question_generator:
     max_paper_chars: 16000
     model: Qwen/Qwen3-32B
     n_questions: 5
 c2_sus_likert:
   enabled: true
+  report_scope: pending_human
+  v3_note: "Requires user-study CSV; not part of pre-n=30 automated smoke."
   source_csv: experiments/results/user_study/sus_likert.csv
   target_n: 12
 c3_time_saving:
   enabled: true
+  report_scope: pending_human
+  v3_note: "Requires user-study CSV; not part of pre-n=30 automated smoke."
   source_csv: experiments/results/user_study/timing.csv
   target_n: 12
+action_executability:
+  enabled: true
+  report_scope: headline_protocol
+convergence_rate:
+  enabled: true
+  report_scope: headline_protocol
+mean_iters_to_converge:
+  enabled: true
+  report_scope: headline_protocol
+per_iter_visual_gain:
+  enabled: true
+  report_scope: headline_protocol
 d1_latency:
   enabled: true
   source: experiment_log.jsonl

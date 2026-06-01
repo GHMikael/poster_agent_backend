@@ -2,11 +2,11 @@
 
 # PosterCSP — Paper-to-Poster Backend
 
-> **当前版本：v5.2** · FastAPI 后端 + **SVFP**（Structured Visual Feedback Protocol，结构化视觉反馈协议）+ 可复现的 **CS-Poster-30** 评测框架。
+> **当前版本：v5.3** · FastAPI 后端 + **SVFP**（Structured Visual Feedback Protocol，结构化视觉反馈协议）+ 可复现的 **CS-Poster-30** 评测框架。
 
 给定一篇 CS 论文 PDF，系统通过 Dify **Chatflow**（内容规划）与 Python 渲染器（可选 **SVFP 闭环**：VLM 批评 → 确定性修复 → 收敛留痕）生成可编辑的 A3 学术海报 PPTX。长耗时任务采用 **异步 HTTP + 服务端长轮询**，适配 Dify。
 
-**研究方向（v2）：** 一主（**SVFP 协议**）两从（**CS-Poster-30 基准** + **CS 垂直实例化**）。5 篇试点数据后的方向修正详见 [`RESEARCH_DIRECTION_v2.md`](RESEARCH_DIRECTION_v2.md)。
+**研究方向（v3）：** SVFP 仍是主贡献；当前已补齐 E1/E2 预检链路、VLM 延迟边界、图抽取过滤与协议级指标。当前状态与后续优化见 [`RESEARCH_DIRECTION_v3.md`](RESEARCH_DIRECTION_v3.md)。
 
 ---
 
@@ -15,10 +15,10 @@
 | | |
 |---|---|
 | **是** | 一种 **planner-agnostic** 的结构化视觉反馈协议（4 类 issue × 9 个原子动作），可挂在任意 poster planner 之后 |
-| **是** | 可复现的 **CS-Poster-30** 流水线（30 份冻结规划快照、12 项指标套件、L0→L8 脚本） |
+| **是** | 可复现的 **CS-Poster-30** 流水线（30 份冻结规划快照、headline/appendix/protocol 指标、L0→L8 脚本） |
 | **不是** | 「结构化规划在内容召回上优于 zero-shot」（试点：a1 低于 gpt4o_zeroshot） |
-| **不是** | 「轻量高效系统」（试点：SVFP ~160 s vs 无闭环 38 ms vs zero-shot 23 s） |
-| **不是** | 「100% 原图复用」的已证结论（图 pipeline 审计 B1 进行中） |
+| **不是** | 「SVFP 比无反馈更快」的系统；当前应写成质量-延迟 Pareto |
+| **不是** | 「100% 原图复用」的已证结论；图抽取已加过滤和审计，但复用率仍需正式度量 |
 
 **一句话定位（论文用）：**
 
@@ -26,19 +26,20 @@
 
 ---
 
-## 版本概览（v5.2）
+## 版本概览（v5.3）
 
 | 模块 | 能力 |
 |------|------|
-| **SVFP 协议** | 4 类 root-cause issue × 9 确定性 action；FSM 式收敛；**仅改排版、不改 bullet 文本**（设计决定） |
-| **E1 基线** | `ours_freeform` — 自由文本 VLM 批评 + LLM best-effort 改写（closed-set vs free-form 对照臂） |
+| **SVFP 协议** | 4 类 root-cause issue × 9 确定性 action；可配置收敛；VLM 调用有 timeout/硬超时边界 |
+| **E1 基线** | `ours_freeform` — 自由文本 VLM 批评 + LLM best-effort 改写；失败记录为不可执行反馈，不再让 cell 崩溃 |
+| **E2 基线** | `gpt4o_zeroshot_svfp` — zero-shot planner 后接 SVFP，用于验证 planner-agnostic |
 | **A3 修复** | NLI 幻觉：中立/弃权不再误判为幻觉；拆分 `contradicted_rate` 与 `unsupported_rate` |
-| **图污染体检** | `audit_figures.py` — VLM 对齐扫描 planner_cache 中的错图（B1 诊断） |
+| **图 pipeline** | PDF 抽图过滤低信息图片，记录 xref/bbox 元数据，并支持 VLM 图审计 |
 | **Planner 缓存** | 30 份冻结 `PosterTask`；错图引用清理；`clean_planner_cache.py` |
 | **Dify Chatflow** | 三 Agent 流水线；Prompt 见 `dify/prompts/` |
 | **批跑** | `batch_dify_runs.py` 通过 API 批量触发 Chatflow |
 | **渲染器** | 4 模板 × 4 主题；六模块 CS domain prior；异步 Job + 运行归档 |
-| **实验** | 基线：`ours_svfp` · `ours_no_svfp` · `ours_freeform` · `gpt4o_zeroshot` · 外部 SOTA（可选） |
+| **实验** | 基线：`ours_svfp` · `ours_no_svfp` · `ours_freeform` · `gpt4o_zeroshot` · `gpt4o_zeroshot_svfp` · 外部 SOTA（可选） |
 
 **演进主线**
 
@@ -46,6 +47,7 @@
 - **v5.0**：实验框架、5 篇试点、JSONL 遥测
 - **v5.1**：Dify 批跑、30 份 planner 快照、L0→L8 文档
 - **v5.2**：研究重锚（PosterCSP / SVFP 脊柱）、E1 free-form 基线、A3 指标修复、图审计 + planner 清理
+- **v5.3**：VLM 延迟边界、PDF 图过滤、协议级指标、E1 smoke、E2 cross-planner baseline、v3 规划文档
 
 ---
 
@@ -62,9 +64,9 @@
 | 工程 | D1 延迟 (ms) | 23,025 | **38** | 160,612 | 质量–延迟 trade-off |
 | 工程 | D2 成本 ($) | **0.004** | 0 | 0.012 | 多轮 VLM 成本 |
 
-**设计事实：** `ours_svfp` 与 `ours_no_svfp` 唯一区别是 `use_commenter`，所有修复**只改排版**，故二者在内容指标上逐篇完全相同——这是设计决定，不是 bug。
+**历史 pilot 注记：** 原始 n=5 pilot 中 `ours_svfp` 与 `ours_no_svfp` 内容指标相同，因为当时闭环几乎只改排版。v5.3 已把 `reduce_bullet_count` 改为内容保留式合并，因此新的内容指标必须重算后再下结论。
 
-**待做实验：** E1 三臂（无反馈 / 自由反馈 / SVFP）、E4 n=30 矩阵、B1 图 pipeline 修复。完整 backlog 见 [`RESEARCH_DIRECTION_v2.md`](RESEARCH_DIRECTION_v2.md)。
+**当前状态：** E1/E2 预检链路已实现并 smoke-tested。正式 n=30、独立视觉验证、E3 消融、人评、外部 SOTA 仍未完成。见 [`RESEARCH_DIRECTION_v3.md`](RESEARCH_DIRECTION_v3.md)。
 
 ---
 
@@ -101,10 +103,10 @@ poster_agent_backend/
 ├── dify/                        # Chatflow 设计与 Agent Prompt
 ├── experiments/
 │   ├── baselines/               # ours_svfp, ours_no_svfp, ours_freeform, …
-│   ├── metrics/                 # A1–A4, B1–B3, C1–C3, D1–D3
+│   ├── metrics/                 # 内容、视觉、协议、用户/待补、工程指标
 │   ├── scripts/                 # batch_dify_runs, run_matrix, audit_figures, …
 │   └── datasets/planner_cache/  # 30 份冻结 PosterTask 快照
-├── RESEARCH_DIRECTION_v2.md     # 研究方向与实验 backlog（必读）
+├── RESEARCH_DIRECTION_v3.md     # 当前技术状态与下一步优化计划
 ├── INTERNAL_EXPERIMENT_GUIDE.md # L0→L8 逐步操作手册
 └── .env.example
 ```
@@ -171,13 +173,14 @@ python -m experiments.tools.run_analysis outputs/runs/<run_folder>/run_report.js
 | `ours_no_svfp` | 同渲染器、无反馈（布局消融） |
 | `ours_freeform` | 自由文本 VLM 批评 + LLM 改写（E1 臂） |
 | `gpt4o_zeroshot` | 仅 LLM 规划，同渲染器与同模板 |
+| `gpt4o_zeroshot_svfp` | zero-shot planner + SVFP 后处理（E2 臂） |
 
 **完整矩阵（本地）**
 
 ```bash
 python -m experiments.scripts.run_matrix \
   --papers experiments/configs/papers_30.json \
-  --baselines ours_svfp,ours_no_svfp,ours_freeform,gpt4o_zeroshot
+  --baselines ours_no_svfp,ours_freeform,ours_svfp,gpt4o_zeroshot_svfp
 python -m experiments.scripts.compute_metrics --all
 python -m experiments.scripts.aggregate_stats --out experiments/results/aggregate/
 python -m experiments.scripts.print_paper_table
@@ -201,6 +204,9 @@ python experiments/scripts/audit_figures.py --limit 3   # 小规模验证
 | `DASHSCOPE_API_KEY` | Qwen-VL 评审 + Judge |
 | `OPENAI_API_KEY` | 指标 Judge（OpenAI 兼容） |
 | `POSTER_EXPERIMENT_MODE` | `1` = 每次运行写 JSONL 遥测 |
+| `POSTER_LLM_TIMEOUT_S` | 文本/VLM SDK 请求 timeout |
+| `POSTER_VLM_WALL_TIMEOUT_S` | SVFP VLM 审查硬超时 |
+| `POSTER_VLM_ALLOW_FALLBACK` | 实验中设 `0`，避免第二次非 JSON VLM 长调用 |
 | `DIFY_API_KEY` / `DIFY_BASE_URL` | 批量触发 Chatflow |
 | `DIFY_WORKFLOW_INPUT_NAME` | Start 节点 PDF 变量名（默认 `paper`） |
 
@@ -222,7 +228,8 @@ python -m pytest experiments/tests/ -q
 | 文档 | 读者 | 内容 |
 |------|------|------|
 | **README**（本文） | 新克隆者 | 概览、快速开始、诚实试点摘要 |
-| [`RESEARCH_DIRECTION_v2.md`](RESEARCH_DIRECTION_v2.md) | 论文作者 | 定位、指标 v2、实验 backlog |
+| [`RESEARCH_DIRECTION_v3.md`](RESEARCH_DIRECTION_v3.md) | 论文作者 | 当前状态、剩余风险、下一步优化计划 |
+| [`RESEARCH_DIRECTION_v2.md`](RESEARCH_DIRECTION_v2.md) | 论文作者 | 历史 v2 转向与原始 backlog |
 | [`INTERNAL_EXPERIMENT_GUIDE.md`](INTERNAL_EXPERIMENT_GUIDE.md) | 操作者 | L0→L8 命令与避坑 |
 | [`dify/DIFY_WORKFLOW_AND_PAPER_DESIGN.md`](dify/DIFY_WORKFLOW_AND_PAPER_DESIGN.md) | 方法章节 | Chatflow 拓扑与 Agent 设计 |
 

@@ -18,16 +18,18 @@ from __future__ import annotations
 
 import copy
 import json
+import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from app.config import QWEN_VL_MODEL
-from app.feedback_loop import render_pptx_to_png
+from app.feedback_loop import HeuristicLayoutChecker, render_pptx_to_png
 from app.models import PosterTask
 from app.ppt_renderer import generate_dashboard_pptx
 from experiments.baselines.base import BaselineRunner, PosterArtifact
 from experiments.baselines._planner_shared import cached_plan, extract_assets, heuristic_plan
 from experiments.tools.llm_client import parse_json, text_chat, vlm_chat
+from experiments.tools.experiment_logger import get_logger_from_env
 
 __all__ = ["OursFreeformRunner", "run_freeform_loop", "freeform_critique", "freeform_apply"]
 
@@ -153,26 +155,108 @@ def run_freeform_loop(task: PosterTask, max_iterations: int, *, work_dir: Path,
     n_executed = 0
     content_drift = False
     stop_reason = "max_iterations_reached"
+    visual_scores: List[float] = []
+    visual_gains: List[float] = []
+    visual_checker = HeuristicLayoutChecker()
 
     for it in range(1, max(1, max_iterations) + 1):
+        iter_t0 = time.perf_counter()
+        stage_t = time.perf_counter()
         pptx_buf = generate_dashboard_pptx(current)
         pptx_path = work_dir / f"freeform_iter_{it}.pptx"
         pptx_path.write_bytes(pptx_buf.getvalue())
+        if experiment_logger is not None:
+            experiment_logger.log_stage(
+                stage="freeform_pptx_gen",
+                latency_ms=(time.perf_counter() - stage_t) * 1000,
+                extra={"iteration": it, "size_bytes": len(pptx_buf.getvalue())},
+            )
+        stage_t = time.perf_counter()
         shot = render_pptx_to_png(pptx_path, work_dir)
+        if experiment_logger is not None:
+            experiment_logger.log_stage(
+                stage="freeform_png_render",
+                latency_ms=(time.perf_counter() - stage_t) * 1000,
+                extra={"iteration": it, "ok": shot is not None},
+            )
         if not shot:
-            history.append({"iteration": it, "executable": False, "reason": "no_screenshot"})
+            score_before = visual_checker.check(current, source="freeform_heuristic").score
+            visual_scores.append(score_before)
+            history.append({
+                "iteration": it,
+                "executable": False,
+                "reason": "no_screenshot",
+                "score_before": score_before,
+                "score_after": score_before,
+                "visual_gain": 0.0,
+            })
             stop_reason = "no_screenshot"
             break
 
-        critique = freeform_critique(Path(shot), experiment_logger=experiment_logger)
+        score_before = visual_checker.check(current, source="freeform_heuristic").score
+        visual_scores.append(score_before)
+        stage_t = time.perf_counter()
+        try:
+            critique = freeform_critique(Path(shot), experiment_logger=experiment_logger)
+        except Exception as exc:
+            reason = f"critique_failed:{type(exc).__name__}"
+            critique = ""
+            history.append({
+                "iteration": it,
+                "executable": False,
+                "reason": reason,
+                "content_changed": False,
+                "critique": "",
+                "score_before": score_before,
+                "score_after": score_before,
+                "visual_gain": 0.0,
+            })
+            stop_reason = f"stuck:{reason}"
+            if experiment_logger is not None:
+                experiment_logger.log_stage(
+                    stage="freeform_critique_total",
+                    latency_ms=(time.perf_counter() - stage_t) * 1000,
+                    extra={"iteration": it, "ok": False, "reason": reason},
+                )
+                experiment_logger.log_stage(
+                    stage="iteration_total",
+                    latency_ms=(time.perf_counter() - iter_t0) * 1000,
+                    extra={"iteration": it, "executable": False},
+                )
+            break
+        if experiment_logger is not None:
+            experiment_logger.log_stage(
+                stage="freeform_critique_total",
+                latency_ms=(time.perf_counter() - stage_t) * 1000,
+                extra={"iteration": it},
+            )
         n_attempts += 1
+        stage_t = time.perf_counter()
         new_task, ok, reason, changed = freeform_apply(
             current, critique, experiment_logger=experiment_logger)
+        if experiment_logger is not None:
+            experiment_logger.log_stage(
+                stage="freeform_apply_total",
+                latency_ms=(time.perf_counter() - stage_t) * 1000,
+                extra={"iteration": it, "ok": ok, "reason": reason},
+            )
         content_drift = content_drift or changed
+        score_after = visual_checker.check(new_task if ok else current, source="freeform_heuristic").score
+        gain = max(0.0, score_after - score_before) if ok else 0.0
+        visual_gains.append(gain)
         history.append({
             "iteration": it, "executable": ok, "reason": reason,
             "content_changed": changed, "critique": (critique or "")[:600],
+            "score_before": score_before,
+            "score_after": score_after,
+            "visual_gain": gain,
         })
+        if experiment_logger is not None:
+            experiment_logger.log_stage(
+                stage="iteration_total",
+                latency_ms=(time.perf_counter() - iter_t0) * 1000,
+                extra={"iteration": it, "executable": ok},
+            )
         if ok:
             n_executed += 1
             current = new_task
@@ -193,6 +277,8 @@ def run_freeform_loop(task: PosterTask, max_iterations: int, *, work_dir: Path,
         "n_attempts": n_attempts,
         "n_executed": n_executed,
         "action_executability": (n_executed / n_attempts) if n_attempts else 0.0,
+        "per_iter_visual_gain": (sum(visual_gains) / len(visual_gains)) if visual_gains else 0.0,
+        "score_curve": visual_scores,
         "content_drift": content_drift,
         "convergence_reason": stop_reason,
         "final_path": str(final_path),
@@ -222,7 +308,13 @@ class OursFreeformRunner(BaselineRunner):
             task.use_commenter = False  # we drive our own free-form loop
             task.max_iterations = self.max_iterations
 
-            result = run_freeform_loop(task, self.max_iterations, work_dir=cell_dir)
+            logger = get_logger_from_env(run_id=f"freeform_{paper_path.stem}")
+            result = run_freeform_loop(
+                task,
+                self.max_iterations,
+                work_dir=cell_dir,
+                experiment_logger=logger,
+            )
 
             meta.config.update({
                 "planner_source": planner_source,
@@ -230,11 +322,21 @@ class OursFreeformRunner(BaselineRunner):
                 "action_executability": result["action_executability"],
                 "n_executed": result["n_executed"],
                 "n_attempts": result["n_attempts"],
+                "n_iterations": result["n_iterations"],
+                "converged": result["convergence_reason"] not in {
+                    "max_iterations_reached",
+                    "no_screenshot",
+                } and not str(result["convergence_reason"]).startswith("stuck:"),
                 "content_drift": result["content_drift"],
                 "convergence_reason": result["convergence_reason"],
+                "per_iter_visual_gain": result["per_iter_visual_gain"],
             })
             (cell_dir / "freeform_trace.json").write_text(
                 json.dumps(result["history"], ensure_ascii=False, indent=2), encoding="utf-8")
+            try:
+                logger.close()
+            except Exception:
+                pass
 
             dest_pptx = cell_dir / "poster.pptx"
             return self._finish(

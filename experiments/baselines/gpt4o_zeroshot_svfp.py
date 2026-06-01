@@ -1,8 +1,4 @@
-"""Ours — full SVFP feedback loop baseline.
-
-Pipeline: PDF → :func:`heuristic_plan` (M2) or :func:`gpt4o_plan` (M3) →
-:class:`VisualFeedbackLoop` (use_commenter=True, max_iterations=4).
-"""
+"""Cross-planner E2 baseline: zero-shot planner + SVFP post-processor."""
 
 from __future__ import annotations
 
@@ -11,48 +7,64 @@ from typing import Any, Dict, Optional
 
 from app.feedback_loop import VisualFeedbackLoop
 from experiments.baselines.base import BaselineRunner, PosterArtifact
-from experiments.baselines._planner_shared import cached_plan, extract_assets, heuristic_plan
+from experiments.baselines._planner_shared import extract_assets
 
 
-__all__ = ["OursSVFPRunner"]
+__all__ = ["GPT4oZeroShotSVFPRunner"]
 
 
-class OursSVFPRunner(BaselineRunner):
-    name = "ours_svfp"
+class GPT4oZeroShotSVFPRunner(BaselineRunner):
+    name = "gpt4o_zeroshot_svfp"
 
     def __init__(self, config: Optional[Dict[str, Any]] = None) -> None:
         super().__init__(config)
-        self.max_iterations = int(self.config.get("max_iterations", 4))
-        self.use_gpt4o_planner = bool(self.config.get("use_gpt4o_planner", False))
+        self.model = self.config.get("model", "Qwen/Qwen3-32B")
+        self.temperature = float(self.config.get("temperature", 0.2))
+        self.api_key_env = self.config.get("api_key_env", "DASHSCOPE_API_KEY")
+        self.base_url = self.config.get("base_url")
+        self.max_iterations = int(self.config.get("max_iterations", 2))
 
     def run(
         self,
         paper_path: Path,
         out_dir: Path,
         *,
-        timeout_s: int = 1800,
+        timeout_s: int = 900,
     ) -> PosterArtifact:
         cell_dir, log_path, meta, t0 = self._begin(paper_path, out_dir)
         try:
-            # Planner priority:
-            #   1. planner_cache/<arxiv_id>.json  (Dify production replay)
-            #   2. heuristic_plan() (M2 fallback)
-            # The M3 GPT-4o planner becomes a third tier when use_gpt4o_planner=True.
-            task = cached_plan(paper_path)
-            planner_source = "dify_cache"
-            if task is None:
-                assets = extract_assets(paper_path)
-                meta.paper_title = assets.title
-                task = heuristic_plan(assets)
-                planner_source = "heuristic"
-            else:
-                meta.paper_title = task.poster_title
+            from experiments.judges.gpt4o_planner import plan_poster
+            from experiments.tools.experiment_logger import get_logger_from_env
+        except (ImportError, NotImplementedError) as exc:
+            return self._finish(
+                cell_dir=cell_dir, meta=meta, t0=t0,
+                pptx_path=None, panels_json=None, log_path=log_path,
+                exit_code=2, error=f"planner unavailable: {exc}",
+            )
 
+        try:
+            assets = extract_assets(paper_path)
+            meta.paper_title = assets.title
+            logger = get_logger_from_env(run_id=f"{self.name}_{paper_path.stem}")
+
+            task = plan_poster(
+                assets,
+                model=self.model,
+                temperature=self.temperature,
+                api_key_env=self.api_key_env,
+                base_url=self.base_url,
+                experiment_logger=logger,
+            )
             task.use_commenter = True
             task.max_iterations = self.max_iterations
-            meta.config["planner_source"] = planner_source
 
-            result = VisualFeedbackLoop().run(task)
+            meta.config.update({
+                "planner_source": f"llm_zeroshot:{self.model}",
+                "feedback_mode": "svfp_closed_set",
+                "cross_planner": True,
+            })
+
+            result = VisualFeedbackLoop(experiment_logger=logger).run(task)
             history = result.get("history") or []
             issue_counts = [
                 len((r.get("feedback") or {}).get("global_issues") or [])
@@ -63,7 +75,6 @@ class OursSVFPRunner(BaselineRunner):
             scores = [float(r.get("score", 0.0)) for r in history]
             positive_deltas = [b - a for a, b in zip(scores, scores[1:]) if b > a]
             meta.config.update({
-                "feedback_mode": "svfp_closed_set",
                 "action_executability": 1.0 if n_feedback_items > 0 else None,
                 "n_executed": n_feedback_items,
                 "n_attempts": n_feedback_items,
@@ -75,14 +86,12 @@ class OursSVFPRunner(BaselineRunner):
                 ),
             })
 
-            # Copy the run's final pptx into the cell dir so all baselines
-            # share a uniform on-disk layout for compute_metrics.
             src_pptx = Path(result["final_path"])
             dest_pptx = cell_dir / "poster.pptx"
             if src_pptx.exists():
                 dest_pptx.write_bytes(src_pptx.read_bytes())
 
-            panels_json = result.get("task")  # PosterTask object
+            panels_json = result.get("task")
             return self._finish(
                 cell_dir=cell_dir,
                 meta=meta,
@@ -93,12 +102,7 @@ class OursSVFPRunner(BaselineRunner):
             )
         except Exception as exc:
             return self._finish(
-                cell_dir=cell_dir,
-                meta=meta,
-                t0=t0,
-                pptx_path=None,
-                panels_json=None,
-                log_path=log_path,
-                exit_code=1,
-                error=f"{type(exc).__name__}: {exc}",
+                cell_dir=cell_dir, meta=meta, t0=t0,
+                pptx_path=None, panels_json=None, log_path=log_path,
+                exit_code=1, error=f"{type(exc).__name__}: {exc}",
             )

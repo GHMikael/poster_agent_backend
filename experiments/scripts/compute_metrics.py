@@ -39,10 +39,14 @@ def _import_all_metrics() -> None:
         "experiments.metrics.b1_layout_rationality",
         "experiments.metrics.b2_readability",
         "experiments.metrics.b3_academic_compliance",
+        "experiments.metrics.figure_reuse_rate",
+        "experiments.metrics.visual_smoke_check",
         # User
         "experiments.metrics.c1_paperquiz",
         "experiments.metrics.c2_sus_likert",
         "experiments.metrics.c3_time_saving",
+        # Protocol
+        "experiments.metrics.protocol_metrics",
         # Engineering
         "experiments.metrics.d1_latency",
         "experiments.metrics.d2_cost",

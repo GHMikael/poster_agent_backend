@@ -45,7 +45,14 @@ class OursNoSVFPRunner(BaselineRunner):
 
             task.use_commenter = False
             task.max_iterations = 1
-            meta.config["planner_source"] = planner_source
+            meta.config.update({
+                "planner_source": planner_source,
+                "feedback_mode": "none",
+                "n_iterations": 0,
+                "converged": None,
+                "convergence_reason": "no_feedback",
+                "per_iter_visual_gain": None,
+            })
 
             pptx_buf = generate_dashboard_pptx(task)
             dest_pptx = cell_dir / "poster.pptx"

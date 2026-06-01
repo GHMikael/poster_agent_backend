@@ -26,6 +26,9 @@ from __future__ import annotations
 import base64
 import io
 import json
+import os
+import signal
+import threading
 from enum import Enum
 from typing import Any, Dict, Iterable, List, Optional
 
@@ -473,7 +476,13 @@ JSON schema:
 """.strip()
 
     try:
-        client = OpenAI(api_key=DASHSCOPE_API_KEY, base_url="https://api.siliconflow.cn/v1")
+        timeout_s = float(os.getenv("POSTER_LLM_TIMEOUT_S", "60"))
+        client = OpenAI(
+            api_key=DASHSCOPE_API_KEY,
+            base_url="https://api.siliconflow.cn/v1",
+            timeout=timeout_s,
+            max_retries=0,
+        )
         kwargs: Dict[str, Any] = dict(
             model=QWEN_VL_MODEL,
             messages=[
@@ -488,21 +497,46 @@ JSON schema:
             temperature=0.1,
             max_tokens=1800,
         )
-        # Some OpenAI-compatible endpoints (incl. SiliconFlow Qwen-VL) accept
-        # response_format; others reject it. Try the strict mode first and
-        # silently retry without it if the server complains.
+        # Some OpenAI-compatible endpoints accept response_format; others
+        # reject it. In experiment mode the fallback is disabled by default
+        # because a second long VLM request can dominate D1 latency.
         import time as _time
 
         _t0 = _time.perf_counter()
         retries = 0
+        strict_json = os.getenv("POSTER_VLM_JSON_MODE", "1") != "0"
+        allow_fallback = os.getenv("POSTER_VLM_ALLOW_FALLBACK", "0") == "1"
+        wall_timeout_s = float(os.getenv("POSTER_VLM_WALL_TIMEOUT_S", "0"))
+        alarm_enabled = (
+            wall_timeout_s > 0
+            and hasattr(signal, "SIGALRM")
+            and threading.current_thread() is threading.main_thread()
+        )
+        previous_handler = None
+        if alarm_enabled:
+            def _raise_timeout(_signum: int, _frame: Any) -> None:
+                raise TimeoutError(f"VLM wall timeout after {wall_timeout_s:.1f}s")
+
+            previous_handler = signal.getsignal(signal.SIGALRM)
+            signal.signal(signal.SIGALRM, _raise_timeout)
+            signal.setitimer(signal.ITIMER_REAL, wall_timeout_s)
         try:
-            resp = client.chat.completions.create(
-                response_format={"type": "json_object"},
-                **kwargs,
-            )
+            if strict_json:
+                resp = client.chat.completions.create(
+                    response_format={"type": "json_object"},
+                    **kwargs,
+                )
+            else:
+                resp = client.chat.completions.create(**kwargs)
         except Exception:
+            if not allow_fallback or not strict_json:
+                raise
             retries = 1
             resp = client.chat.completions.create(**kwargs)
+        finally:
+            if alarm_enabled:
+                signal.setitimer(signal.ITIMER_REAL, 0)
+                signal.signal(signal.SIGALRM, previous_handler)
         _latency_ms = (_time.perf_counter() - _t0) * 1000
 
         content = (resp.choices[0].message.content or "").strip()

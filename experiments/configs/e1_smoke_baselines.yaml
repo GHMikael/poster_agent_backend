@@ -1,0 +1,34 @@
+baselines:
+  - name: ours_no_svfp
+    module: experiments.baselines.ours_no_svfp
+    class: OursNoSVFPRunner
+    description: E1 smoke no-feedback arm.
+    use_commenter: false
+    max_iterations: 1
+    timeout_s: 600
+
+  - name: ours_freeform
+    module: experiments.baselines.ours_freeform
+    class: OursFreeformRunner
+    description: E1 smoke free-form feedback arm with 2 iterations.
+    max_iterations: 2
+    timeout_s: 900
+
+  - name: ours_svfp
+    module: experiments.baselines.ours_svfp
+    class: OursSVFPRunner
+    description: E1 smoke closed-set SVFP arm with 2 iterations.
+    use_commenter: true
+    max_iterations: 2
+    timeout_s: 900
+
+  - name: gpt4o_zeroshot_svfp
+    module: experiments.baselines.gpt4o_zeroshot_svfp
+    class: GPT4oZeroShotSVFPRunner
+    description: E2 smoke cross-planner arm with 1 SVFP iteration.
+    model: Qwen/Qwen3-32B
+    api_key_env: DASHSCOPE_API_KEY
+    base_url: https://api.siliconflow.cn/v1
+    temperature: 0.2
+    max_iterations: 1
+    timeout_s: 900

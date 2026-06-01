@@ -135,6 +135,22 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 0
 
     summary = {"total": len(cells), "ok": 0, "failed": 0, "per_cell": []}
+    if args.workers <= 1:
+        for b, paper_row in cells:
+            res = _run_one_cell(b, paper_row, str(args.out), args.timeout)
+            summary["per_cell"].append(res)
+            if res.get("ok"):
+                summary["ok"] += 1
+                print(f"  ok   [{res['baseline']:>15}] {res['arxiv_id']} ({res.get('latency_ms', 0):.0f} ms)")
+            else:
+                summary["failed"] += 1
+                print(f"  FAIL [{res['baseline']:>15}] {res['arxiv_id']}: {res.get('error', '')[:120]}")
+
+        summary_path = args.out / "_run_matrix_summary.json"
+        summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"\n[run_matrix] done. ok={summary['ok']} failed={summary['failed']}. summary at {summary_path}")
+        return 0 if summary["failed"] == 0 else 1
+
     with cf.ProcessPoolExecutor(max_workers=args.workers) as pool:
         futures = {
             pool.submit(_run_one_cell, b, paper_row, str(args.out), args.timeout): (b["name"], paper_row["arxiv_id"])

@@ -42,6 +42,13 @@ experiments/results/artifacts/
 experiments/results/metrics/
 experiments/results/aggregate/
 experiments/results/figures/
+# E1/E2 preflight & smoke (separate from formal n=30 outputs)
+experiments/results/artifacts_e1_preflight/
+experiments/results/artifacts_e1_smoke/
+experiments/results/artifacts_e2_preflight/
+experiments/results/metrics_e1_preflight/
+experiments/results/metrics_e2_preflight/
+experiments/results/aggregate_e1_preflight/
 experiments/results/batch_dify_report.json
 experiments/results/batch_dify_console.log
 experiments/results/import_report.json

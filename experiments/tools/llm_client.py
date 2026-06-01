@@ -36,6 +36,8 @@ load_dotenv(_PROJECT_ROOT / ".env")
 
 _DEFAULT_BASE_URL = "https://api.siliconflow.cn/v1"
 _DEFAULT_API_KEY_ENV = "DASHSCOPE_API_KEY"
+_DEFAULT_TIMEOUT_S = 60.0
+_DEFAULT_MAX_RETRIES = 3
 _CACHE_ROOT = Path("experiments/.cache/llm")
 
 
@@ -48,10 +50,17 @@ def _hash_key(*parts: str) -> str:
 
 
 def _client(api_key_env: str, base_url: Optional[str]) -> OpenAI:
+    timeout_s = float(os.getenv("POSTER_LLM_TIMEOUT_S", str(_DEFAULT_TIMEOUT_S)))
     return OpenAI(
         api_key=os.getenv(api_key_env, ""),
         base_url=base_url or _DEFAULT_BASE_URL,
+        timeout=timeout_s,
+        max_retries=0,
     )
+
+
+def _max_retries() -> int:
+    return max(1, int(os.getenv("POSTER_LLM_MAX_RETRIES", str(_DEFAULT_MAX_RETRIES))))
 
 
 def text_chat(
@@ -79,6 +88,17 @@ def text_chat(
         try:
             data = json.loads(cache_path.read_text(encoding="utf-8"))
             data["cache_hit"] = True
+            if experiment_logger is not None:
+                experiment_logger.log_llm_call(
+                    stage=stage_label,
+                    model=model,
+                    prompt_tokens=0,
+                    completion_tokens=0,
+                    latency_ms=0.0,
+                    raw_response=None,
+                    retries=0,
+                    extra={"cache_hit": True},
+                )
             return data
         except Exception:
             pass
@@ -99,12 +119,13 @@ def text_chat(
     # connections under heavy load; 3 tries with exponential backoff covers
     # the typical case without masking a real outage.
     resp = None
-    for attempt in range(3):
+    max_retries = _max_retries()
+    for attempt in range(max_retries):
         try:
             resp = client.chat.completions.create(**kwargs)
             break
         except Exception as exc:
-            if attempt == 2:
+            if attempt == max_retries - 1:
                 raise
             time.sleep(2 * (attempt + 1))
     latency_ms = (time.perf_counter() - t0) * 1000
@@ -168,6 +189,17 @@ def vlm_chat(
         try:
             data = json.loads(cache_path.read_text(encoding="utf-8"))
             data["cache_hit"] = True
+            if experiment_logger is not None:
+                experiment_logger.log_llm_call(
+                    stage=stage_label,
+                    model=model,
+                    prompt_tokens=0,
+                    completion_tokens=0,
+                    latency_ms=0.0,
+                    raw_response=None,
+                    retries=0,
+                    extra={"cache_hit": True, "n_images": len(image_paths)},
+                )
             return data
         except Exception:
             pass
@@ -193,12 +225,13 @@ def vlm_chat(
     if json_mode:
         kwargs["response_format"] = {"type": "json_object"}
     resp = None
-    for attempt in range(3):
+    max_retries = _max_retries()
+    for attempt in range(max_retries):
         try:
             resp = client.chat.completions.create(**kwargs)
             break
         except Exception:
-            if attempt == 2:
+            if attempt == max_retries - 1:
                 raise
             time.sleep(2 * (attempt + 1))
     latency_ms = (time.perf_counter() - t0) * 1000

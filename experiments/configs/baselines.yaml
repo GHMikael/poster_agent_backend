@@ -8,9 +8,9 @@ baselines:
   - name: ours_svfp
     module: experiments.baselines.ours_svfp
     class: OursSVFPRunner
-    description: Our system with full SVFP feedback loop (use_commenter=true, max_iter=4).
+    description: Our system with full SVFP feedback loop (use_commenter=true, max_iter=2).
     use_commenter: true
-    max_iterations: 4
+    max_iterations: 2
     timeout_s: 1800
 
   - name: ours_no_svfp
@@ -29,7 +29,7 @@ baselines:
       but the visual feedback is FREE-FORM prose (not the SVFP closed schema) and
       is applied by an LLM best-effort rewrite (not deterministic dispatch).
       Emits action_executability / content_drift to quantify closed-set vs free-form.
-    max_iterations: 4
+    max_iterations: 2
     timeout_s: 1800
 
   - name: gpt4o_zeroshot
@@ -47,6 +47,17 @@ baselines:
     base_url: https://api.siliconflow.cn/v1
     temperature: 0.2
     timeout_s: 600
+
+  - name: gpt4o_zeroshot_svfp
+    module: experiments.baselines.gpt4o_zeroshot_svfp
+    class: GPT4oZeroShotSVFPRunner
+    description: E2 cross-planner arm — zero-shot planner followed by the same SVFP post-processor.
+    model: Qwen/Qwen3-32B
+    api_key_env: DASHSCOPE_API_KEY
+    base_url: https://api.siliconflow.cn/v1
+    temperature: 0.2
+    max_iterations: 2
+    timeout_s: 900
 
   - name: paper2poster
     module: experiments.baselines.paper2poster

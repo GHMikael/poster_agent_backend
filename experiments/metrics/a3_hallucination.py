@@ -72,10 +72,10 @@ class A3Hallucination(Metric):
         unsupported: List[Dict[str, Any]] = []
         supported: List[Dict[str, Any]] = []
         for r in results:
-            pe, pn, pc = r["p_entail"], r["p_neutral"], r["p_contradict"]
-            if pc >= pe and pc >= pn and pc >= contradict_min:
+            label = _classify_nli_result(r, contradict_min=contradict_min)
+            if label == "contradicted":
                 contradicted.append(r)   # paper explicitly refutes the bullet → hallucination
-            elif pe >= pn and pe >= pc:
+            elif label == "supported":
                 supported.append(r)      # paper entails the bullet
             else:
                 unsupported.append(r)    # neutral: paper is silent — NOT a hallucination
@@ -117,3 +117,20 @@ def _flatten_bullets(panels_json: Dict[str, Any]) -> List[str]:
             if s:
                 out.append(s)
     return out
+
+
+def _classify_nli_result(result: Dict[str, Any], *, contradict_min: float) -> str:
+    """Return supported/unsupported/contradicted for one 3-way NLI result.
+
+    The important rule is that neutral/abstained distributions are not counted
+    as hallucinations. A bullet is contradicted only when contradiction is the
+    winning label and clears the configured threshold.
+    """
+    pe = float(result["p_entail"])
+    pn = float(result["p_neutral"])
+    pc = float(result["p_contradict"])
+    if pc >= pe and pc >= pn and pc >= contradict_min:
+        return "contradicted"
+    if pe >= pn and pe >= pc:
+        return "supported"
+    return "unsupported"
